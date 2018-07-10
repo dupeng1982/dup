@@ -1,10 +1,7 @@
 package com.dup.demo.mapper;
 
 import com.dup.demo.domain.User;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,5 +20,6 @@ public interface UserMapper {
     User getOneUser(Long id);
 
     @Insert("insert into users(name,password) VALUES(#{name}, #{password})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int addUser(User user);
 }

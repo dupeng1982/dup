@@ -16,7 +16,7 @@ public class HelloController {
     private String sitename;
 
     //@RequestMapping(value = "/hello", method = RequestMethod.GET)
-    @PostMapping(value = {"/hello", "test"})
+    @PostMapping(value = {"/hello", "hi"})
     @ResponseBody
     public String sayHello() {
         return "Hello Spring Boot!" + sitename + siteProperties.getRecordcode();
@@ -33,7 +33,7 @@ public class HelloController {
     @ResponseBody
     //public int saySome(@PathVariable("id") int id) {
     public int saySome(@RequestParam(value = "id", required = false, defaultValue = "0") int id) {
-    //public int saySome(@PathVariable("id") int id) {
+        //public int saySome(@PathVariable("id") int id) {
         return id;
     }
 

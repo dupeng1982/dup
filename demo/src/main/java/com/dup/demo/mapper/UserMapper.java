@@ -19,7 +19,7 @@ public interface UserMapper {
     @Select("select * from users where id = #{id}")
     User getOneUser(Long id);
 
-    @Insert("insert into users(name,password,type,status) VALUES(#{name},#{password},#{type},#{status})")
+    @Insert("insert into users(name,password,type,status,flag) VALUES(#{name},#{password},#{type},#{status},#{flag})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int addUser(User user);
 }

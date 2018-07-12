@@ -2,6 +2,8 @@ package com.dup.demo.domain;
 
 import com.dup.demo.domain.group.First;
 import com.dup.demo.domain.group.Second;
+import com.dup.demo.validator.FlagValidator;
+import com.dup.demo.validator.ForbiddenWordValidator;
 import org.hibernate.validator.constraints.ScriptAssert;
 
 import javax.validation.constraints.NotEmpty;
@@ -18,6 +20,9 @@ public class User {
 
     private Integer type;
     private Integer status;
+    //@FlagValidator(values = "1,2,3", message = "{user.flag.FlagValidator}", groups = {First.class, Second.class})
+    @ForbiddenWordValidator(values = "admin,user", message = "{user.flag.ForbiddenWordValidator}", groups = {First.class, Second.class})
+    private String flag;
 
     public Long getId() {
         return id;
@@ -57,6 +62,14 @@ public class User {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getFlag() {
+        return flag;
+    }
+
+    public void setFlag(String flag) {
+        this.flag = flag;
     }
 
     @Override

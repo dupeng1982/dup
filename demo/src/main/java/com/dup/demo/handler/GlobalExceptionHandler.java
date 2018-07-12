@@ -1,0 +1,27 @@
+package com.dup.demo.handler;
+
+import com.dup.demo.domain.Result;
+import com.dup.demo.enums.ExceptionEnum;
+import com.dup.demo.exception.AppException;
+import com.dup.demo.utils.ResultUtil;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@ControllerAdvice
+public class GlobalExceptionHandler {
+    @ExceptionHandler(value = Exception.class)
+    @ResponseBody
+    public Result defaultHandler(Exception e) {
+        if (e instanceof AppException) {
+            AppException appException = (AppException) e;
+            return ResultUtil.error(appException.getCode(), appException.getMessage());
+        } else {
+            if (e.getMessage().equals("")) {
+                return ResultUtil.error(ExceptionEnum.UNKOWN_ERROR.getCode(), ExceptionEnum.UNKOWN_ERROR.getMsg());
+            } else {
+                return ResultUtil.error(ExceptionEnum.ERROR.getCode(), e.getMessage());
+            }
+        }
+    }
+}

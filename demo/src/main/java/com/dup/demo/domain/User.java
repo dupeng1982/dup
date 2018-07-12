@@ -6,11 +6,11 @@ import com.dup.demo.domain.group.Second;
 import javax.validation.constraints.NotEmpty;
 
 public class User {
-    @NotEmpty(message = "用户ID不能为空", groups = {First.class})
+    @NotEmpty(message = "{user.id.notEmpty}", groups = {First.class})
     private Long id;
-    @NotEmpty(message = "用户名不能为空", groups = {First.class, Second.class})
+    @NotEmpty(message = "{user.name.notEmpty}", groups = {First.class, Second.class})
     private String name;
-    @NotEmpty(message = "密码不能为空", groups = {First.class, Second.class})
+    @NotEmpty(message = "{user.password.notEmpty}", groups = {First.class, Second.class})
     private String password;
 
     public Long getId() {

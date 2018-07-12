@@ -2,9 +2,12 @@ package com.dup.demo.domain;
 
 import com.dup.demo.domain.group.First;
 import com.dup.demo.domain.group.Second;
+import org.hibernate.validator.constraints.ScriptAssert;
 
 import javax.validation.constraints.NotEmpty;
 
+@ScriptAssert(lang = "javascript", script = "com.dup.demo.domain.User.checkParams(_this.type,_this.status)",
+        message = "自定义验证测试", groups = {First.class, Second.class})
 public class User {
     @NotEmpty(message = "{user.id.notEmpty}", groups = {First.class})
     private Long id;
@@ -12,6 +15,9 @@ public class User {
     private String name;
     @NotEmpty(message = "{user.password.notEmpty}", groups = {First.class, Second.class})
     private String password;
+
+    private Integer type;
+    private Integer status;
 
     public Long getId() {
         return id;
@@ -37,6 +43,22 @@ public class User {
         this.password = password;
     }
 
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -45,4 +67,13 @@ public class User {
                 ", password='" + password + '\'' +
                 '}';
     }
+
+    public static boolean checkParams(Integer type, Integer status) {
+        if ((status != null) && (status > 1) && (type != null)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

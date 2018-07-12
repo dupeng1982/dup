@@ -16,8 +16,10 @@ public class GlobalExceptionHandler {
         if (e instanceof AppException) {
             AppException appException = (AppException) e;
             return ResultUtil.error(appException.getCode(), appException.getMessage());
+        } else if (e instanceof NullPointerException) {
+            return ResultUtil.error(ExceptionEnum.NULL_POINTER_ERROR.getCode(), ExceptionEnum.NULL_POINTER_ERROR.getMsg());
         } else {
-            if (e.getMessage().equals("")) {
+            if (e.getMessage().isEmpty()) {
                 return ResultUtil.error(ExceptionEnum.UNKOWN_ERROR.getCode(), ExceptionEnum.UNKOWN_ERROR.getMsg());
             } else {
                 return ResultUtil.error(ExceptionEnum.ERROR.getCode(), e.getMessage());

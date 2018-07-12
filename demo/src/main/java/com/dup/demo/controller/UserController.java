@@ -14,7 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
- 
+
 @RestController
 @RequestMapping(value = "/user")
 public class UserController {
@@ -41,6 +41,7 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             ExceptionEnum.ARGS_ERROR.setMsg(bindingResult.getFieldError().getDefaultMessage());
             throw new AppException(ExceptionEnum.ARGS_ERROR);
+            //return ResultUtil.error(ExceptionEnum.ARGS_ERROR.getCode(), ExceptionEnum.ARGS_ERROR.getMsg());
         }
         return userService.addUser(user);
     }

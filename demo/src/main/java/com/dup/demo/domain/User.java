@@ -4,13 +4,17 @@ import com.dup.demo.domain.group.First;
 import com.dup.demo.domain.group.Second;
 import com.dup.demo.validator.FlagValidator;
 import com.dup.demo.validator.ForbiddenWordValidator;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.ScriptAssert;
 
 import javax.validation.constraints.NotEmpty;
 
+@ApiModel(description = "用户实体")
 @ScriptAssert(lang = "javascript", script = "com.dup.demo.domain.User.checkParams(_this.type,_this.status)",
         message = "自定义验证测试", groups = {First.class, Second.class})
 public class User {
+    @ApiModelProperty(dataType = "Integer", notes = "用户ID", hidden = true)
     @NotEmpty(message = "{user.id.notEmpty}", groups = {First.class})
     private Long id;
     @NotEmpty(message = "{user.name.notEmpty}", groups = {First.class, Second.class})

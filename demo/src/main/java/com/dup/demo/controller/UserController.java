@@ -59,4 +59,15 @@ public class UserController {
         return userService.addUser(user);
     }
 
+    @PostMapping("/createuser")
+    @Transactional
+    public Object createUser(@Validated({Second.class}) User user, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            ExceptionEnum.ARGS_ERROR.setMsg(bindingResult.getFieldError().getDefaultMessage());
+            throw new AppException(ExceptionEnum.ARGS_ERROR);
+            //return ResultUtil.error(ExceptionEnum.ARGS_ERROR.getCode(), ExceptionEnum.ARGS_ERROR.getMsg());
+        }
+        return userService.createUser(user);
+    }
+
 }

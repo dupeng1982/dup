@@ -22,4 +22,11 @@ public interface UserMapper {
     @Insert("insert into users(name,password,type,status,flag) VALUES(#{name},#{password},#{type},#{status},#{flag})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int addUser(User user);
+
+    @Insert("insert into users(name,password,type,status,flag) VALUES(#{name},#{password},#{type},#{status},#{flag})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    int createUser(User user);
+
+    @Select("select * from users where name = #{username}")
+    User findByUsername(String username);
 }

@@ -5,16 +5,19 @@ import com.dup.demo.domain.User;
 import com.dup.demo.domain.group.Second;
 import com.dup.demo.enums.ExceptionEnum;
 import com.dup.demo.exception.AppException;
+import com.dup.demo.service.AuthUserService;
 import com.dup.demo.service.UserService;
 import com.dup.demo.utils.ResultUtil;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Api(tags = "用户操作接口")
@@ -24,7 +27,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/getalluser")
+    @PostMapping("/getalluser")
     public Result<List<User>> getAllUser() {
         return ResultUtil.success(userService.getAllUser());
     }
@@ -69,5 +72,18 @@ public class UserController {
         }
         return userService.createUser(user);
     }
+
+//    @Autowired
+//    private AuthUserService authUserService;
+    @PostMapping("/getauth")
+    @Transactional
+//    public Object getAuth(Authentication authentication) {
+//        return authentication.getPrincipal();
+//        return authentication..getName();
+//    }
+    public Object getAuth(HttpServletRequest request) {
+        return request.getUserPrincipal().getName();
+    }
+
 
 }

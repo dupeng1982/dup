@@ -22,7 +22,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private DataSource dataSource;
 
-    @Bean // 声明TokenStore实现
+    @Bean
     public TokenStore tokenStore() {
         return new JdbcTokenStore(dataSource);
     }

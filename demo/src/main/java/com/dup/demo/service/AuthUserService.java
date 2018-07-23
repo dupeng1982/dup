@@ -19,7 +19,7 @@ public class AuthUserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        User user = userMapper.findByUsername(username);
+        User user = userMapper.findByUsername2(username);
         if (user == null) {
             throw new UsernameNotFoundException("用户名不存在");
         }

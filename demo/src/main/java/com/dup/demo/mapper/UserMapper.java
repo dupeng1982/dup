@@ -28,5 +28,8 @@ public interface UserMapper {
     int createUser(User user);
 
     @Select("select * from users where name = #{username}")
-    User findByUsername(String username);
+    User findByUsername1(String username);
+
+    @Select("select * from admins where name = #{username}")
+    User findByUsername2(String username);
 }

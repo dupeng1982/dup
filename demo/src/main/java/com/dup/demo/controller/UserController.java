@@ -5,7 +5,6 @@ import com.dup.demo.domain.User;
 import com.dup.demo.domain.group.Second;
 import com.dup.demo.enums.ExceptionEnum;
 import com.dup.demo.exception.AppException;
-import com.dup.demo.service.AuthUserService;
 import com.dup.demo.service.UserService;
 import com.dup.demo.utils.ResultUtil;
 import io.swagger.annotations.*;
@@ -73,8 +72,6 @@ public class UserController {
         return userService.createUser(user);
     }
 
-//    @Autowired
-//    private AuthUserService authUserService;
     @PostMapping("/getauth")
     @Transactional
 //    public Object getAuth(Authentication authentication) {

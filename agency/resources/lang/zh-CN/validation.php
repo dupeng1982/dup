@@ -109,6 +109,8 @@ return [
     */
     'attributes'           => [
         //自定义验证字段名称
+        'name'             => '用户名',
+        'password'         => '密码',
 
     ],
 

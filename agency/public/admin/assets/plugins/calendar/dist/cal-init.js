@@ -1,7 +1,6 @@
 
 !function($) {
     "use strict";
-
     var CalendarApp = function() {
         this.$body = $("body")
         this.$calendar = $('#calendar'),
@@ -13,9 +12,8 @@
         this.$calendarObj = null
     };
 
-
     /* on drop */
-    CalendarApp.prototype.onDrop = function (eventObj, date) { 
+    CalendarApp.prototype.onDrop = function (eventObj, date) {
         var $this = this;
             // retrieve the dropped element's stored Event Object
             var originalEventObject = eventObj.data('eventObject');
@@ -58,6 +56,8 @@
     },
     /* on select */
     CalendarApp.prototype.onSelect = function (start, end, allDay) {
+        console.log($.fullCalendar.formatDate(start,'YYYY-MM-DD HH:mm:ss'));
+        console.log($.fullCalendar.formatDate(end,'Y-M-D HH:mm:ss'));
         var $this = this;
             $this.$modal.modal({
                 backdrop: 'static'
@@ -90,14 +90,14 @@
                         end: end,
                         allDay: false,
                         className: categoryClass
-                    }, true);  
+                    }, true);
                     $this.$modal.modal('hide');
                 }
                 else{
                     alert('You have to give a title to your event');
                 }
                 return false;
-                
+
             });
             $this.$calendarObj.fullCalendar('unselect');
     },
@@ -118,7 +118,7 @@
                 revertDuration: 0  //  original position after the drag
             });
         });
-    }
+    },
     /* Initializing */
     CalendarApp.prototype.init = function() {
         this.enableDrag();
@@ -158,7 +158,7 @@
                 start: new Date($.now() - 399000000),
                 end: new Date($.now() - 219000000),
                 className: 'bg-info'
-            },  
+            },
               {
                 title: 'Hanns birthday',
                 start: new Date($.now() + 868000000),
@@ -171,21 +171,26 @@
 
         var $this = this;
         $this.$calendarObj = $this.$calendar.fullCalendar({
-            slotDuration: '00:15:00', /* If we want to split day time each 15minutes */
-            minTime: '08:00:00',
-            maxTime: '19:00:00',  
-            defaultView: 'month',  
-            handleWindowResize: true,   
-             
+            defaultView: 'month',
+            handleWindowResize: true,
+
+            monthNames : ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"], //月份自定义命名
+            monthNamesShort: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"], //月份缩略命名（英语比较实用：全称January可设置缩略为Jan）
+            dayNames: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],       //同理monthNames
+            dayNamesShort: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],  //同理monthNamesShort
+            weekNumberTitle : "周",
+            titleFormat:"YYYY年 MMMM",
+
             header: {
-                left: 'prev,next today',
+                left: 'prev',
                 center: 'title',
-                right: 'month,agendaWeek,agendaDay'
+                right: 'next'
             },
+
             events: defaultEvents,
             editable: true,
             droppable: true, // this allows things to be dropped onto the calendar !!!
-            eventLimit: true, // allow "more" link when too many events
+            eventLimit: false, // allow "more" link when too many events
             selectable: true,
             drop: function(date) { $this.onDrop($(this), date); },
             select: function (start, end, allDay) { $this.onSelect(start, end, allDay); },
@@ -205,9 +210,8 @@
         });
     },
 
-   //init CalendarApp
+    //init CalendarApp
     $.CalendarApp = new CalendarApp, $.CalendarApp.Constructor = CalendarApp
-    
 }(window.jQuery),
 
 //initializing CalendarApp

@@ -15,12 +15,13 @@ class AdminController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth.admin:admin');
+        //$this->middleware('auth.admin:admin');
     }
 
     public function index()
     {
-        $admin = Auth::guard('admin')->user();
-        return $admin->name;
+//        $admin = Auth::guard('admin')->user();
+//        return $admin->name;
+        return view('admin/index');
     }
 }

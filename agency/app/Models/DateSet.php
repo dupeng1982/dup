@@ -8,14 +8,14 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasCompositePrimaryKey;
 use Illuminate\Database\Eloquent\Model;
 
 class DateSet extends Model
 {
-    use HasCompositePrimaryKey;
     protected $table = 'date_set';
+    protected $primaryKey = 'set_date';
+    protected $keyType = 'string';
+    public $incrementing = false;
     public $timestamps = false;
-    public $primaryKey = ['sign_date', 'sign_date_type'];
-    protected $fillable = ['sign_date', 'sign_date_type', 'date_status'];
+    protected $fillable = ['set_date'];
 }

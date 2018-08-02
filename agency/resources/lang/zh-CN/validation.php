@@ -111,6 +111,8 @@ return [
         //自定义验证字段名称
         'name'             => '用户名',
         'password'         => '密码',
+        'start_date'       => '开始日期',
+        'end_date'         => '结束日期',
 
     ],
 

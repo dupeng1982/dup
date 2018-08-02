@@ -18,7 +18,6 @@ $(function() {
           });
 
      });
-
       $(".tst2").click(function(){
            $.toast({
             heading: 'Welcome to Monster admin',
@@ -29,7 +28,6 @@ $(function() {
             hideAfter: 3500, 
             stack: 6
           });
-
      });
       $(".tst3").click(function(){
            $.toast({
@@ -41,9 +39,7 @@ $(function() {
             hideAfter: 3500, 
             stack: 6
           });
-
      });
-
       $(".tst4").click(function(){
            $.toast({
             heading: 'Welcome to Monster admin',
@@ -52,9 +48,7 @@ $(function() {
             loaderBg:'#ff6849',
             icon: 'error',
             hideAfter: 3500
-            
           });
-
      });
 });
           

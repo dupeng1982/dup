@@ -22,7 +22,7 @@ Author: Themedesigner
 Email: niravjoshi87@gmail.com
 File: scss
 */
-@import url("https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700");
+@import url(./poppins.css);
 /*Theme Colors*/
 /*bootstrap Color*/
 /*Light colors*/
@@ -36,7 +36,6 @@ File: scss
 @import url(../scss/icons/themify-icons/themify-icons.css);
 @import url(../scss/icons/flag-icon-css/flag-icon.min.css);
 @import url(../scss/icons/material-design-iconic-font/css/materialdesignicons.min.css);
-@import url("https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700");
 @import url(../css/spinners.css);
 @import url(../css/animate.css);
 .preloader {
@@ -7138,7 +7137,8 @@ input[type=checkbox]:not(:disabled).tabbed:focus ~ .lever::after {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  padding: 25px; }
+  padding: 25px;
+  z-index:100; }
 
 /*Radio button*/
 @-webkit-keyframes ripple {

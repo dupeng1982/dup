@@ -10,4 +10,29 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    //数据封装
+    protected function resp($code, $data)
+    {
+        return response()->json([
+            'code' => $code,
+            'data' => $data,
+        ]);
+    }
+
+    //数据封装
+    protected function resp_long($code, $data)
+    {
+        return response()->json([
+            'code' => $code,
+            'data' => json_encode($data),
+        ]);
+    }
+
+    //时间段参数规则化
+    protected function getTimeArr($string)
+    {
+        $arr = explode(',', $string);
+        sort($arr);
+        return $arr;
+    }
 }

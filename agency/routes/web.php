@@ -30,6 +30,11 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('login', 'LoginController@login');
 
     $router->get('index', 'AdminController@index');
+
+    $router->get('dateset', 'AdminController@dateset');
+    $router->post('getDateEvent', 'AdminController@getDateEvent');
+    $router->post('setDateEvent', 'AdminController@setDateEvent');
+    $router->post('delDateEvent', 'AdminController@delDateEvent');
 });
 
 

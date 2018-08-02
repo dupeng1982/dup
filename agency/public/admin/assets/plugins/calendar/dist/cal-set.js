@@ -169,7 +169,7 @@
             };
             var $this = this;
             $this.$calendarObj = $this.$calendar.fullCalendar({
-                height: 700,
+                height: 664,
                 firstDay: 1,
                 defaultView: 'month',
                 handleWindowResize: true,

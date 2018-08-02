@@ -17,9 +17,32 @@
 
 @section('admin-content')
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-5">
             <div class="card">
                 <div class="card-body">
+                    <h4 class="card-title text-muted">上下班时间设置</h4>
+                    <label class="m-t-40">上班时间设置</label>
+                    <div class="input-group clockpicker " data-placement="bottom" data-align="top"
+                         data-autoclose="true">
+                        <input type="text" class="form-control" value="13:14"> <span class="input-group-addon"> <span
+                                    class="fa fa-clock-o"></span> </span>
+                    </div>
+                    <label class="m-t-40">下班时间设置</label>
+                    <div class="input-group clockpicker " data-placement="bottom" data-align="top"
+                         data-autoclose="true">
+                        <input type="text" class="form-control" value="13:14"> <span class="input-group-addon"> <span
+                                    class="fa fa-clock-o"></span> </span>
+                    </div>
+                    <button type="button" class="btn waves-effect waves-light btn-rounded btn-secondary">
+                        提交
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-muted">休假日期设置</h4>
                     <div id="calendar"></div>
                 </div>
             </div>

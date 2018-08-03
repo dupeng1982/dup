@@ -180,7 +180,7 @@ a.link:hover, a.link:focus {
 
 .sidebar-nav > ul > li.active > a, .sidebar-nav > ul > li.active:hover > a {
   color: #ffffff !important;
-  background: #26c6da !important;
+  background: #1e88e5 !important;
 }
 
 .sidebar-nav > ul > li.active > a i, .sidebar-nav > ul > li.active:hover > a i {

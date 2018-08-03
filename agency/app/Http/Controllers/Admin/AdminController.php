@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\DateSet;
+use App\Models\TimeSet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Validator, DB, Date, Excel;
@@ -22,15 +23,20 @@ class AdminController extends Controller
 
     public function index()
     {
-//        $admin = Auth::guard('admin')->user();
-//        return $admin->name;
+//        $user = Auth::guard('admin')->user();
+//        if ($user->hasRole('admin123')) {
+//            dd(123);
+//        } else {
+//            dd(456);
+//        }
         return view('admin/index');
     }
 
     //日期事件视图
     public function dateset()
     {
-        return view('admin/dateset');
+        $data['time_set'] = TimeSet::get();
+        return view('admin/dateset', ['data' => $data]);
     }
 
     //获取日期事件
@@ -94,6 +100,46 @@ class AdminController extends Controller
                 }
             }
             return $this->resp(0, '删除成功');
+        });
+    }
+
+    //设置夏季工作时间
+    public function setSummerTime(Request $request)
+    {
+        $rule = [
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        return DB::transaction(function () use ($request) {
+            $start_time = $request->start_time;
+            $end_time = $request->end_time;
+            TimeSet::whereIn('set_month', ['06', '07', '08', '09'])
+                ->update(['set_start_time' => $start_time, 'set_end_time' => $end_time]);
+            return $this->resp(0, '设置成功');
+        });
+    }
+
+    //设置冬季工作时间
+    public function setWinterTime(Request $request)
+    {
+        $rule = [
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        return DB::transaction(function () use ($request) {
+            $start_time = $request->start_time;
+            $end_time = $request->end_time;
+            TimeSet::whereNotIn('set_month', ['06', '07', '08', '09'])
+                ->update(['set_start_time' => $start_time, 'set_end_time' => $end_time]);
+            return $this->resp(0, '设置成功');
         });
     }
 }

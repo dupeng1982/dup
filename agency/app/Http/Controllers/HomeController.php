@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -21,8 +22,14 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+//        $user = Auth::guard('web')->user();
+//        if ($user->hasRole('user1')) {
+//            dd(123);
+//        } else {
+//            dd(456);
+//        }
         return view('home');
     }
 }

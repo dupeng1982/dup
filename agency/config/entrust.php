@@ -19,7 +19,8 @@ return [
     | the role if it is in a different namespace.
     |
     */
-    'role' => 'App\Role',
+    'role' => 'App\Models\Role',
+    'adminrole' => 'App\Models\AdminRole',
 
     /*
     |--------------------------------------------------------------------------
@@ -30,6 +31,7 @@ return [
     |
     */
     'roles_table' => 'roles',
+    'admin_roles_table' => 'admin_roles',
 
     /*
     |--------------------------------------------------------------------------
@@ -51,7 +53,8 @@ return [
     | Update the User if it is in a different namespace.
     |
     */
-    'user' => 'App\User',
+    'user' => 'App\Models\User',
+    'admin' => 'App\Models\Admin',
 
     /*
     |--------------------------------------------------------------------------
@@ -63,6 +66,7 @@ return [
     |
     */
     'users_table' => 'users',
+    'admins_table' => 'admins',
 
     /*
     |--------------------------------------------------------------------------
@@ -74,6 +78,7 @@ return [
     |
     */
     'role_user_table' => 'role_user',
+    'admin_role_user_table' => 'admin_role_user',
 
     /*
     |--------------------------------------------------------------------------
@@ -95,7 +100,8 @@ return [
     | Update the permission if it is in a different namespace.
     |
     */
-    'permission' => 'App\Permission',
+    'permission' => 'App\Models\Permission',
+    'adminpermission' => 'App\Models\AdminPermission',
 
     /*
     |--------------------------------------------------------------------------
@@ -107,6 +113,7 @@ return [
     |
     */
     'permissions_table' => 'permissions',
+    'admin_permissions_table' => 'admin_permissions',
 
     /*
     |--------------------------------------------------------------------------
@@ -118,6 +125,7 @@ return [
     |
     */
     'permission_role_table' => 'permission_role',
+    'admin_permission_role_table' => 'admin_permission_role',
 
     /*
     |--------------------------------------------------------------------------

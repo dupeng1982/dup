@@ -113,6 +113,8 @@ return [
         'password'         => '密码',
         'start_date'       => '开始日期',
         'end_date'         => '结束日期',
+        'start_time'       => '上班时间',
+        'end_time'         => '下班时间',
 
     ],
 

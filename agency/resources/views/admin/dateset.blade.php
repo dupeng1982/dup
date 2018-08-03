@@ -4,7 +4,6 @@
     <link href="{{ asset('admin/assets/plugins/calendar/dist/fullcalendar.css') }}" rel="stylesheet"/>
     <link href="{{ asset('admin/assets/plugins/toast-master/css/jquery.toast.css') }}" rel="stylesheet"/>
     <link href="{{ asset('admin/assets/plugins/clockpicker/dist/jquery-clockpicker.min.css') }}" rel="stylesheet"/>
-    <link href="{{ asset('admin/scss/app.css') }}" rel="stylesheet"/>
 @endsection
 
 @section('admin-title')
@@ -26,20 +25,22 @@
                     <label class="m-t-40">上班时间设置</label>
                     <div class="input-group clockpicker " data-placement="bottom" data-align="top"
                          data-autoclose="true">
-                        <input type="text" class="form-control" value="13:14"> <span
+                        <input type="text" class="form-control" id="get_summer_start_time" readonly
+                               value="{{ $data['time_set']->where('set_month','06')->first()->set_start_time }}"> <span
                                 class="input-group-addon"> <span
                                     class="fa fa-clock-o"></span> </span>
                     </div>
                     <label class="m-t-40">下班时间设置</label>
                     <div class="input-group clockpicker " data-placement="bottom" data-align="top"
                          data-autoclose="true">
-                        <input type="text" class="form-control" value="13:14"> <span
+                        <input type="text" class="form-control" id="get_summer_end_time" readonly
+                               value="{{ $data['time_set']->where('set_month','06')->first()->set_end_time }}"> <span
                                 class="input-group-addon"> <span
                                     class="fa fa-clock-o"></span> </span>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <button type="button" class="btn waves-effect waves-light btn-rounded btn-secondary"
+                    <button type="button" class="btn waves-effect waves-light btn-rounded btn-secondary set_summer_time"
                             style="margin:0px auto;display:table;">
                         保存设置
                     </button>
@@ -51,20 +52,22 @@
                     <label class="m-t-40">上班时间设置</label>
                     <div class="input-group clockpicker " data-placement="bottom" data-align="top"
                          data-autoclose="true">
-                        <input type="text" class="form-control" value="13:14"> <span
+                        <input type="text" class="form-control" id="get_winter_start_time" readonly
+                               value="{{ $data['time_set']->where('set_month','01')->first()->set_start_time }}"> <span
                                 class="input-group-addon"> <span
                                     class="fa fa-clock-o"></span> </span>
                     </div>
                     <label class="m-t-40">下班时间设置</label>
                     <div class="input-group clockpicker " data-placement="bottom" data-align="top"
                          data-autoclose="true">
-                        <input type="text" class="form-control" value="13:14"> <span
+                        <input type="text" class="form-control" id="get_winter_end_time" readonly
+                               value="{{ $data['time_set']->where('set_month','01')->first()->set_end_time }}"> <span
                                 class="input-group-addon"> <span
                                     class="fa fa-clock-o"></span> </span>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <button type="button" class="btn waves-effect waves-light btn-rounded btn-secondary"
+                    <button type="button" class="btn waves-effect waves-light btn-rounded btn-secondary set_winter_time"
                             style="margin:0px auto;display:table;">
                         保存设置
                     </button>
@@ -90,8 +93,100 @@
     <script src="{{ asset('admin/assets/plugins/calendar/dist/cal-set.js') }}"></script>
     <script src="{{ asset('admin/assets/plugins/clockpicker/dist/jquery-clockpicker.min.js') }}"></script>
     <script>
-        $('.clockpicker').clockpicker().find('input').change(function () {
-            console.log(this.value);
+        $('.clockpicker').clockpicker();
+        $('.set_summer_time').click(function () {
+            var start_time = $('#get_summer_start_time').val();
+            var end_time = $('#get_summer_end_time').val();
+            $.ajax({
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                url: 'setSummerTime',
+                type: 'POST',
+                data: {
+                    start_time: start_time,
+                    end_time: end_time
+                },
+                success: function (doc) {
+                    if (doc.code) {
+                        $.toast({
+                            heading: '警告',
+                            text: doc.data,
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'warning',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    } else {
+                        $.toast({
+                            heading: '成功',
+                            text: doc.data,
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'success',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                },
+                error: function (doc) {
+                    $.toast({
+                        heading: '错误',
+                        text: '网络错误，请稍后重试！',
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'error',
+                        hideAfter: 3000,
+                        stack: 6
+                    });
+                }
+            });
+        });
+        $('.set_winter_time').click(function () {
+            var start_time = $('#get_winter_start_time').val();
+            var end_time = $('#get_winter_end_time').val();
+            $.ajax({
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                url: 'setWinterTime',
+                type: 'POST',
+                data: {
+                    start_time: start_time,
+                    end_time: end_time
+                },
+                success: function (doc) {
+                    if (doc.code) {
+                        $.toast({
+                            heading: '警告',
+                            text: doc.data,
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'warning',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    } else {
+                        $.toast({
+                            heading: '成功',
+                            text: doc.data,
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'success',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                },
+                error: function (doc) {
+                    $.toast({
+                        heading: '错误',
+                        text: '网络错误，请稍后重试！',
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'error',
+                        hideAfter: 3000,
+                        stack: 6
+                    });
+                }
+            });
         });
     </script>
 @endsection

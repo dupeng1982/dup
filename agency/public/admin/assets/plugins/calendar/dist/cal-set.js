@@ -27,7 +27,7 @@
                 if (doc.code) {
                     $.toast({
                         heading: '警告',
-                        text: '设置失败，请重试！',
+                        text: doc.data,
                         position: 'top-right',
                         loaderBg: '#ff6849',
                         icon: 'warning',
@@ -40,7 +40,7 @@
                     });
                     $.toast({
                         heading: '成功',
-                        text: '删除成功！',
+                        text: doc.data,
                         position: 'top-right',
                         loaderBg: '#ff6849',
                         icon: 'success',
@@ -52,7 +52,7 @@
             error: function (doc) {
                 $.toast({
                     heading: '错误',
-                    text: '系统错误！',
+                    text: '网络错误，请稍后重试！',
                     position: 'top-right',
                     loaderBg: '#ff6849',
                     icon: 'error',
@@ -77,7 +77,7 @@
                     if (doc.code) {
                         $.toast({
                             heading: '警告',
-                            text: '设置失败，请重试！',
+                            text: doc.data,
                             position: 'top-right',
                             loaderBg: '#ff6849',
                             icon: 'warning',
@@ -93,7 +93,7 @@
                         $this.$calendarObj.fullCalendar('unselect');
                         $.toast({
                             heading: '成功',
-                            text: '设置成功！',
+                            text: doc.data,
                             position: 'top-right',
                             loaderBg: '#ff6849',
                             icon: 'success',
@@ -105,7 +105,7 @@
                 error: function (doc) {
                     $.toast({
                         heading: '错误',
-                        text: '系统错误！',
+                        text: '网络错误，请稍后重试！',
                         position: 'top-right',
                         loaderBg: '#ff6849',
                         icon: 'error',
@@ -136,7 +136,7 @@
                         if (doc.code) {
                             $.toast({
                                 heading: '警告',
-                                text: '数据获取失败，请刷新重试！',
+                                text: doc.data,
                                 position: 'top-right',
                                 loaderBg: '#ff6849',
                                 icon: 'warning',
@@ -157,7 +157,7 @@
                     error: function (doc) {
                         $.toast({
                             heading: '错误',
-                            text: '系统错误！',
+                            text: '网络错误，请稍后重试！',
                             position: 'top-right',
                             loaderBg: '#ff6849',
                             icon: 'error',

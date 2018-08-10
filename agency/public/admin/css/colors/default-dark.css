@@ -1,15 +1,3 @@
-/*
-Template Name: Material Pro Admin
-Author: Themedesigner
-Email: niravjoshi87@gmail.com
-File: scss
-*/
-/*
-Template Name: Material Pro Admin
-Author: Themedesigner
-Email: niravjoshi87@gmail.com
-File: scss
-*/
 @import url(../poppins.css);
 /*Theme Colors*/
 /*bootstrap Color*/
@@ -36,23 +24,46 @@ File: scss
 /*Top bar
 *******************/
 .topbar {
-  background: #fff;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  background: #99abb4;
+  /* Old browsers */
+  background: -moz-linear-gradient(left, #99abb4 0%, #660fb5 100%);
+  /* FF3.6-15 */
+  background: -webkit-linear-gradient(left, #99abb4 0%, #660fb5 100%);
+  /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right, #99abb4 0%, #660fb5 100%);
+  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+}
+
+.topbar .top-navbar .navbar-header .navbar-brand .dark-logo {
+  display: none;
+}
+
+.topbar .top-navbar .navbar-header .navbar-brand .light-logo {
+  display: inline-block;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.topbar .navbar-light .navbar-nav .nav-item > a.nav-link {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.topbar .navbar-light .navbar-nav .nav-item > a.nav-link:hover, .topbar .navbar-light .navbar-nav .nav-item > a.nav-link:focus {
+  color: #ffffff !important;
 }
 
 /*******************
 /*General Elements
 *******************/
 a {
-  color: #009efb;
+  color: #99abb4;
 }
 
 a.link:hover, a.link:focus {
-  color: #009efb !important;
+  color: #99abb4 !important;
 }
 
 .bg-theme {
-  background-color: #009efb !important;
+  background-color: #99abb4 !important;
 }
 
 .pagination > .active > a,
@@ -61,31 +72,31 @@ a.link:hover, a.link:focus {
 .pagination > .active > span:hover,
 .pagination > .active > a:focus,
 .pagination > .active > span:focus {
-  background-color: #009efb;
-  border-color: #009efb;
+  background-color: #99abb4;
+  border-color: #99abb4;
 }
 
 .right-sidebar .rpanel-title {
-  background: #009efb;
+  background: #99abb4;
 }
 
 .stylish-table tbody tr:hover, .stylish-table tbody tr.active {
-  border-left: 4px solid #009efb;
+  border-left: 4px solid #99abb4;
 }
 
 .text-themecolor {
-  color: #009efb !important;
+  color: #99abb4 !important;
 }
 
 .profile-tab li a.nav-link.active,
 .customtab li a.nav-link.active {
-  border-bottom: 2px solid #009efb;
-  color: #009efb;
+  border-bottom: 2px solid #99abb4;
+  color: #99abb4;
 }
 
 .profile-tab li a.nav-link:hover,
 .customtab li a.nav-link:hover {
-  color: #009efb;
+  color: #99abb4;
 }
 
 /*******************
@@ -93,22 +104,22 @@ a.link:hover, a.link:focus {
 *******************/
 .btn-themecolor,
 .btn-themecolor.disabled {
-  background: #009efb;
+  background: #99abb4;
   color: #ffffff;
-  border: 1px solid #009efb;
+  border: 1px solid #99abb4;
 }
 
 .btn-themecolor:hover,
 .btn-themecolor.disabled:hover {
-  background: #009efb;
+  background: #99abb4;
   opacity: 0.7;
-  border: 1px solid #009efb;
+  border: 1px solid #99abb4;
 }
 
 .btn-themecolor.active, .btn-themecolor:focus,
 .btn-themecolor.disabled.active,
 .btn-themecolor.disabled:focus {
-  background: #028ee1;
+  background: #99abb4;
 }
 
 /*******************
@@ -137,7 +148,7 @@ a.link:hover, a.link:focus {
 }
 
 .sidebar-nav ul li a.active, .sidebar-nav ul li a:hover {
-  color: #26c6da;
+  color: #99abb4;
 }
 
 .sidebar-nav ul li a.active {
@@ -150,7 +161,7 @@ a.link:hover, a.link:focus {
 
 .sidebar-nav > ul > li.active > a, .sidebar-nav > ul > li.active:hover > a {
   color: #ffffff !important;
-  background: #26c6da !important;
+  background: #99abb4 !important;
 }
 
 .sidebar-nav > ul > li.active > a i, .sidebar-nav > ul > li.active:hover > a i {
@@ -162,7 +173,7 @@ a.link:hover, a.link:focus {
 }
 
 .sidebar-nav > ul > li > a.active i, .sidebar-nav > ul > li > a:hover i {
-  color: #26c6da;
+  color: #99abb4;
 }
 
 .sidebar-nav > ul > li > a i {
@@ -172,7 +183,7 @@ a.link:hover, a.link:focus {
 .sidebar-nav > ul > li > a.active {
   font-weight: 400;
   background: #ffffff;
-  color: #009efb;
+  color: #99abb4;
 }
 
 .user-profile .profile-text a {

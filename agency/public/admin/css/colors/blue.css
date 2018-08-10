@@ -1,15 +1,3 @@
-/*
-Template Name: Material Pro Admin
-Author: Themedesigner
-Email: niravjoshi87@gmail.com
-File: scss
-*/
-/*
-Template Name: Material Pro Admin
-Author: Themedesigner
-Email: niravjoshi87@gmail.com
-File: scss
-*/
 @import url(../poppins.css);
 /*Theme Colors*/
 /*bootstrap Color*/
@@ -37,10 +25,13 @@ File: scss
 *******************/
 .topbar {
   background: #1e88e5;
-}
-
-.topbar .navbar-header {
-  background: rgba(0, 0, 0, 0.05);
+  /* Old browsers */
+  background: -moz-linear-gradient(left, #1e88e5 0%, #660fb5 100%);
+  /* FF3.6-15 */
+  background: -webkit-linear-gradient(left, #1e88e5 0%, #660fb5 100%);
+  /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right, #1e88e5 0%, #660fb5 100%);
+  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 
 .topbar .top-navbar .navbar-header .navbar-brand .dark-logo {
@@ -53,16 +44,20 @@ File: scss
 }
 
 .topbar .navbar-light .navbar-nav .nav-item > a.nav-link {
-  color: #ffffff !important;
+  color: rgba(255, 255, 255, 0.8) !important;
 }
 
 .topbar .navbar-light .navbar-nav .nav-item > a.nav-link:hover, .topbar .navbar-light .navbar-nav .nav-item > a.nav-link:focus {
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: #ffffff !important;
 }
 
 /*******************
 /*General Elements
 *******************/
+a {
+  color: #1e88e5;
+}
+
 a.link:hover, a.link:focus {
   color: #1e88e5 !important;
 }
@@ -124,7 +119,7 @@ a.link:hover, a.link:focus {
 .btn-themecolor.active, .btn-themecolor:focus,
 .btn-themecolor.disabled.active,
 .btn-themecolor.disabled:focus {
-  background: #028ee1;
+  background: #1e88e5;
 }
 
 /*******************
@@ -139,7 +134,7 @@ a.link:hover, a.link:focus {
 }
 
 .sidebar-nav ul li a.active, .sidebar-nav ul li a:hover {
-  color: #26c6da;
+  color: #1e88e5;
 }
 
 .sidebar-nav ul li a.active {
@@ -150,8 +145,21 @@ a.link:hover, a.link:focus {
   color: #99abb4;
 }
 
+.sidebar-nav > ul > li.active > a, .sidebar-nav > ul > li.active:hover > a {
+  color: #ffffff !important;
+  background: #1e88e5 !important;
+}
+
+.sidebar-nav > ul > li.active > a i, .sidebar-nav > ul > li.active:hover > a i {
+  color: #ffffff !important;
+}
+
+.sidebar-nav > ul > li.active > a:after, .sidebar-nav > ul > li.active:hover > a:after {
+  border-color: #ffffff;
+}
+
 .sidebar-nav > ul > li > a.active i, .sidebar-nav > ul > li > a:hover i {
-  color: #26c6da;
+  color: #1e88e5;
 }
 
 .sidebar-nav > ul > li > a i {
@@ -164,15 +172,18 @@ a.link:hover, a.link:focus {
   color: #1e88e5;
 }
 
-.sidebar-nav > ul > li.active > a, .sidebar-nav > ul > li.active:hover > a {
-  color: #ffffff;
-  background: #1e88e5 !important;
+
+.preloader {
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  position: fixed;
+  z-index: 99999;
+  background: #fff;
 }
 
-.sidebar-nav > ul > li.active > a i, .sidebar-nav > ul > li.active:hover > a i {
-  color: #ffffff;
-}
-
-.sidebar-nav > ul > li.active > a:after, .sidebar-nav > ul > li.active:hover > a:after {
-  border-color: #ffffff;
+.preloader .cssload-speeding-wheel {
+  position: absolute;
+  top: calc(50% - 3.5px);
+  left: calc(50% - 3.5px);
 }

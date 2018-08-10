@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminRole;
 use App\Models\DateSet;
 use App\Models\TimeSet;
 use Illuminate\Http\Request;
@@ -142,4 +143,35 @@ class AdminController extends Controller
             return $this->resp(0, '设置成功');
         });
     }
+
+    //角色设置
+    public function roleset()
+    {
+        $data['admin_roles'] = AdminRole::paginate(2);
+        return view('admin/roleset', ['data' => $data]);
+    }
+
+    //角色设置
+    public function getRole(Request $request)
+    {
+        $data = AdminRole::paginate($request->item);
+        return $data;
+    }
+
+    public function delRole(Request $request)
+    {
+        $rule = [
+            'role_id' => 'required|integer'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $rs = AdminRole::where('id', $request->role_id)->delete();
+        if ($rs) {
+            return $this->resp(0, '删除成功');
+        }
+        return $this->resp(10000, '删除失败');
+    }
+
 }

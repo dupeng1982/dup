@@ -14,8 +14,12 @@
     @yield('admin-css')
     <link href="{{ asset('admin/css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('admin/css/colors/blue.css') }}" id="theme" rel="stylesheet">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
     <script src="{{ asset('admin/js/html5shiv.js') }}"></script>
     <script src="{{ asset('admin/js/respond.min.js') }}"></script>
+    <![endif]-->
 </head>
 
 <body class="fix-header card-no-border">
@@ -347,33 +351,14 @@
             <nav class="sidebar-nav">
                 <ul id="sidebarnav">
                     <li>
-                        <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i
+                        <a class="waves-effect waves-dark" href="{{ url('admin/index') }}" aria-expanded="false"><i
                                     class="mdi mdi-gauge"></i><span class="hide-menu">首页 </span></a>
-                        <ul aria-expanded="false" class="collapse">
-                            <li><a href="">角色管理11</a></li>
-                        </ul>
                     </li>
-                    {{--<li class="nav-devider"></li>--}}
-                    <li><a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i
-                                    class="mdi mdi-laptop-windows"></i><span class="hide-menu">业务管理</span></a>
-                        <ul aria-expanded="false" class="collapse">
-                            <li><a href="">角色管理1</a></li>
-                        </ul>
-                    </li>
-                    {{--<li class="nav-devider"></li>--}}
                     <li>
-                        <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i
-                                    class="mdi mdi-bullseye"></i><span class="hide-menu">行政管理</span></a>
-                        <ul aria-expanded="false" class="collapse">
-                            <li><a href="">角色管理1</a></li>
-                        </ul>
-                    </li>
-                    {{--<li class="nav-devider"></li>--}}
-                    <li>
-                        <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i
+                        <a class="has-arrow waves-effect waves-dark" href="{{ url('admin/roleset') }}" aria-expanded="false"><i
                                     class="mdi mdi-email"></i><span class="hide-menu">系统设置</span></a>
                         <ul aria-expanded="false" class="collapse">
-                            <li><a href="">角色管理10</a></li>
+                            <li><a href="{{ url('admin/roleset') }}">角色管理</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -387,17 +372,7 @@
     </aside>
     <div class="page-wrapper">
         <div class="container-fluid">
-            <div class="row page-titles">
-                @yield('admin-title')
-                <div class="col-md-7 col-4 align-self-center">
-                    <div class="d-flex m-t-10 justify-content-end">
-                        <div class="">
-                            <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10 btn-themecolor">
-                                <i class="ti-settings text-white"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @yield('admin-title')
             @yield('admin-content')
             <div class="right-sidebar">
                 <div class="rpanel-title"> 页面调色 <span><i class="ti-close right-side-toggle"></i></span>
@@ -433,8 +408,8 @@
     </div>
 </div>
 <script src="{{ asset('admin/assets/plugins/jquery/jquery.min.js') }}"></script>
-<script src="{{ asset('admin/assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
 <script src="{{ asset('admin/assets/plugins/bootstrap/js/popper.min.js') }}"></script>
+<script src="{{ asset('admin/assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
 <script src="{{ asset('admin/js/jquery.slimscroll.js') }}"></script>
 <script src="{{ asset('admin/js/waves.js') }}"></script>
 <script src="{{ asset('admin/js/sidebarmenu.js') }}"></script>

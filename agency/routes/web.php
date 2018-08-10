@@ -37,6 +37,10 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('delDateEvent', 'AdminController@delDateEvent');
     $router->post('setSummerTime', 'AdminController@setSummerTime');
     $router->post('setWinterTime', 'AdminController@setWinterTime');
+
+    $router->get('roleset', 'AdminController@roleset');
+    $router->any('getRole', 'AdminController@getRole');
+    $router->post('delRole', 'AdminController@delRole');
 });
 
 

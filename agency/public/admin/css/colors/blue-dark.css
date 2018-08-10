@@ -1,15 +1,3 @@
-/*
-Template Name: Material Pro Admin
-Author: Themedesigner
-Email: niravjoshi87@gmail.com
-File: scss
-*/
-/*
-Template Name: Material Pro Admin
-Author: Themedesigner
-Email: niravjoshi87@gmail.com
-File: scss
-*/
 @import url(../poppins.css);
 /*Theme Colors*/
 /*bootstrap Color*/
@@ -37,6 +25,13 @@ File: scss
 *******************/
 .topbar {
   background: #1e88e5;
+  /* Old browsers */
+  background: -moz-linear-gradient(left, #1e88e5 0%, #660fb5 100%);
+  /* FF3.6-15 */
+  background: -webkit-linear-gradient(left, #1e88e5 0%, #660fb5 100%);
+  /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right, #1e88e5 0%, #660fb5 100%);
+  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 
 .topbar .top-navbar .navbar-header .navbar-brand .dark-logo {
@@ -54,20 +49,6 @@ File: scss
 
 .topbar .navbar-light .navbar-nav .nav-item > a.nav-link:hover, .topbar .navbar-light .navbar-nav .nav-item > a.nav-link:focus {
   color: #ffffff !important;
-}
-
-.logo-center .topbar .navbar-header {
-  background: transparent;
-  box-shadow: none;
-}
-
-.logo-center .topbar .top-navbar .navbar-header .navbar-brand .dark-logo {
-  display: none;
-}
-
-.logo-center .topbar .top-navbar .navbar-header .navbar-brand .light-logo {
-  display: inline-block;
-  color: rgba(255, 255, 255, 0.8);
 }
 
 /*******************
@@ -138,7 +119,7 @@ a.link:hover, a.link:focus {
 .btn-themecolor.active, .btn-themecolor:focus,
 .btn-themecolor.disabled.active,
 .btn-themecolor.disabled:focus {
-  background: #028ee1;
+  background: #1e88e5;
 }
 
 /*******************
@@ -167,7 +148,7 @@ a.link:hover, a.link:focus {
 }
 
 .sidebar-nav ul li a.active, .sidebar-nav ul li a:hover {
-  color: #26c6da;
+  color: #1e88e5;
 }
 
 .sidebar-nav ul li a.active {
@@ -192,7 +173,7 @@ a.link:hover, a.link:focus {
 }
 
 .sidebar-nav > ul > li > a.active i, .sidebar-nav > ul > li > a:hover i {
-  color: #26c6da;
+  color: #1e88e5;
 }
 
 .sidebar-nav > ul > li > a i {

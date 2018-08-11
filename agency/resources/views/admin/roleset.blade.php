@@ -113,7 +113,7 @@
                 sidePagination: 'server',
                 pageSize: 10,//单页记录数
                 pageList: [10, 15, 20],
-                responseHandler: responseHandler,//请求数据成功后，渲染表格前的方法
+                responseHandler: responseHandler,
                 columns: [{
                     field: 'SerialNumber',
                     title: '序号',
@@ -136,12 +136,9 @@
                     title: '操作',
                     formatter: operateFormatter
                 }],
-                onPostBody: function () {
-                    $("[data-toggle='tooltip']").tooltip();
-                }
+                onPostBody: onPostBody
             });
             function queryParams(params) {
-                console.log(params);
                 return {
                     page: (params.offset / params.limit) + 1,
                     item: params.limit
@@ -151,25 +148,84 @@
             function responseHandler(result) {
                 var errcode = result.code;//在此做了错误代码的判断
                 if (errcode) {
-                    alert("错误代码" + errcode);
                     return;
                 }
-                //如果没有错误则返回数据，渲染表格
-                console.log(result);
                 return {
-                    total: result.total,
-                    data: result.data
+                    total: result.data.total,
+                    data: result.data.data
                 };
             }
 
             function operateFormatter(value, row, index) {
                 return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="分配权限"><i class="ti-key" aria-hidden="true"></i></button>' +
                     '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
-                    '<button onmouseover="test();" type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delAdminRole" data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delAdminRole" data-adminroleid=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
             }
 
             function refresh() {
                 $('#admin_role_table').bootstrapTable('refresh', {url: "{{ url('admin/getRole') }}"});
+            }
+
+            function onPostBody(res) {
+                $("[data-toggle='tooltip']").tooltip();
+                $(".delAdminRole").click(function () {
+                    var admin_role_id = $(this).attr('data-adminroleid');
+                    swal({
+                            title: "是否删除？",
+                            text: "删除后不能恢复!",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "是",
+                            cancelButtonText: "否",
+                            closeOnConfirm: true
+                        }, function () {
+                            $.ajax({
+                                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                                url: 'delRole',
+                                type: 'POST',
+                                data: {
+                                    role_id: admin_role_id
+                                },
+                                success: function (doc) {
+                                    if (doc.code) {
+                                        $.toast({
+                                            heading: '警告',
+                                            text: doc.data,
+                                            position: 'top-right',
+                                            loaderBg: '#ff6849',
+                                            icon: 'warning',
+                                            hideAfter: 3000,
+                                            stack: 6
+                                        });
+                                    } else {
+                                        $.toast({
+                                            heading: '成功',
+                                            text: doc.data,
+                                            position: 'top-right',
+                                            loaderBg: '#ff6849',
+                                            icon: 'success',
+                                            hideAfter: 3000,
+                                            stack: 6
+                                        });
+                                        refresh()
+                                    }
+                                },
+                                error: function (doc) {
+                                    $.toast({
+                                        heading: '错误',
+                                        text: '网络错误，请稍后重试！',
+                                        position: 'top-right',
+                                        loaderBg: '#ff6849',
+                                        icon: 'error',
+                                        hideAfter: 3000,
+                                        stack: 6
+                                    });
+                                }
+                            });
+                        }
+                    );
+                });
             }
         });
     </script>

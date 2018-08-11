@@ -147,15 +147,22 @@ class AdminController extends Controller
     //角色设置
     public function roleset()
     {
-        $data['admin_roles'] = AdminRole::paginate(2);
-        return view('admin/roleset', ['data' => $data]);
+        return view('admin/roleset');
     }
 
-    //角色设置
+    //获取角色
     public function getRole(Request $request)
     {
+        $rule = [
+            'page' => 'integer',
+            'item' => 'integer',
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
         $data = AdminRole::paginate($request->item);
-        return $data;
+        return $this->resp(0, $data);
     }
 
     public function delRole(Request $request)

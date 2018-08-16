@@ -57,20 +57,25 @@
                                                         <form>
                                                             <div class="form-group">
                                                                 <label>角色标识</label>
-                                                                <input type="text" class="form-control"></div>
+                                                                <input type="text" class="form-control"
+                                                                       id="add-admin-role-name"></div>
                                                             <div class="form-group">
                                                                 <label>角色名称</label>
-                                                                <input type="text" class="form-control"></div>
+                                                                <input type="text" class="form-control"
+                                                                       id="add-admin-role-display-name"></div>
                                                             <div class="form-group">
                                                                 <label>角色描述</label>
-                                                                <input type="text" class="form-control"></div>
+                                                                <input type="text" class="form-control"
+                                                                       id="add-admin-role-description"></div>
                                                         </form>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
                                                                 data-dismiss="modal">关闭
                                                         </button>
-                                                        <button type="button" class="btn btn-success">添加</button>
+                                                        <button type="button" id="add-admin-role"
+                                                                class="btn btn-success">添加
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -101,7 +106,7 @@
     <script>
         $(function () {
             $('#admin_role_table').bootstrapTable({
-                url: "{{ url('admin/getRole') }}",
+                url: "{{ url('admin/getRoleList') }}",
                 ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
                 cache: false,
                 method: 'POST',
@@ -163,7 +168,7 @@
             }
 
             function refresh() {
-                $('#admin_role_table').bootstrapTable('refresh', {url: "{{ url('admin/getRole') }}"});
+                $('#admin_role_table').bootstrapTable('refresh', {url: "{{ url('admin/getRoleList') }}"});
             }
 
             function onPostBody(res) {
@@ -227,6 +232,61 @@
                     );
                 });
             }
+
+            $('#add-admin-role').click(function () {
+                var admin_role_name = $('#add-admin-role-name').val();
+                var admin_role_display_name = $('#add-admin-role-display-name').val();
+                var admin_role_description = $('#add-admin-role-description').val();
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: 'addRole',
+                    type: 'POST',
+                    data: {
+                        role_name: admin_role_name,
+                        role_display_name: admin_role_display_name,
+                        role_description: admin_role_description
+                    },
+                    success: function (doc) {
+                        if (doc.code) {
+                            $.toast({
+                                heading: '警告',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'warning',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        } else {
+                            $('#addRoleModal').modal('hide');
+                            $('#add-admin-role-name').val('');
+                            $('#add-admin-role-display-name').val('');
+                            $('#add-admin-role-description').val('');
+                            $.toast({
+                                heading: '成功',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'success',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                            refresh()
+                        }
+                    },
+                    error: function (doc) {
+                        $.toast({
+                            heading: '错误',
+                            text: '网络错误，请稍后重试！',
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'error',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                });
+            });
         });
     </script>
 @endsection

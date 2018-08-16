@@ -12,4 +12,5 @@ use App\Models\Entrust\EntrustAdminRole;
 
 class AdminRole extends EntrustAdminRole
 {
+    protected $fillable = ['name', 'display_name', 'description'];
 }

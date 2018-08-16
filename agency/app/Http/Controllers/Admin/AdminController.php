@@ -33,7 +33,7 @@ class AdminController extends Controller
         return view('admin/index');
     }
 
-    //日期事件视图
+    /*******日期事件视图*******/
     public function dateset()
     {
         $data['time_set'] = TimeSet::get();
@@ -144,14 +144,14 @@ class AdminController extends Controller
         });
     }
 
-    //角色设置
+    /*******角色设置视图*******/
     public function roleset()
     {
         return view('admin/roleset');
     }
 
-    //获取角色
-    public function getRole(Request $request)
+    //获取角色列表
+    public function getRoleList(Request $request)
     {
         $rule = [
             'page' => 'integer',
@@ -161,10 +161,11 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        $data = AdminRole::paginate($request->item);
+        $data = AdminRole::orderBy('id', 'DESC')->paginate($request->item);
         return $this->resp(0, $data);
     }
 
+    //删除角色
     public function delRole(Request $request)
     {
         $rule = [
@@ -179,6 +180,48 @@ class AdminController extends Controller
             return $this->resp(0, '删除成功');
         }
         return $this->resp(10000, '删除失败');
+    }
+
+    //添加角色
+    public function addRole(Request $request)
+    {
+        $rule = [
+            'role_name' => 'required|max:100|',
+            'role_display_name' => 'required|max:50',
+            'role_description' => 'required|max:100'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $rs = AdminRole::create(['name' => $request->role_name, 'display_name' => $request->role_display_name,
+            'description' => $request->role_description]);
+        if ($rs) {
+            return $this->resp(0, '添加成功');
+        }
+        return $this->resp(10000, '添加失败');
+    }
+
+    //编辑角色
+    public function editRole(Request $request)
+    {
+        $rule = [
+            'role_id' => 'required|integer',
+            'role_name' => 'required|max:100',
+            'role_display_name' => 'required|max:50',
+            'role_description' => 'required|max:100'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $rs = AdminRole::where('id', $request->role_id)
+            ->update(['name' => $request->role_name, 'display_name' => $request->role_display_name,
+                'description' => $request->role_description]);
+        if ($rs) {
+            return $this->resp(0, '修改成功');
+        }
+        return $this->resp(10000, '修改失败');
     }
 
 }

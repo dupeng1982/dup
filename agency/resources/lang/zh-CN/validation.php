@@ -115,6 +115,12 @@ return [
         'end_date'         => '结束日期',
         'start_time'       => '上班时间',
         'end_time'         => '下班时间',
+        'page'             => '页码',
+        'item'             => '条数',
+        'role_id'          => '角色ID',
+        'role_name'        => '角色标识',
+        'role_display_name'=> '角色名称',
+        'role_description' => '角色描述',
 
     ],
 

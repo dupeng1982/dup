@@ -143,7 +143,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">权限分配</h4>
-                    <button type="button" class="close" data-dismiss="modal"
+                    <button type="button" class="close" data-dismiss="modal" id="close-admin-perms"
                             aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
                 </div>
@@ -230,7 +230,11 @@
             }
 
             function refresh() {
-                $('#admin_role_table').bootstrapTable('refresh', {url: "{{ url('admin/getRoleList') }}"});
+                $('#admin_role_table').bootstrapTable('refresh', {url: 'getRoleList'});
+            }
+
+            function refresh1() {
+                $('#admin_perms_table').bootstrapTable('refresh', {url: 'getAdminPerms'});
             }
 
             function onPostBody(res) {
@@ -303,6 +307,8 @@
                     );
                 });
                 $('.allotAdminPerms').click(function () {
+                    var admin_role_id = $(this).attr('data-adminroleid');
+                    console.log(admin_role_id);
                     $('#PermListModal').modal('show');
                     $('#admin_perms_table').bootstrapTable({
                         url: 'getAdminPerms',
@@ -313,11 +319,7 @@
                         dataField: "data",
                         pageNumber: 1,
                         pagination: true,
-                        queryParams: function () {
-                            return {
-                                role_id: admin_role_id
-                            }
-                        },
+                        queryParams: queryParams1,
                         search: true,
                         sidePagination: 'client',
                         pageSize: 2,
@@ -344,6 +346,12 @@
                         }],
                         onPostBody: onPostBody1
                     });
+
+                    function queryParams1(params) {
+                        return {
+                            role_id: admin_role_id
+                        }
+                    }
 
                     function responseHandler1(result) {
                         var errcode = result.code;
@@ -372,21 +380,19 @@
                             offColor: "info",
                             size: "small",
                             onSwitchChange: function (event, state) {
-//                                if (state == true) {
-//                                    cartshow_submit($(this).attr("data-estateID"), $(this).attr("data-cartShow"), 1, function (check) {
-//                                        if (!check) {
-//                                            alert("修改失败！");
-//                                        }
-//                                        location.reload();
-//                                    });
-//                                } else {
+                                if (state == true) {
+                                    refresh1()
+                                    console.log(123);
+                                } else {
+                                    refresh1()
+                                    console.log(456);
 //                                    cartshow_submit($(this).attr("data-estateID"), $(this).attr("data-cartShow"), 0, function (check) {
 //                                        if (!check) {
 //                                            alert("修改失败！");
 //                                        }
 //                                        location.reload();
 //                                    });
-//                                }
+                                }
                             }
                         });
                     }
@@ -500,6 +506,10 @@
                         });
                     }
                 });
+            });
+
+            $('#close-admin-perms').click(function () {
+                $('#admin_perms_table').bootstrapTable('destroy');
             });
         });
     </script>

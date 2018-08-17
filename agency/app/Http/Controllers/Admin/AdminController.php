@@ -242,17 +242,16 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        $role_id = $request->role_id;
-        $a = AdminRole::find(3);return $a->perms;
-//        $data = AdminPermission::get()->map(function ($v) use ($role_id) {
-//            if ($admin->can($v['name'])) {
-//                $v['prem_status'] = 1;
-//            } else {
-//                $v['prem_status'] = 0;
-//            }
-//            return $v;
-//        });
-//        return $this->resp(0, $data);
+        $admin_perms = AdminRole::find($request->role_id)->perms;
+        $data = AdminPermission::get()->map(function ($v) use ($admin_perms) {
+            if ($admin_perms->where('id', $v['id'])->first()) {
+                $v['prem_status'] = 1;
+            } else {
+                $v['prem_status'] = 0;
+            }
+            return $v;
+        });
+        return $this->resp(0, $data);
     }
 
     //分配权限

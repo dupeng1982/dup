@@ -43,6 +43,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('delRole', 'AdminController@delRole');
     $router->post('addRole', 'AdminController@addRole');
     $router->post('editRole', 'AdminController@editRole');
+    $router->post('getAdminPerms', 'AdminController@getAdminPerms');
 });
 
 

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
+use App\Models\AdminPermission;
 use App\Models\AdminRole;
 use App\Models\DateSet;
 use App\Models\TimeSet;
@@ -161,7 +163,13 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        $data = AdminRole::orderBy('id', 'DESC')->paginate($request->item);
+        $search = $request->search;
+        $data = AdminRole::where(function ($q) use ($search) {
+            $search &&
+            $q->orWhere('admin_roles.name', 'like', '%' . $search . '%')
+                ->orwhere('admin_roles.display_name', 'like', '%' . $search . '%')
+                ->orwhere('admin_roles.description', 'like', '%' . $search . '%');
+        })->orderBy('id', 'DESC')->paginate($request->item);
         return $this->resp(0, $data);
     }
 
@@ -186,7 +194,7 @@ class AdminController extends Controller
     public function addRole(Request $request)
     {
         $rule = [
-            'role_name' => 'required|max:100|',
+            'role_name' => 'required|max:100|unique:admin_roles,name',
             'role_display_name' => 'required|max:50',
             'role_description' => 'required|max:100'
         ];
@@ -207,7 +215,7 @@ class AdminController extends Controller
     {
         $rule = [
             'role_id' => 'required|integer',
-            'role_name' => 'required|max:100',
+            'role_name' => 'required|max:100|unique:admin_roles,name,' . $request->role_id,
             'role_display_name' => 'required|max:50',
             'role_description' => 'required|max:100'
         ];
@@ -223,5 +231,35 @@ class AdminController extends Controller
         }
         return $this->resp(10000, '修改失败');
     }
+
+    //获取角色的权限
+    public function getAdminPerms(Request $request)
+    {
+        $rule = [
+            'role_id' => 'required|integer'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $role_id = $request->role_id;
+        $a = AdminRole::find(3);return $a->perms;
+//        $data = AdminPermission::get()->map(function ($v) use ($role_id) {
+//            if ($admin->can($v['name'])) {
+//                $v['prem_status'] = 1;
+//            } else {
+//                $v['prem_status'] = 0;
+//            }
+//            return $v;
+//        });
+//        return $this->resp(0, $data);
+    }
+
+    //分配权限
+    public function allotPrems(Request $request)
+    {
+
+    }
+
 
 }

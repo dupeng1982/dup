@@ -143,7 +143,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">权限分配</h4>
-                    <button type="button" class="close" data-dismiss="modal" id="close-admin-perms"
+                    <button type="button" class="close" data-dismiss="modal"
                             aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
                 </div>
@@ -162,7 +162,6 @@
     <script src="{{ asset('admin/assets/plugins/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>
     <script src="{{ asset('admin/assets/plugins/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js') }}"></script>
     <script src="{{ asset('admin/assets/plugins/bootstrap-switch/bootstrap-switch.min.js') }}"></script>
-    {{--<script src="{{ asset('admin/assets/plugins/styleswitcher/jQuery.style.switcher.js') }}"></script>--}}
     <script>
         $(function () {
             var admin_role_id = null;
@@ -308,7 +307,6 @@
                 });
                 $('.allotAdminPerms').click(function () {
                     var admin_role_id = $(this).attr('data-adminroleid');
-                    console.log(admin_role_id);
                     $('#PermListModal').modal('show');
                     $('#admin_perms_table').bootstrapTable({
                         url: 'getAdminPerms',
@@ -366,9 +364,9 @@
 
                     function operateFormatter1(value, row, index) {
                         if (row.prem_status) {
-                            return '<input type="checkbox" checked class="allotPerms"/>';
+                            return '<input type="checkbox" checked class="allotPerms" data-perm_id=' + value + ' />';
                         } else {
-                            return '<input type="checkbox" class="allotPerms"/>';
+                            return '<input type="checkbox" class="allotPerms" data-perm_id=' + value + ' />';
                         }
                     }
 
@@ -380,18 +378,103 @@
                             offColor: "info",
                             size: "small",
                             onSwitchChange: function (event, state) {
+                                var admin_prem_id = $(this).attr('data-perm_id');
                                 if (state == true) {
-                                    refresh1()
-                                    console.log(123);
+                                    $.ajax({
+                                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                                        url: 'allotPrems',
+                                        type: 'POST',
+                                        data: {
+                                            role_id: admin_role_id,
+                                            permission_id: admin_prem_id,
+                                            perm_allot_status: 1
+                                        },
+                                        success: function (doc) {
+                                            if (doc.code) {
+                                                $.toast({
+                                                    heading: '警告',
+                                                    text: doc.data,
+                                                    position: 'top-right',
+                                                    loaderBg: '#ff6849',
+                                                    icon: 'warning',
+                                                    hideAfter: 3000,
+                                                    stack: 6
+                                                });
+                                                refresh1();
+                                            } else {
+                                                $('#editRoleModal').modal('hide');
+                                                $.toast({
+                                                    heading: '成功',
+                                                    text: doc.data,
+                                                    position: 'top-right',
+                                                    loaderBg: '#ff6849',
+                                                    icon: 'success',
+                                                    hideAfter: 3000,
+                                                    stack: 6
+                                                });
+                                            }
+                                        },
+                                        error: function (doc) {
+                                            $.toast({
+                                                heading: '错误',
+                                                text: '网络错误，请稍后重试！',
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'error',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                            refresh1();
+                                        }
+                                    });
                                 } else {
-                                    refresh1()
-                                    console.log(456);
-//                                    cartshow_submit($(this).attr("data-estateID"), $(this).attr("data-cartShow"), 0, function (check) {
-//                                        if (!check) {
-//                                            alert("修改失败！");
-//                                        }
-//                                        location.reload();
-//                                    });
+                                    $.ajax({
+                                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                                        url: 'allotPrems',
+                                        type: 'POST',
+                                        data: {
+                                            role_id: admin_role_id,
+                                            permission_id: admin_prem_id,
+                                            perm_allot_status: 0
+                                        },
+                                        success: function (doc) {
+                                            if (doc.code) {
+                                                $.toast({
+                                                    heading: '警告',
+                                                    text: doc.data,
+                                                    position: 'top-right',
+                                                    loaderBg: '#ff6849',
+                                                    icon: 'warning',
+                                                    hideAfter: 3000,
+                                                    stack: 6
+                                                });
+                                                refresh1();
+                                            } else {
+                                                $('#editRoleModal').modal('hide');
+                                                $.toast({
+                                                    heading: '成功',
+                                                    text: doc.data,
+                                                    position: 'top-right',
+                                                    loaderBg: '#ff6849',
+                                                    icon: 'success',
+                                                    hideAfter: 3000,
+                                                    stack: 6
+                                                });
+                                            }
+                                        },
+                                        error: function (doc) {
+                                            $.toast({
+                                                heading: '错误',
+                                                text: '网络错误，请稍后重试！',
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'error',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                            refresh1();
+                                        }
+                                    });
                                 }
                             }
                         });
@@ -508,9 +591,9 @@
                 });
             });
 
-            $('#close-admin-perms').click(function () {
+            $('#PermListModal').on('hide.bs.modal', function () {
                 $('#admin_perms_table').bootstrapTable('destroy');
-            });
+            })
         });
     </script>
 @endsection

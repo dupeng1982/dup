@@ -121,6 +121,11 @@ return [
         'role_name'        => '角色标识',
         'role_display_name'=> '角色名称',
         'role_description' => '角色描述',
+        'permission_id'          => '权限ID',
+        'permission_name'        => '权限标识',
+        'permission_display_name'=> '权限名称',
+        'permission_description' => '权限描述',
+        'perm_allot_status'    => '权限分配状态',
 
     ],
 

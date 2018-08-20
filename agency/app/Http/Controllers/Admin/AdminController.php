@@ -177,7 +177,7 @@ class AdminController extends Controller
     public function delRole(Request $request)
     {
         $rule = [
-            'role_id' => 'required|integer'
+            'role_id' => 'required|integer|exists:admin_roles,id'
         ];
         $validator = Validator::make($request->all(), $rule);
         if ($validator->fails()) {
@@ -214,7 +214,7 @@ class AdminController extends Controller
     public function editRole(Request $request)
     {
         $rule = [
-            'role_id' => 'required|integer',
+            'role_id' => 'required|integer|exists:admin_roles,id',
             'role_name' => 'required|max:100|unique:admin_roles,name,' . $request->role_id,
             'role_display_name' => 'required|max:50',
             'role_description' => 'required|max:100'
@@ -236,7 +236,7 @@ class AdminController extends Controller
     public function getAdminPerms(Request $request)
     {
         $rule = [
-            'role_id' => 'required|integer'
+            'role_id' => 'required|integer|exists:admin_roles,id'
         ];
         $validator = Validator::make($request->all(), $rule);
         if ($validator->fails()) {
@@ -257,8 +257,24 @@ class AdminController extends Controller
     //分配权限
     public function allotPrems(Request $request)
     {
-
+        $rule = [
+            'role_id' => 'required|integer|exists:admin_roles,id',
+            'permission_id' => 'required|integer|exists:admin_permissions,id',
+            'perm_allot_status' => 'required|integer|between:0,1'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $role = AdminRole::find($request->role_id);
+        $perm_id = $request->permission_id;
+        if ($request->perm_allot_status) {
+            $role->attachPermissions([$perm_id]);
+            return $this->resp(0,'分配权限成功');
+        } else {
+            $role->detachPermissions([$perm_id]);
+            return $this->resp(0,'取消权限成功');
+        }
     }
-
 
 }

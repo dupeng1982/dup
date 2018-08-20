@@ -320,7 +320,7 @@
                         queryParams: queryParams1,
                         search: true,
                         sidePagination: 'client',
-                        pageSize: 2,
+                        pageSize: 10,
                         responseHandler: responseHandler1,
                         columns: [{
                             field: 'SerialNumber',

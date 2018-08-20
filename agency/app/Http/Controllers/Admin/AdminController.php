@@ -250,7 +250,7 @@ class AdminController extends Controller
                 $v['prem_status'] = 0;
             }
             return $v;
-        });
+        })->sortByDesc('prem_status')->values()->all();
         return $this->resp(0, $data);
     }
 
@@ -276,5 +276,7 @@ class AdminController extends Controller
             return $this->resp(0,'取消权限成功');
         }
     }
+
+    /*******角色设置视图*******/
 
 }

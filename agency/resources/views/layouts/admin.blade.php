@@ -355,19 +355,55 @@
                                     class="mdi mdi-gauge"></i><span class="hide-menu">首页 </span></a>
                     </li>
                     <li>
-                        <a class="has-arrow waves-effect waves-dark" href="{{ url('admin/roleset') }}" aria-expanded="false"><i
-                                    class="mdi mdi-email"></i><span class="hide-menu">系统设置</span></a>
+                        <a class="has-arrow waves-effect waves-dark" href="{{ url('admin/aaa') }}"
+                           aria-expanded="false"><i
+                                    class="mdi mdi-store"></i><span class="hide-menu">项目管理</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li><a href="{{ url('admin/aaa') }}">合同管理</a></li>
+                            <li><a href="{{ url('admin/bbb') }}">项目管理</a></li>
+                            <li><a href="{{ url('admin/bbb') }}">单位管理</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a class="has-arrow waves-effect waves-dark" href="{{ url('admin/ccc') }}"
+                           aria-expanded="false"><i
+                                    class="mdi mdi-coin"></i><span class="hide-menu">财务管理</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li><a href="{{ url('admin/ccc') }}">财务设置</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a class="has-arrow waves-effect waves-dark" href="{{ url('admin/dateset') }}"
+                           aria-expanded="false"><i
+                                    class="mdi mdi-alarm"></i><span class="hide-menu">考勤管理</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li><a href="{{ url('admin/mysign') }}">我的考勤</a></li>
+                            <li><a href="{{ url('admin/dateset') }}">考勤设置</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a class="has-arrow waves-effect waves-dark" href="{{ url('admin/roleset') }}"
+                           aria-expanded="false"><i
+                                    class="mdi mdi-settings"></i><span class="hide-menu">系统设置</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="{{ url('admin/roleset') }}">角色管理</a></li>
+
                         </ul>
                     </li>
                 </ul>
             </nav>
         </div>
         <div class="sidebar-footer">
-            <a href="" class="link" data-toggle="tooltip" title="Settings"><i class="ti-settings"></i></a>
-            <a href="" class="link" data-toggle="tooltip" title="Email"><i class="mdi mdi-gmail"></i></a>
-            <a href="" class="link" data-toggle="tooltip" title="Logout"><i class="mdi mdi-power"></i></a>
+            <div class="row"></div>
+            <div data-toggle="tooltip"
+                 data-original-title="签到"><i class="mdi mdi-account-check"></i>
+            </div>
+            <div data-toggle="tooltip"
+                 data-original-title="签退"><i class="mdi mdi-account-remove"></i>
+            </div>
+            <div data-toggle="tooltip"
+                 data-original-title="退出"><i class="mdi mdi-power"></i>
+            </div>
         </div>
     </aside>
     <div class="page-wrapper">

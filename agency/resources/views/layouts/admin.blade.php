@@ -394,16 +394,15 @@
             </nav>
         </div>
         <div class="sidebar-footer">
-            <div class="row"></div>
-            <div data-toggle="tooltip"
-                 data-original-title="签到"><i class="mdi mdi-account-check"></i>
-            </div>
-            <div data-toggle="tooltip"
-                 data-original-title="签退"><i class="mdi mdi-account-remove"></i>
-            </div>
-            <div data-toggle="tooltip"
-                 data-original-title="退出"><i class="mdi mdi-power"></i>
-            </div>
+            <a href="javascript:void(0)" class="link" data-toggle="tooltip"
+               data-original-title="签到"><i class="mdi mdi-account-check"></i>
+            </a>
+            <a href="javascript:void(0)" class="link" data-toggle="tooltip"
+               data-original-title="签退"><i class="mdi mdi-account-remove"></i>
+            </a>
+            <a href="javascript:void(0)" class="link" data-toggle="tooltip"
+               data-original-title="退出"><i class="mdi mdi-power"></i>
+            </a>
         </div>
     </aside>
     <div class="page-wrapper">

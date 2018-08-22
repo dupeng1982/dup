@@ -42,10 +42,20 @@ class AdminController extends Controller
     public function adminSignIn()
     {
         $admin_id = Auth::guard('admin')->user()->id;
-        if ($this->adminSignCheck($admin_id, Date::now()->format('Y-m-d'), 1)) {
+        $now = Date::now();
+        $now_date = $now->format('Y-m-d');
+        $now_month = $now->format('m');
+        $now_time = $now->format('H:i:s');
+        if ($this->adminSignCheck($admin_id, $now_date, 1)) {
             return $this->resp(10000, '您已签到');
         }
-        AdminSign::create(['admin_id' => $admin_id, 'sign_time' => Date::now(), 'sign_type' => 1]);
+        $set_start_time = TimeSet::where('set_month', $now_month)->pluck('set_start_time')->first();
+        if ($now_time <= $set_start_time) {
+            AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 1]);
+            return $this->resp(0, '签到成功');
+        }
+        AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 1,
+            'sign_status' => 0]);
         return $this->resp(0, '签到成功');
     }
 
@@ -53,10 +63,23 @@ class AdminController extends Controller
     public function adminSignOut()
     {
         $admin_id = Auth::guard('admin')->user()->id;
-        if (!$this->adminSignCheck($admin_id, Date::now()->format('Y-m-d'), 1)) {
-            return $this->resp(10000, '请签到后再签退');
+        $now = Date::now();
+        $now_date = $now->format('Y-m-d');
+        $now_month = $now->format('m');
+        $now_time = $now->format('H:i:s');
+        $set_end_time = TimeSet::where('set_month', $now_month)->pluck('set_end_time')->first();
+        if ($now_time > $set_end_time) {
+            $sign_status = 1;
+        } else {
+            $sign_status = 0;
         }
-        AdminSign::create(['admin_id' => $admin_id, 'sign_time' => Date::now(), 'sign_type' => 2]);
+        $sign_id = $this->adminSignCheck($admin_id, $now_date, 2);
+        if ($sign_id) {
+            AdminSign::where('id', $sign_id)->update(['sign_time' => $now, 'sign_status' =>$sign_status]);
+            return $this->resp(0, '签退成功');
+        }
+        AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 2,
+            'sign_status' =>$sign_status]);
         return $this->resp(0, '签退成功');
     }
 
@@ -67,9 +90,9 @@ class AdminController extends Controller
             ->whereDate('sign_time', $date)
             ->where('sign_type', $sign_type)->first();
         if ($rs) {
-            return true;
+            return $rs->id;
         } else {
-            return false;
+            return 0;
         }
     }
 

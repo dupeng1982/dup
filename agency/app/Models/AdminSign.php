@@ -14,5 +14,5 @@ class AdminSign extends Model
 {
     protected $table = 'admin_sign';
     public $timestamps = false;
-    protected $fillable = ['admin_id', 'sign_time', 'sign_type'];
+    protected $fillable = ['admin_id', 'sign_time', 'sign_type', 'sign_status'];
 }

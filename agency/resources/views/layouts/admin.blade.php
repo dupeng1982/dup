@@ -463,6 +463,7 @@
 <script src="{{ asset('admin/assets/plugins/styleswitcher/jQuery.style.switcher.js') }}"></script>
 <script>
     $('#admin-sign-in').click(function(){
+        $("[data-toggle='tooltip']").tooltip('hide');
         $.ajax({
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
             url: 'adminSignIn',
@@ -504,6 +505,7 @@
         });
     });
     $('#admin-sign-out').click(function(){
+        $("[data-toggle='tooltip']").tooltip('hide');
         $.ajax({
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
             url: 'adminSignOut',

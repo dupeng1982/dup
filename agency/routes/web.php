@@ -28,8 +28,16 @@ Route::group(['prefix' => '', 'namespace' => 'Auth'], function ($router) {
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->get('login', 'LoginController@showLoginForm')->name('admin.login');
     $router->post('login', 'LoginController@login');
+    $router->match(['get', 'post'], 'logout', 'LoginController@logout')->name('admin.logout');
 
     $router->get('index', 'AdminController@index');
+    $router->post('adminSignIn', 'AdminController@adminSignIn');
+    $router->post('adminSignOut', 'AdminController@adminSignOut');
+
+    $router->get('mysign', 'AdminController@mysign');
+    $router->post('adminAskForLeave', 'AdminController@adminAskForLeave');
+    $router->post('adminSignApply', 'AdminController@adminSignApply');
+    $router->post('getMySign', 'AdminController@getMySign');
 
     $router->get('dateset', 'AdminController@dateset');
     $router->post('getDateEvent', 'AdminController@getDateEvent');

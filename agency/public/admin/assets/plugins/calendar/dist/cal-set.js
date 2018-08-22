@@ -89,7 +89,7 @@
                             title: '休',
                             start: start,
                             end: end
-                        }, true);
+                        }, false);
                         $this.$calendarObj.fullCalendar('unselect');
                         $.toast({
                             heading: '成功',
@@ -203,5 +203,5 @@
 //initializing CalendarApp
     function ($) {
         "use strict";
-        $.CalendarApp.init()
+        $.CalendarApp.init();
     }(window.jQuery);

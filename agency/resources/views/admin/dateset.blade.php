@@ -2,7 +2,6 @@
 
 @section('admin-css')
     <link href="{{ asset('admin/assets/plugins/calendar/dist/fullcalendar.css') }}" rel="stylesheet"/>
-    <link href="{{ asset('admin/assets/plugins/toast-master/css/jquery.toast.css') }}" rel="stylesheet"/>
     <link href="{{ asset('admin/assets/plugins/clockpicker/dist/jquery-clockpicker.min.css') }}" rel="stylesheet"/>
 @endsection
 
@@ -98,7 +97,6 @@
 @section('admin-js')
     <script src="{{ asset('admin/assets/plugins/calendar/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('admin/assets/plugins/moment/moment.js') }}"></script>
-    <script src="{{ asset('admin/assets/plugins/toast-master/js/jquery.toast.js') }}"></script>
     <script src='{{ asset('admin/assets/plugins/calendar/dist/fullcalendar.min.js') }}'></script>
     <script src="{{ asset('admin/assets/plugins/calendar/dist/cal-set.js') }}"></script>
     <script src="{{ asset('admin/assets/plugins/clockpicker/dist/jquery-clockpicker.min.js') }}"></script>

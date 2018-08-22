@@ -1,8 +1,6 @@
 @extends('layouts.admin')
 
 @section('admin-css')
-    <link href="{{ asset('admin/assets/plugins/toast-master/css/jquery.toast.css') }}" rel="stylesheet"/>
-    <link href="{{ asset('admin/assets/plugins/sweetalert/sweetalert.css') }}" rel="stylesheet"/>
     <link href="{{ asset('admin/assets/plugins/bootstrap-table/dist/bootstrap-table.min.css') }}" rel="stylesheet"/>
     <link href="{{ asset('admin/assets/plugins/bootstrap-switch/bootstrap-switch.min.css') }}" rel="stylesheet">
 @endsection
@@ -154,11 +152,34 @@
             </div>
         </div>
     </div>
+    <div class="modal fade show" id="confirmDelRole" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">操作提示</h4>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <h2 class="center-block" style="margin:0px auto;display:table;">是否删除？</h2>
+                    <p class="center-block" style="margin:0px auto;display:table;">删除后不能恢复!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" id="del-admin-role"
+                            class="btn btn-success">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('admin-js')
-    <script src="{{ asset('admin/assets/plugins/toast-master/js/jquery.toast.js') }}"></script>
-    <script src="{{ asset('admin/assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script src="{{ asset('admin/assets/plugins/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>
     <script src="{{ asset('admin/assets/plugins/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js') }}"></script>
     <script src="{{ asset('admin/assets/plugins/bootstrap-switch/bootstrap-switch.min.js') }}"></script>
@@ -248,62 +269,8 @@
                     $('#edit-admin-role-description').val(data[index].description);
                 });
                 $(".delAdminRole").click(function () {
-                    var admin_role_id = $(this).attr('data-adminroleid');
-                    swal({
-                            title: "是否删除？",
-                            text: "删除后不能恢复!",
-                            type: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#DD6B55",
-                            confirmButtonText: "是",
-                            cancelButtonText: "否",
-                            closeOnConfirm: true
-                        }, function () {
-                            $.ajax({
-                                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                                url: 'delRole',
-                                type: 'POST',
-                                data: {
-                                    role_id: admin_role_id
-                                },
-                                success: function (doc) {
-                                    if (doc.code) {
-                                        $.toast({
-                                            heading: '警告',
-                                            text: doc.data,
-                                            position: 'top-right',
-                                            loaderBg: '#ff6849',
-                                            icon: 'warning',
-                                            hideAfter: 3000,
-                                            stack: 6
-                                        });
-                                    } else {
-                                        $.toast({
-                                            heading: '成功',
-                                            text: doc.data,
-                                            position: 'top-right',
-                                            loaderBg: '#ff6849',
-                                            icon: 'success',
-                                            hideAfter: 3000,
-                                            stack: 6
-                                        });
-                                        refresh()
-                                    }
-                                },
-                                error: function (doc) {
-                                    $.toast({
-                                        heading: '错误',
-                                        text: '网络错误，请稍后重试！',
-                                        position: 'top-right',
-                                        loaderBg: '#ff6849',
-                                        icon: 'error',
-                                        hideAfter: 3000,
-                                        stack: 6
-                                    });
-                                }
-                            });
-                        }
-                    );
+                    admin_role_id = $(this).attr('data-adminroleid');
+                    $('#confirmDelRole').modal('show');
                 });
                 $('.allotAdminPerms').click(function () {
                     var admin_role_id = $(this).attr('data-adminroleid');
@@ -574,6 +541,53 @@
                                 hideAfter: 3000,
                                 stack: 6
                             });
+                            refresh()
+                        }
+                    },
+                    error: function (doc) {
+                        $.toast({
+                            heading: '错误',
+                            text: '网络错误，请稍后重试！',
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'error',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                });
+            });
+
+            $('#del-admin-role').click(function () {
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: 'delRole',
+                    type: 'POST',
+                    data: {
+                        role_id: admin_role_id
+                    },
+                    success: function (doc) {
+                        if (doc.code) {
+                            $.toast({
+                                heading: '警告',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'warning',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        } else {
+                            $.toast({
+                                heading: '成功',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'success',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                            $('#confirmDelRole').modal('hide');
                             refresh()
                         }
                     },

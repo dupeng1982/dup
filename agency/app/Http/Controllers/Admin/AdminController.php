@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin;
+use App\Models\AdminLeave;
 use App\Models\AdminPermission;
 use App\Models\AdminRole;
+use App\Models\AdminSign;
+use App\Models\AdminSignApply;
 use App\Models\DateSet;
 use App\Models\TimeSet;
 use Illuminate\Http\Request;
@@ -21,9 +23,10 @@ class AdminController extends Controller
      */
     public function __construct()
     {
-        //$this->middleware('auth.admin:admin');
+        $this->middleware('auth.admin:admin');
     }
 
+    //公用页面
     public function index()
     {
 //        $user = Auth::guard('admin')->user();
@@ -33,6 +36,120 @@ class AdminController extends Controller
 //            dd(456);
 //        }
         return view('admin/index');
+    }
+
+    //签到
+    public function adminSignIn()
+    {
+        $admin_id = Auth::guard('admin')->user()->id;
+        if ($this->adminSignCheck($admin_id, Date::now()->format('Y-m-d'), 1)) {
+            return $this->resp(10000, '您已签到');
+        }
+        AdminSign::create(['admin_id' => $admin_id, 'sign_time' => Date::now(), 'sign_type' => 1]);
+        return $this->resp(0, '签到成功');
+    }
+
+    //签退
+    public function adminSignOut()
+    {
+        $admin_id = Auth::guard('admin')->user()->id;
+        if (!$this->adminSignCheck($admin_id, Date::now()->format('Y-m-d'), 1)) {
+            return $this->resp(10000, '请签到后再签退');
+        }
+        AdminSign::create(['admin_id' => $admin_id, 'sign_time' => Date::now(), 'sign_type' => 2]);
+        return $this->resp(0, '签退成功');
+    }
+
+    //签到签退判断
+    private function adminSignCheck($admin_id, $date, $sign_type)
+    {
+        $rs = AdminSign::where('admin_id', $admin_id)
+            ->whereDate('sign_time', $date)
+            ->where('sign_type', $sign_type)->first();
+        if ($rs) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //我的考勤
+    public function mysign()
+    {
+        return view('admin/mysign');
+    }
+
+    //请假
+    public function adminAskForLeave(Request $request)
+    {
+        $rule = [
+            'leave_start_time' => 'required|date_format:Y-m-d H:i:s',
+            'leave_end_time' => 'required|date_format:Y-m-d H:i:s|after:leave_start_time',
+            'leave_type' => 'required|integer|between:1,4',//请假类型：1-调休，2-事假，3-病假，4-出差
+            'leave_reason' => 'required'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $admin_id = Auth::guard('admin')->user()->id;
+        AdminLeave::create(['admin_id' => $admin_id, 'submit_time' => Date::now(),
+            'leave_start_time' => $request->leave_start_time, 'leave_end_time' => $request->leave_end_time,
+            'leave_type' => $request->leave_type, 'leave_reason' => $request->leave_reason]);
+        return $this->resp(0, '提交成功');
+    }
+
+    //补签
+    public function adminSignApply(Request $request)
+    {
+        $rule = [
+            'sign_apply_date' => 'required|date_format:Y-m-d',
+            'sign_apply_type' => 'required|integer|between:1,3',//补签类型：1-补到签，2-补退签，3-补全天
+            'sign_apply_reason' => 'required'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $admin_id = Auth::guard('admin')->user()->id;
+        AdminSignApply::create(['admin_id' => $admin_id, 'submit_time' => Date::now(),
+            'sign_apply_date' => $request->sign_apply_date, 'sign_apply_type' => $request->sign_apply_type,
+            'sign_apply_reason' => $request->sign_apply_reason]);
+        return $this->resp(0, '提交成功');
+    }
+
+    //获取我的考勤
+    public function getMySign(Request $request)
+    {
+        $admin_id = 1;
+        $rule = [
+            'start_date' => 'required|date_format:Y-m-d',
+            'end_date' => 'required|date_format:Y-m-d'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        //日期设置信息
+        $set_data = DateSet::select()
+            ->where('set_date', '>=', $request->start_date)
+            ->where('set_date', '<', $request->end_date)->get();
+        //签到信息
+        $sign = AdminSign::select()
+            ->where('sign_time', '>=', $request->start_date)
+            ->where('sign_time', '<', $request->end_date)
+            ->where('admin_id', $admin_id)->get();
+        //请假信息
+        $leave = AdminLeave::select()
+            ->where('set_date', '>=', $request->start_date)
+            ->where('set_date', '<', $request->end_date)
+            ->where('admin_id', $admin_id)->get();
+        //补签信息
+        $leave = AdminSignApply::select()
+            ->where('sign_apply_date', '>=', $request->start_date)
+            ->where('sign_apply_date', '<', $request->end_date)
+            ->where('admin_id', $admin_id)->get();
+        return 123;
     }
 
     /*******日期事件视图*******/
@@ -270,10 +387,10 @@ class AdminController extends Controller
         $perm_id = $request->permission_id;
         if ($request->perm_allot_status) {
             $role->attachPermissions([$perm_id]);
-            return $this->resp(0,'分配权限成功');
+            return $this->resp(0, '分配权限成功');
         } else {
             $role->detachPermissions([$perm_id]);
-            return $this->resp(0,'取消权限成功');
+            return $this->resp(0, '取消权限成功');
         }
     }
 

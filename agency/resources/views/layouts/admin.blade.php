@@ -11,6 +11,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('admin/assets/images/favicon.png') }}">
     <title>{{ config('app.name', '测试应用') }}</title>
     <link href="{{ asset('admin/assets/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('admin/assets/plugins/toast-master/css/jquery.toast.css') }}" rel="stylesheet"/>
     @yield('admin-css')
     <link href="{{ asset('admin/css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('admin/css/colors/blue.css') }}" id="theme" rel="stylesheet">
@@ -373,7 +374,7 @@
                         </ul>
                     </li>
                     <li>
-                        <a class="has-arrow waves-effect waves-dark" href="{{ url('admin/dateset') }}"
+                        <a class="has-arrow waves-effect waves-dark" href="{{ url('admin/mysign') }}"
                            aria-expanded="false"><i
                                     class="mdi mdi-alarm"></i><span class="hide-menu">考勤管理</span></a>
                         <ul aria-expanded="false" class="collapse">
@@ -394,15 +395,21 @@
             </nav>
         </div>
         <div class="sidebar-footer">
-            <a href="javascript:void(0)" class="link" data-toggle="tooltip"
+            <a href="javascript:void(0)" class="link" data-toggle="tooltip" id="admin-sign-in"
                data-original-title="签到"><i class="mdi mdi-account-check"></i>
             </a>
-            <a href="javascript:void(0)" class="link" data-toggle="tooltip"
+            <a href="javascript:void(0)" class="link" data-toggle="tooltip" id="admin-sign-out"
                data-original-title="签退"><i class="mdi mdi-account-remove"></i>
             </a>
-            <a href="javascript:void(0)" class="link" data-toggle="tooltip"
-               data-original-title="退出"><i class="mdi mdi-power"></i>
+            <a href="{{ route('logout') }}"
+               onclick="event.preventDefault();document.getElementById('logout-form').submit();" class="link"
+               data-toggle="tooltip" data-original-title="退出" data-placement="top"><i class="mdi mdi-power"></i>
             </a>
+            <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+
+
         </div>
     </aside>
     <div class="page-wrapper">
@@ -451,8 +458,93 @@
 <script src="{{ asset('admin/assets/plugins/sticky-kit-master/dist/sticky-kit.min.js') }}"></script>
 <script src="{{ asset('admin/assets/plugins/sparkline/jquery.sparkline.min.js') }}"></script>
 <script src="{{ asset('admin/js/custom.min.js') }}"></script>
+<script src="{{ asset('admin/assets/plugins/toast-master/js/jquery.toast.js') }}"></script>
 @yield('admin-js')
 <script src="{{ asset('admin/assets/plugins/styleswitcher/jQuery.style.switcher.js') }}"></script>
+<script>
+    $('#admin-sign-in').click(function(){
+        $.ajax({
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+            url: 'adminSignIn',
+            type: 'POST',
+            success: function (doc) {
+                if (doc.code) {
+                    $.toast({
+                        heading: '警告',
+                        text: doc.data,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'warning',
+                        hideAfter: 3000,
+                        stack: 6
+                    });
+                } else {
+                    $.toast({
+                        heading: '成功',
+                        text: doc.data,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'success',
+                        hideAfter: 3000,
+                        stack: 6
+                    });
+                }
+            },
+            error: function (doc) {
+                $.toast({
+                    heading: '错误',
+                    text: '网络错误，请稍后重试！',
+                    position: 'top-right',
+                    loaderBg: '#ff6849',
+                    icon: 'error',
+                    hideAfter: 3000,
+                    stack: 6
+                });
+            }
+        });
+    });
+    $('#admin-sign-out').click(function(){
+        $.ajax({
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+            url: 'adminSignOut',
+            type: 'POST',
+            success: function (doc) {
+                if (doc.code) {
+                    $.toast({
+                        heading: '警告',
+                        text: doc.data,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'warning',
+                        hideAfter: 3000,
+                        stack: 6
+                    });
+                } else {
+                    $.toast({
+                        heading: '成功',
+                        text: doc.data,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'success',
+                        hideAfter: 3000,
+                        stack: 6
+                    });
+                }
+            },
+            error: function (doc) {
+                $.toast({
+                    heading: '错误',
+                    text: '网络错误，请稍后重试！',
+                    position: 'top-right',
+                    loaderBg: '#ff6849',
+                    icon: 'error',
+                    hideAfter: 3000,
+                    stack: 6
+                });
+            }
+        });
+    });
+</script>
 </body>
 
 </html>

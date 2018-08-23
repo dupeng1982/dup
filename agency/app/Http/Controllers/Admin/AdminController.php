@@ -46,7 +46,7 @@ class AdminController extends Controller
         $now_date = $now->format('Y-m-d');
         $now_month = $now->format('m');
         $now_time = $now->format('H:i:s');
-        if ($this->adminSignCheck($admin_id, $now_date, 1)) {
+        if ($this->_adminSignCheck($admin_id, $now_date, 1)) {
             return $this->resp(10000, '您已签到');
         }
         $set_start_time = TimeSet::where('set_month', $now_month)->pluck('set_start_time')->first();
@@ -68,23 +68,23 @@ class AdminController extends Controller
         $now_month = $now->format('m');
         $now_time = $now->format('H:i:s');
         $set_end_time = TimeSet::where('set_month', $now_month)->pluck('set_end_time')->first();
-        if ($now_time > $set_end_time) {
+        if ($now_time >= $set_end_time) {
             $sign_status = 1;
         } else {
             $sign_status = 0;
         }
-        $sign_id = $this->adminSignCheck($admin_id, $now_date, 2);
+        $sign_id = $this->_adminSignCheck($admin_id, $now_date, 2);
         if ($sign_id) {
-            AdminSign::where('id', $sign_id)->update(['sign_time' => $now, 'sign_status' =>$sign_status]);
+            AdminSign::where('id', $sign_id)->update(['sign_time' => $now, 'sign_status' => $sign_status]);
             return $this->resp(0, '签退成功');
         }
         AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 2,
-            'sign_status' =>$sign_status]);
+            'sign_status' => $sign_status]);
         return $this->resp(0, '签退成功');
     }
 
     //签到签退判断
-    private function adminSignCheck($admin_id, $date, $sign_type)
+    private function _adminSignCheck($admin_id, $date, $sign_type)
     {
         $rs = AdminSign::where('admin_id', $admin_id)
             ->whereDate('sign_time', $date)
@@ -153,26 +153,233 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+        $now_date = Date::now()->add('+1 day')->format('Y-m-d');
+        if ($end_date > $now_date) {
+            $end_date = $now_date;
+        }
         //日期设置信息
         $set_data = DateSet::select()
-            ->where('set_date', '>=', $request->start_date)
-            ->where('set_date', '<', $request->end_date)->get();
+            ->whereDate('set_date', '>=', $start_date)
+            ->whereDate('set_date', '<', $end_date)->get();
         //签到信息
-        $sign = AdminSign::select()
-            ->where('sign_time', '>=', $request->start_date)
-            ->where('sign_time', '<', $request->end_date)
+        $sign = AdminSign::select('*', DB::raw("DATE_FORMAT(sign_time,'%Y-%m-%d') as sign_date,DATE_FORMAT(sign_time,'%H:%i:%s') as sign_hour"))
+            ->whereDate('sign_time', '>=', $start_date)
+            ->whereDate('sign_time', '<', $end_date)
             ->where('admin_id', $admin_id)->get();
         //请假信息
         $leave = AdminLeave::select()
-            ->where('set_date', '>=', $request->start_date)
-            ->where('set_date', '<', $request->end_date)
+            ->where(function ($query) use ($start_date, $end_date) {
+                $query->orWhere(function ($query) use ($start_date, $end_date) {
+                    $query->whereDate('leave_start_time', '>=', $start_date)
+                        ->whereDate('leave_start_time', '<', $end_date);
+                })->orWhere(function ($query) use ($start_date, $end_date) {
+                    $query->whereDate('leave_end_time', '>', $start_date)
+                        ->whereDate('leave_end_time', '<=', $end_date);
+                });
+            })
             ->where('admin_id', $admin_id)->get();
         //补签信息
-        $leave = AdminSignApply::select()
-            ->where('sign_apply_date', '>=', $request->start_date)
-            ->where('sign_apply_date', '<', $request->end_date)
+        $sign_apply = AdminSignApply::select()
+            ->whereDate('sign_apply_date', '>=', $start_date)
+            ->whereDate('sign_apply_date', '<', $end_date)
             ->where('admin_id', $admin_id)->get();
-        return 123;
+        //获取每天结果
+        $arr = array();
+        while ($start_date < $end_date) {
+            $arr = array_merge($arr, $this->_getDaySignInfo($start_date, $set_data, $sign, $sign_apply, $leave));
+            $start_date = Date::parse($start_date)->add('+1 day')->format('Y-m-d');
+        }
+        return $this->resp(0, $arr);
+    }
+
+    //获取某天休或班信息
+    private function _getSetDateInfo($date, $set_date)
+    {
+        $rs = $set_date->where('set_date', $date)->first();
+        if ($rs) {
+            $tmp['start'] = $date;
+            $tmp['title'] = '休';
+            $tmp['className'] = 'bg-success';
+            $tmp['type'] = 0;
+        } else {
+            $tmp['start'] = $date;
+            $tmp['title'] = '班';
+            $tmp['className'] = 'bg-info';
+            $tmp['type'] = 1;
+        }
+        $tmp['order'] = 1;
+        return $tmp;
+    }
+
+    //获取某天补签信息
+    private function _getSignApplyInfo($date, $sign_type, $sign_apply)
+    {
+        //3-无签到信息，2-补签信息待审核，1-补签信息通过，0-补签信息驳回
+        //1-签到，2-签退
+        if (!$sign_apply->isEmpty()) {
+            $rs = $sign_apply->where('sign_apply_date', $date);
+            if (!$rs->isEmpty()) {
+                $tmp = $rs->where('sign_apply_type', $sign_type);
+                if (!$tmp->isEmpty()) {
+                    return $tmp->pluck('sign_apply_status')->last();
+                }
+                return 3;
+            }
+            return 3;
+        }
+        return 3;
+    }
+
+    //获某天签到信息
+    private function _getSignInInfo($date, $sign, $className, $sign_apply)
+    {
+        $tmp1 = $this->_getSignApplyInfo($date, 1, $sign_apply);
+        switch ($tmp1) {
+            case 0:
+                $sign_apply_title = '补签驳回';
+                break;
+            case 1:
+                $sign_apply_title = '已补签';
+                break;
+            case 2:
+                $sign_apply_title = '补签待审';
+                break;
+            case 3:
+                $sign_apply_title = null;
+                break;
+            default:
+                $sign_apply_title = null;
+        }
+        $rs = $sign->where('sign_date', $date)->where('sign_type', 1)->first();
+        if ($rs) {
+            $tmp['start'] = $date;
+            if ($rs->sign_status) {
+                $tmp['title'] = '已签到 ' . $rs->sign_hour;
+                $tmp['className'] = $className ?: 'bg-info';
+            } else {
+                $tmp['title'] = $className ? '已签到 ' . $rs->sign_hour : '迟到 ' . $rs->sign_hour . ' ' . $sign_apply_title;
+                if ($tmp1 == 1) {
+                    $tmp['className'] = $className ?: 'bg-info';
+                } else {
+                    $tmp['className'] = $className ?: 'bg-warning';
+                }
+            }
+        } else {
+            $tmp['start'] = $date;
+            $tmp['title'] = '未签到 ' . $sign_apply_title;
+            if ($tmp1 == 1) {
+                $tmp['className'] = $className ?: 'bg-info';
+            } else {
+                $tmp['className'] = $className ?: 'bg-danger';
+            }
+        }
+        $tmp['order'] = 2;
+        return $tmp;
+    }
+
+    //获某天签退信息
+    private function _getSignOutInfo($date, $sign, $className, $sign_apply)
+    {
+        $tmp1 = $this->_getSignApplyInfo($date, 2, $sign_apply);
+        switch ($tmp1) {
+            case 0:
+                $sign_apply_title = '补签驳回';
+                break;
+            case 1:
+                $sign_apply_title = '已补签';
+                break;
+            case 2:
+                $sign_apply_title = '补签待审';
+                break;
+            case 3:
+                $sign_apply_title = null;
+                break;
+            default:
+                $sign_apply_title = null;
+        }
+        $rs = $sign->where('sign_date', $date)->where('sign_type', 2)->first();
+        if ($rs) {
+            $tmp['start'] = $date;
+            if ($rs->sign_status) {
+                $tmp['title'] = '已签退 ' . $rs->sign_hour;
+                $tmp['className'] = $className ?: 'bg-info';
+            } else {
+                $tmp['title'] = $className ? '已签退 ' . $rs->sign_hour : '早退 ' . $rs->sign_hour . ' ' . $sign_apply_title;
+                if ($tmp1 == 1) {
+                    $tmp['className'] = $className ?: 'bg-info';
+                } else {
+                    $tmp['className'] = $className ?: 'bg-warning';
+                }
+            }
+        } else {
+            $tmp['start'] = $date;
+            $tmp['title'] = '未签退 ' . $sign_apply_title;
+            if ($tmp1 == 1) {
+                $tmp['className'] = $className ?: 'bg-info';
+            } else {
+                $tmp['className'] = $className ?: 'bg-danger';
+            }
+        }
+        $tmp['order'] = 3;
+        return $tmp;
+    }
+
+    //获取某天请假信息
+    public function _getLeaveInfo($date = '2018-08-04', $leave = null)
+    {
+        $start_date = '2018-08-01';
+        $end_date = '2018-09-01';
+        $leave = AdminLeave::select()
+            ->where(function ($query) use ($start_date, $end_date) {
+                $query->orWhere(function ($query) use ($start_date, $end_date) {
+                    $query->whereDate('leave_start_time', '>=', $start_date)
+                        ->whereDate('leave_start_time', '<', $end_date);
+                })->orWhere(function ($query) use ($start_date, $end_date) {
+                    $query->whereDate('leave_end_time', '>', $start_date)
+                        ->whereDate('leave_end_time', '<=', $end_date);
+                });
+            })
+            ->where('admin_id', 1)->get();
+        //3-无请假信息，2-请假信息待审核，1-请假信息通过，0-请假信息驳回
+        //请假类型：1-调休，2-事假，3-病假，4-出差，5-下现场
+        if (!$leave->isEmpty()) {
+            $rs = $leave->map(function ($v) use ($date) {
+                $start = Date::parse($v['leave_start_time'])->format('Y-m-d');
+                $stop = Date::parse($v['leave_end_time'])->format('Y-m-d');
+                if ($date >= $start && $date <= $stop) {
+                    return $v;
+                }
+            })->reject(function ($v) {
+                return empty($v);
+            })->values();
+            if (!$rs->isEmpty()) {
+                dd($rs);
+            }
+            return 3;
+        }
+        return 3;
+    }
+
+    //获取每天考勤结果
+    private function _getDaySignInfo($date, $set_date, $sign, $sign_apply, $leave)
+    {
+        $arr = array();
+        //获取休息天信息
+        $arr[] = $this->_getSetDateInfo($date, $set_date);
+        if ($arr[0]['type']) {
+            $className = null;
+        } else {
+            $className = 'bg-success';
+        }
+        //获取签到信息
+        $arr[] = $this->_getSignInInfo($date, $sign, $className, $sign_apply);
+        //获取签退信息
+        $arr[] = $this->_getSignOutInfo($date, $sign, $className, $sign_apply);
+        //获取请假信息
+        $arr[] = $this->_getLeaveInfo($date, $leave);
+        return $arr;
     }
 
     /*******日期事件视图*******/

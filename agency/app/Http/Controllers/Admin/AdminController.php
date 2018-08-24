@@ -108,7 +108,7 @@ class AdminController extends Controller
         $rule = [
             'leave_start_time' => 'required|date_format:Y-m-d H:i:s',
             'leave_end_time' => 'required|date_format:Y-m-d H:i:s|after:leave_start_time',
-            'leave_type' => 'required|integer|between:1,4',//请假类型：1-调休，2-事假，3-病假，4-出差
+            'leave_type' => 'required|integer|between:1,4',//请假类型：1-调休，2-事假，3-病假，4-出差，5-下现场
             'leave_reason' => 'required'
         ];
         $validator = Validator::make($request->all(), $rule);
@@ -127,7 +127,7 @@ class AdminController extends Controller
     {
         $rule = [
             'sign_apply_date' => 'required|date_format:Y-m-d',
-            'sign_apply_type' => 'required|integer|between:1,3',//补签类型：1-补到签，2-补退签，3-补全天
+            'sign_apply_type' => 'required|integer|between:1,2',//补签类型：1-补到签，2-补退签
             'sign_apply_reason' => 'required'
         ];
         $validator = Validator::make($request->all(), $rule);
@@ -135,9 +135,9 @@ class AdminController extends Controller
             return $this->resp(10000, $validator->messages()->first());
         }
         $admin_id = Auth::guard('admin')->user()->id;
-        AdminSignApply::create(['admin_id' => $admin_id, 'submit_time' => Date::now(),
-            'sign_apply_date' => $request->sign_apply_date, 'sign_apply_type' => $request->sign_apply_type,
-            'sign_apply_reason' => $request->sign_apply_reason]);
+        AdminSignApply::updateOrCreate(['admin_id' => $admin_id, 'sign_apply_date' => $request->sign_apply_date,
+            'sign_apply_type' => $request->sign_apply_type, 'sign_apply_status' => 2],
+            ['submit_time' => Date::now(), 'sign_apply_reason' => $request->sign_apply_reason]);
         return $this->resp(0, '提交成功');
     }
 
@@ -179,6 +179,7 @@ class AdminController extends Controller
                         ->whereDate('leave_end_time', '<=', $end_date);
                 });
             })
+            //->where('leave_status', 1)
             ->where('admin_id', $admin_id)->get();
         //补签信息
         $sign_apply = AdminSignApply::select()
@@ -239,15 +240,18 @@ class AdminController extends Controller
         switch ($tmp1) {
             case 0:
                 $sign_apply_title = '补签驳回';
+                $tmp['apply_reason'] = $sign_apply->where('sign_apply_date', $date)
+                    ->where('sign_apply_type', 1)
+                    ->pluck('sign_apply_reason')->last();
                 break;
             case 1:
                 $sign_apply_title = '已补签';
                 break;
             case 2:
                 $sign_apply_title = '补签待审';
-                break;
-            case 3:
-                $sign_apply_title = null;
+                $tmp['apply_reason'] = $sign_apply->where('sign_apply_date', $date)
+                    ->where('sign_apply_type', 1)
+                    ->pluck('sign_apply_reason')->last();
                 break;
             default:
                 $sign_apply_title = null;
@@ -286,15 +290,18 @@ class AdminController extends Controller
         switch ($tmp1) {
             case 0:
                 $sign_apply_title = '补签驳回';
+                $tmp['apply_reason'] = $sign_apply->where('sign_apply_date', $date)
+                    ->where('sign_apply_type', 2)
+                    ->pluck('sign_apply_reason')->last();
                 break;
             case 1:
                 $sign_apply_title = '已补签';
                 break;
             case 2:
                 $sign_apply_title = '补签待审';
-                break;
-            case 3:
-                $sign_apply_title = null;
+                $tmp['apply_reason'] = $sign_apply->where('sign_apply_date', $date)
+                    ->where('sign_apply_type', 2)
+                    ->pluck('sign_apply_reason')->last();
                 break;
             default:
                 $sign_apply_title = null;
@@ -327,39 +334,55 @@ class AdminController extends Controller
     }
 
     //获取某天请假信息
-    public function _getLeaveInfo($date = '2018-08-04', $leave = null)
+    private function _getLeaveInfo($date, $leave)
     {
-        $start_date = '2018-08-01';
-        $end_date = '2018-09-01';
-        $leave = AdminLeave::select()
-            ->where(function ($query) use ($start_date, $end_date) {
-                $query->orWhere(function ($query) use ($start_date, $end_date) {
-                    $query->whereDate('leave_start_time', '>=', $start_date)
-                        ->whereDate('leave_start_time', '<', $end_date);
-                })->orWhere(function ($query) use ($start_date, $end_date) {
-                    $query->whereDate('leave_end_time', '>', $start_date)
-                        ->whereDate('leave_end_time', '<=', $end_date);
-                });
-            })
-            ->where('admin_id', 1)->get();
-        //3-无请假信息，2-请假信息待审核，1-请假信息通过，0-请假信息驳回
-        //请假类型：1-调休，2-事假，3-病假，4-出差，5-下现场
+        //0-无请假信息，1-调休，2-事假，3-病假，4-出差，5-下现场
         if (!$leave->isEmpty()) {
-            $rs = $leave->map(function ($v) use ($date) {
+            $rs = $leave->reject(function ($v) use ($date) {
                 $start = Date::parse($v['leave_start_time'])->format('Y-m-d');
                 $stop = Date::parse($v['leave_end_time'])->format('Y-m-d');
-                if ($date >= $start && $date <= $stop) {
+                if ($date < $start || $date > $stop) {
                     return $v;
                 }
-            })->reject(function ($v) {
-                return empty($v);
-            })->values();
-            if (!$rs->isEmpty()) {
-                dd($rs);
+            })->values()->last();
+            if ($rs) {
+                $tmp['start'] = $date;
+                switch ($rs->leave_status) {
+                    case 0:
+                        $leave_status = '驳回';
+                        break;
+                    case 2:
+                        $leave_status = '待审';
+                        break;
+                    default:
+                        $leave_status = null;
+                }
+                switch ($rs->leave_type) {
+                    case 1:
+                        $tmp['title'] = '调休' . $leave_status;
+                        break;
+                    case 2:
+                        $tmp['title'] = '事假' . $leave_status;
+                        break;
+                    case 3:
+                        $tmp['title'] = '病假' . $leave_status;
+                        break;
+                    case 4:
+                        $tmp['title'] = '出差' . $leave_status;
+                        break;
+                    case 5:
+                        $tmp['title'] = '下现场' . $leave_status;
+                        break;
+                    default:
+                        $tmp['title'] = '请假';
+                }
+                $tmp['className'] = 'bg-primary';
+                $tmp['order'] = 4;
+                return $tmp;
             }
-            return 3;
+            return 0;
         }
-        return 3;
+        return 0;
     }
 
     //获取每天考勤结果
@@ -370,6 +393,9 @@ class AdminController extends Controller
         $arr[] = $this->_getSetDateInfo($date, $set_date);
         if ($arr[0]['type']) {
             $className = null;
+            //获取请假信息
+            $rs = $this->_getLeaveInfo($date, $leave);
+            $rs && $arr[] = $rs;
         } else {
             $className = 'bg-success';
         }
@@ -377,8 +403,6 @@ class AdminController extends Controller
         $arr[] = $this->_getSignInInfo($date, $sign, $className, $sign_apply);
         //获取签退信息
         $arr[] = $this->_getSignOutInfo($date, $sign, $className, $sign_apply);
-        //获取请假信息
-        $arr[] = $this->_getLeaveInfo($date, $leave);
         return $arr;
     }
 

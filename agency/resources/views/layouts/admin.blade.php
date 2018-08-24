@@ -462,8 +462,7 @@
 @yield('admin-js')
 <script src="{{ asset('admin/assets/plugins/styleswitcher/jQuery.style.switcher.js') }}"></script>
 <script>
-    $('#admin-sign-in').click(function(){
-        $("[data-toggle='tooltip']").tooltip('hide');
+    $('#admin-sign-in').click(function () {
         $.ajax({
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
             url: 'adminSignIn',
@@ -489,6 +488,9 @@
                         hideAfter: 3000,
                         stack: 6
                     });
+                    if ($('#my-sign-calendar').length > 0) {
+                        $('#my-sign-calendar').fullCalendar('refetchEvents');
+                    }
                 }
             },
             error: function (doc) {
@@ -504,8 +506,7 @@
             }
         });
     });
-    $('#admin-sign-out').click(function(){
-        $("[data-toggle='tooltip']").tooltip('hide');
+    $('#admin-sign-out').click(function () {
         $.ajax({
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
             url: 'adminSignOut',
@@ -531,6 +532,9 @@
                         hideAfter: 3000,
                         stack: 6
                     });
+                    if ($('#my-sign-calendar').length > 0) {
+                        $('#my-sign-calendar').fullCalendar('refetchEvents');
+                    }
                 }
             },
             error: function (doc) {

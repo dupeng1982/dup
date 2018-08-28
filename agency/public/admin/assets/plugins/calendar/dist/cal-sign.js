@@ -5,29 +5,66 @@
             this.$calendar = $('#my-sign-calendar'),
             this.$modal = $('#sign-apply-event'),
             this.$modal1 = $('#leave-event'),
+            this.$modal2 = $('#leave-show-event'),
             this.$calendarObj = null
     };
-    CalendarApp.prototype.onEventClick = function (calEvent, jsEvent, view) {
+    CalendarApp.prototype.onSelect = function (start, end, allDay) {
         var $this = this;
-        $this.$modal.modal({
+        $this.$modal1.modal({
             backdrop: 'static'
         });
-        $this.$modal.find('#admin-sign-apply-date').val($.fullCalendar.formatDate(calEvent.start, 'YYYY-MM-DD'));
-        var sign_apply_type;
-        var sign_apply_reason;
-        if (calEvent.order == 2) {
-            sign_apply_type = '补签到';
-        } else if (calEvent.order == 3) {
-            sign_apply_type = '补签退';
-        }
-        $this.$modal.find('#admin-sign-apply-type').val(sign_apply_type).attr('data-sign-apply-type', calEvent.order - 1);
-        if (calEvent.apply_reason) {
-            sign_apply_reason = calEvent.apply_reason;
-        } else {
-            sign_apply_reason = '';
-        }
-        $this.$modal.find('#admin-sign-apply-description').val(sign_apply_reason);
+        var leave_start_time = $.fullCalendar.formatDate(start, 'YYYY-MM-DD HH:mm:ss');
+        var leave_end_time = $.fullCalendar.formatDate(end.clone().add(-1, 'seconds'), 'YYYY-MM-DD HH:mm:ss');
+
+        $this.$modal1.find('#leave-start-time').val(leave_start_time);
+        $this.$modal1.find('#leave-end-time').val(leave_end_time);
     },
+        CalendarApp.prototype.onEventClick = function (calEvent, jsEvent, view) {
+            var $this = this;
+            $this.$modal.modal({
+                backdrop: 'static'
+            });
+            $this.$modal.find('#admin-sign-apply-date').val($.fullCalendar.formatDate(calEvent.start, 'YYYY-MM-DD'));
+            var sign_apply_type;
+            var sign_apply_reason;
+            if (calEvent.order == 2) {
+                sign_apply_type = '补签到';
+            } else if (calEvent.order == 3) {
+                sign_apply_type = '补签退';
+            }
+            $this.$modal.find('#admin-sign-apply-type').val(sign_apply_type).attr('data-sign-apply-type', calEvent.order - 1);
+            if (calEvent.apply_reason) {
+                sign_apply_reason = calEvent.apply_reason;
+            } else {
+                sign_apply_reason = '';
+            }
+            $this.$modal.find('#admin-sign-apply-description').val(sign_apply_reason);
+        },
+        CalendarApp.prototype.onEventClick2 = function (calEvent, jsEvent, view) {
+            var $this = this;
+            $this.$modal2.modal({
+                backdrop: 'static'
+            });
+            var leave_info = calEvent.leave_info;
+            $this.$modal2.find('#leave-apply-time-show').val(leave_info.submit_time);
+            $this.$modal2.find('#leave-start-time-show').val(leave_info.leave_start_time);
+            $this.$modal2.find('#leave-end-time-show').val(leave_info.leave_end_time);
+            //请假类型：1-调休，2-事假，3-病假，4-出差，5-下现场
+            if (leave_info.leave_type == 1) {
+                $this.$modal2.find('#leave-type-show').val('调休');
+            } else if (leave_info.leave_type == 2) {
+                $this.$modal2.find('#leave-type-show').val('事假');
+            } else if (leave_info.leave_type == 3) {
+                $this.$modal2.find('#leave-type-show').val('病假');
+            } else if (leave_info.leave_type == 4) {
+                $this.$modal2.find('#leave-type-show').val('出差');
+            } else if (leave_info.leave_type == 5) {
+                $this.$modal2.find('#leave-type-show').val('下现场');
+            } else {
+                $this.$modal2.find('#leave-type-show').val('其他');
+            }
+            $this.$modal2.find('#leave-reason-show').val(leave_info.leave_reason);
+        },
         /* Initializing */
         CalendarApp.prototype.init = function () {
             var date = new Date();
@@ -64,7 +101,8 @@
                                     start: $(this).attr('start'),
                                     className: $(this).attr('className'),
                                     order: $(this).attr('order'),
-                                    apply_reason: $(this).attr('apply_reason')
+                                    apply_reason: $(this).attr('apply_reason'),
+                                    leave_info: $(this).attr('leave_info')
                                 });
                             });
                             callback(events);
@@ -109,19 +147,22 @@
                 eventOrder: 'order',
 
                 eventClick: function (calEvent, jsEvent, view) {
-                    //console.log(calEvent.className[0]);
                     if (((calEvent.order == 2) || (calEvent.order == 3)) &&
                         ((calEvent.className[0] == 'bg-danger') || (calEvent.className[0] == 'bg-warning'))) {
                         $this.onEventClick(calEvent, jsEvent, view);
                     }
+                    if (calEvent.order == 4) {
+                        $this.onEventClick2(calEvent, jsEvent, view);
+                    }
                 },
                 select: function (start, end, allDay) {
-                    console.log(start);
+                    $this.onSelect(start, end, allDay);
                 }
             });
         },
         $.CalendarApp = new CalendarApp, $.CalendarApp.Constructor = CalendarApp
-}(window.jQuery),
+}
+(window.jQuery),
 //initializing CalendarApp
     function ($) {
         "use strict";

@@ -108,7 +108,7 @@ class AdminController extends Controller
         $rule = [
             'leave_start_time' => 'required|date_format:Y-m-d H:i:s',
             'leave_end_time' => 'required|date_format:Y-m-d H:i:s|after:leave_start_time',
-            'leave_type' => 'required|integer|between:1,4',//请假类型：1-调休，2-事假，3-病假，4-出差，5-下现场
+            'leave_type' => 'required|integer|between:1,5',//请假类型：1-调休，2-事假，3-病假，4-出差，5-下现场
             'leave_reason' => 'required'
         ];
         $validator = Validator::make($request->all(), $rule);
@@ -116,8 +116,28 @@ class AdminController extends Controller
             return $this->resp(10000, $validator->messages()->first());
         }
         $admin_id = Auth::guard('admin')->user()->id;
+        $leave_start_time = $request->leave_start_time;
+        $leave_end_time = $request->leave_end_time;
+        $tmp = AdminLeave::where('admin_id', $admin_id)
+            ->where('leave_status', 1)
+            ->where(function ($query) use ($leave_start_time, $leave_end_time) {
+                $query->orWhere('leave_end_time', '<', $leave_start_time)
+                    ->orWhere('leave_start_time', '>', $leave_end_time);
+            })
+            ->first();
+        if (!$tmp) {
+            return $this->resp(10000, '您提交的请假时间与已准假时间冲突，请核实修改后重新提交提交');
+        }
+        $tmp_start_time = Date::parse($leave_start_time)->format('Y-m-d');
+        $tmp_end_time = Date::parse($leave_end_time)->format('Y-m-d');
+        $tmp_query = array();
+        while ($tmp_start_time <= $tmp_end_time) {
+            $tmp_query[] = [''];
+            $tmp_start_time = Date::parse($tmp_start_time)->add('+1 day')->format('Y-m-d');
+        }
+
         AdminLeave::create(['admin_id' => $admin_id, 'submit_time' => Date::now(),
-            'leave_start_time' => $request->leave_start_time, 'leave_end_time' => $request->leave_end_time,
+            'leave_start_time' => $leave_start_time, 'leave_end_time' => $leave_end_time,
             'leave_type' => $request->leave_type, 'leave_reason' => $request->leave_reason]);
         return $this->resp(0, '提交成功');
     }
@@ -179,7 +199,6 @@ class AdminController extends Controller
                         ->whereDate('leave_end_time', '<=', $end_date);
                 });
             })
-            //->where('leave_status', 1)
             ->where('admin_id', $admin_id)->get();
         //补签信息
         $sign_apply = AdminSignApply::select()
@@ -378,6 +397,7 @@ class AdminController extends Controller
                 }
                 $tmp['className'] = 'bg-primary';
                 $tmp['order'] = 4;
+                $tmp['leave_info'] = $rs;
                 return $tmp;
             }
             return 0;

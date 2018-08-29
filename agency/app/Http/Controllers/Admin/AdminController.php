@@ -130,12 +130,13 @@ class AdminController extends Controller
         }
         $tmp_start_time = Date::parse($leave_start_time)->format('Y-m-d');
         $tmp_end_time = Date::parse($leave_end_time)->format('Y-m-d');
-        $tmp_query = array();
         while ($tmp_start_time <= $tmp_end_time) {
-            $tmp_query[] = [''];
+            $tmp = DateSet::where('set_date', $tmp_start_time)->first();
+            if ($tmp) {
+                return $this->resp(10000, '您请假的时间包含休息天，请重新选择时间！');
+            }
             $tmp_start_time = Date::parse($tmp_start_time)->add('+1 day')->format('Y-m-d');
         }
-
         AdminLeave::create(['admin_id' => $admin_id, 'submit_time' => Date::now(),
             'leave_start_time' => $leave_start_time, 'leave_end_time' => $leave_end_time,
             'leave_type' => $request->leave_type, 'leave_reason' => $request->leave_reason]);
@@ -164,7 +165,7 @@ class AdminController extends Controller
     //获取我的考勤
     public function getMySign(Request $request)
     {
-        $admin_id = 1;
+        $admin_id = Auth::guard('admin')->user()->id;
         $rule = [
             'start_date' => 'required|date_format:Y-m-d',
             'end_date' => 'required|date_format:Y-m-d'
@@ -668,6 +669,116 @@ class AdminController extends Controller
         }
     }
 
-    /*******角色设置视图*******/
+    /*******补签审核视图*******/
+    public function signapplylist()
+    {
+        return view('admin/signapplylist');
+    }
+
+    //获取补签申请列表
+    public function getSignApplyList(Request $request)
+    {
+        $rule = [
+            'page' => 'integer',
+            'item' => 'integer',
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $search = $request->search;
+        $data = AdminSignApply::select('admininfo.name as realname', 'admin_sign_apply.*',
+            'admin_sign_apply.sign_apply_type as sign_apply_type_name', 'approval.name as approval_name')
+            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admin_sign_apply.admin_id')
+            ->leftjoin('admininfo as approval', 'approval.admin_id', '=', 'admin_sign_apply.sign_apply_approval')
+            ->where(function ($q) use ($search) {
+                $search &&
+                $q->orWhere('admininfo.name', 'like', '%' . $search . '%')
+                    ->orWhere('approval.name', 'like', '%' . $search . '%')
+                    ->orWhere('admin_sign_apply.sign_apply_date', 'like', '%' . $search . '%');
+            })
+            ->orderBy('admin_sign_apply.sign_apply_status', 'DESC')
+            ->orderBy('admin_sign_apply.sign_apply_date', 'DESC')
+            ->paginate($request->item);
+        return $this->resp(0, $data);
+    }
+
+    //审核补签申请
+    public function checkSignApply(Request $request)
+    {
+        $rule = [
+            'sign_apply_id' => 'required|integer|exists:admin_sign_apply,id',
+            'approval_note' => 'required|max:200',
+            'sign_apply_status' => 'required|integer|between:0,1'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $admin_id = Auth::guard('admin')->user()->id;
+        $rs = AdminSignApply::where('id', $request->sign_apply_id)
+            ->update(['sign_apply_approval' => $admin_id, 'approval_time' => Date::now(),
+                'approval_note' => $request->approval_note, 'sign_apply_status' => $request->sign_apply_status]);
+        if ($rs) {
+            return $this->resp(0, '操作成功');
+        }
+        return $this->resp(10000, '操作失败');
+    }
+
+    /*******请假审核视图*******/
+    public function leaveapplylist()
+    {
+        return view('admin/leaveapplylist');
+    }
+
+    //获取请假申请列表
+    public function getLeaveApplyList(Request $request)
+    {
+        $rule = [
+            'page' => 'integer',
+            'item' => 'integer',
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $search = $request->search;
+        $data = AdminLeave::select('admininfo.name as realname', 'admin_leave.*',
+            'admin_leave.leave_type as leave_type_name', 'approval.name as approval_name')
+            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admin_leave.admin_id')
+            ->leftjoin('admininfo as approval', 'approval.admin_id', '=', 'admin_leave.leave_approval')
+            ->where(function ($q) use ($search) {
+                $search &&
+                $q->orWhere('admininfo.name', 'like', '%' . $search . '%')
+                    ->orWhere('approval.name', 'like', '%' . $search . '%')
+                    ->orWhere('admin_leave.submit_time', 'like', '%' . $search . '%');
+            })
+            ->orderBy('admin_leave.leave_status', 'DESC')
+            ->orderBy('admin_leave.submit_time', 'DESC')
+            ->paginate($request->item);
+        return $this->resp(0, $data);
+    }
+
+    //审核请假申请
+    public function checkLeaveApply(Request $request)
+    {
+        $rule = [
+            'leave_id' => 'required|integer|exists:admin_leave,id',
+            'approval_note' => 'required|max:200',
+            'leave_status' => 'required|integer|between:0,1'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $admin_id = Auth::guard('admin')->user()->id;
+        $rs = AdminLeave::where('id', $request->leave_id)
+            ->update(['leave_approval' => $admin_id, 'approval_time' => Date::now(),
+                'approval_note' => $request->approval_note, 'leave_status' => $request->leave_status]);
+        if ($rs) {
+            return $this->resp(0, '操作成功');
+        }
+        return $this->resp(10000, '操作失败');
+    }
 
 }

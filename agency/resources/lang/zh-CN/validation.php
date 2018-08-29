@@ -126,13 +126,18 @@ return [
         'permission_display_name' => '权限名称',
         'permission_description' => '权限描述',
         'perm_allot_status' => '权限分配状态',
+        'leave_id' => '请假ID',
         'leave_start_time' => '请假开始时间',
         'leave_end_time' => '请假结束时间',
         'leave_type' => '请假类型',
+        'leave_status' => '请假状态',
         'leave_reason' => '请假原因',
         'sign_apply_date' => '补签日期',
         'sign_apply_type' => '补签类型',
         'sign_apply_reason' => '补签原因',
+        'sign_apply_id' => '补签申请ID',
+        'approval_note' => '审核说明',
+        'sign_apply_status' => '补签申请状态',
 
     ],
 

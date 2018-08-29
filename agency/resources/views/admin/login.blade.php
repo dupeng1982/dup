@@ -48,7 +48,7 @@
                     <div class="form-group ">
                         <div class="col-xs-12">
                             <input class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" type="text"
-                                   placeholder="Username"
+                                   placeholder="请输入您的用户名"
                                    name="name" value="{{ old('name') }}" required autofocus>
                             @if ($errors->has('name'))
                                 <span class="invalid-feedback">
@@ -60,7 +60,7 @@
                     <div class="form-group">
                         <div class="col-xs-12">
                             <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}"
-                                   type="password" placeholder="Password"
+                                   type="password" placeholder="请输入您的密码"
                                    name="password" value="{{ old('password') }}" required autofocus>
                             @if ($errors->has('password'))
                                 <span class="invalid-feedback">
@@ -74,7 +74,7 @@
                             <div class="checkbox checkbox-primary pull-left p-t-0">
                                 <input id="checkbox-signup" type="checkbox"
                                        name="remember" {{ old('remember') ? 'checked' : '' }}>
-                                <label for="checkbox-signup"> Remember me </label>
+                                <label for="checkbox-signup"> 记住我！ </label>
                             </div>
                         </div>
                     </div>

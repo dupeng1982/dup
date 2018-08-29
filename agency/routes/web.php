@@ -54,7 +54,15 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('getAdminPerms', 'AdminController@getAdminPerms');
     $router->post('allotPrems', 'AdminController@allotPrems');
 
-    $router->post('test', 'AdminController@_getLeaveInfo');
+    $router->get('signapplylist', 'AdminController@signapplylist');
+    $router->post('getSignApplyList', 'AdminController@getSignApplyList');
+    $router->post('checkSignApply', 'AdminController@checkSignApply');
+
+    $router->get('leaveapplylist', 'AdminController@leaveapplylist');
+    $router->post('getLeaveApplyList', 'AdminController@getLeaveApplyList');
+    $router->post('checkLeaveApply', 'AdminController@checkLeaveApply');
+
+    $router->post('test', 'AdminController@getLeaveApplyList');
 });
 
 

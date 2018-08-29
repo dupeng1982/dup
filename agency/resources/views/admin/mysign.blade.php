@@ -9,7 +9,7 @@
 @section('admin-title')
     <div class="row page-titles">
         <div class="col-md-5 col-8 align-self-center">
-            <h3 class="text-themecolor m-b-0 m-t-0">考勤设置</h3>
+            <h3 class="text-themecolor m-b-0 m-t-0">我的考勤</h3>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url('admin/index') }}">首页</a></li>
                 <li class="breadcrumb-item active">我的考勤</li>
@@ -30,7 +30,6 @@
     <div class="row">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title text-muted">我的考勤</h4>
                 <div id="my-sign-calendar"></div>
             </div>
         </div>

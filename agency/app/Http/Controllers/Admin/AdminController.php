@@ -176,6 +176,7 @@ class AdminController extends Controller
         }
         $start_date = $request->start_date;
         $end_date = $request->end_date;
+        $tmp_end_date = $request->end_date;
         $now_date = Date::now()->add('+1 day')->format('Y-m-d');
         if ($end_date > $now_date) {
             $end_date = $now_date;
@@ -191,13 +192,13 @@ class AdminController extends Controller
             ->where('admin_id', $admin_id)->get();
         //请假信息
         $leave = AdminLeave::select()
-            ->where(function ($query) use ($start_date, $end_date) {
-                $query->orWhere(function ($query) use ($start_date, $end_date) {
+            ->where(function ($query) use ($start_date, $tmp_end_date) {
+                $query->orWhere(function ($query) use ($start_date, $tmp_end_date) {
                     $query->whereDate('leave_start_time', '>=', $start_date)
-                        ->whereDate('leave_start_time', '<', $end_date);
-                })->orWhere(function ($query) use ($start_date, $end_date) {
+                        ->whereDate('leave_start_time', '<', $tmp_end_date);
+                })->orWhere(function ($query) use ($start_date, $tmp_end_date) {
                     $query->whereDate('leave_end_time', '>', $start_date)
-                        ->whereDate('leave_end_time', '<=', $end_date);
+                        ->whereDate('leave_end_time', '<=', $tmp_end_date);
                 });
             })
             ->where('admin_id', $admin_id)->get();

@@ -118,7 +118,8 @@
                     title: '补签类型'
                 }, {
                     field: 'sign_apply_reason',
-                    title: '补签原因'
+                    title: '补签原因',
+                    width: '15%'
                 }, {
                     field: 'submit_time',
                     title: '提交时间'

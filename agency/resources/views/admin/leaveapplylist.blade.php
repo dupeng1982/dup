@@ -111,26 +111,24 @@
                     field: 'realname',
                     title: '姓名'
                 }, {
-                    field: 'leave_start_time',
-                    title: '开始日期'
-                }, {
-                    field: 'leave_end_time',
-                    title: '结束日期'
+                    field: 'submit_time',
+                    title: '请假申请时间'
                 }, {
                     field: 'leave_type_name',
-                    title: '补签类型'
+                    title: '请假类型'
+                }, {
+                    field: 'leave_start_time',
+                    title: '开始时间'
+                }, {
+                    field: 'leave_end_time',
+                    title: '结束时间'
                 }, {
                     field: 'leave_reason',
-                    title: '补签原因'
-                }, {
-                    field: 'submit_time',
-                    title: '提交时间'
+                    title: '请假原因',
+                    width: '15%'
                 }, {
                     field: 'approval_name',
                     title: '审核人'
-                }, {
-                    field: 'approval_time',
-                    title: '审核时间'
                 }, {
                     field: 'approval_note',
                     title: '审核备注'

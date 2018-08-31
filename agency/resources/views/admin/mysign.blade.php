@@ -55,9 +55,13 @@
                             <input type="text" class="form-control" disabled="disabled"
                                    id="admin-sign-apply-type"></div>
                         <div class="form-group">
-                            <label>说明</label>
+                            <label>补签说明</label>
                             <textarea type="text" class="form-control"
                                       id="admin-sign-apply-description"></textarea></div>
+                        <div class="form-group">
+                            <label>审核说明</label>
+                            <textarea type="text" class="form-control" disabled
+                                      id="admin-sign-apply-check-description"></textarea></div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -160,6 +164,10 @@
                             <label>请假原因</label>
                             <textarea type="text" class="form-control" disabled="disabled"
                                       id="leave-reason-show"></textarea></div>
+                        <div class="form-group">
+                            <label>审核说明</label>
+                            <textarea type="text" class="form-control" disabled
+                                      id="leave-check-reason-show"></textarea></div>
                     </form>
                 </div>
             </div>

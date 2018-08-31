@@ -78,6 +78,35 @@
             </div>
         </div>
     </div>
+    <div class="modal fade show" id="checkMoreSignApplyModal" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">补签批量审核</h4>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label>批量审核说明</label>
+                            <input type="text" class="form-control"
+                                   id="add-more-approval-note"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="check-more-sign-apply-yes"
+                            class="btn btn-success">通过
+                    </button>
+                    <button type="button" id="check-more-sign-apply-no"
+                            class="btn btn-secondary">驳回
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('admin-js')
@@ -99,7 +128,14 @@
                 pageSize: 10,//单页记录数
                 pageList: [10, 15, 20],
                 responseHandler: responseHandler,
+                onPageChange: function () {
+                    $(":checkbox").prop('checked', false);
+                },
                 columns: [{
+                    field: 'id',
+                    title: '<div class="checkbox"><input type="checkbox" id="checkbox0" value="check"><label for="checkbox0" style="top: 16px;"></label></div>',
+                    formatter: operateFormatter1
+                }, {
                     field: 'SerialNumber',
                     title: '序号',
                     formatter: function (value, row, index) {
@@ -134,7 +170,7 @@
                     title: '审核备注'
                 }, {
                     field: 'id',
-                    title: '操作',
+                    title: '操作<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn checkMoreSignApply" data-toggle="tooltip" data-original-title="批量审核"><i class="ti-marker-alt" aria-hidden="true"></i></button>',
                     formatter: operateFormatter
                 }],
                 onPostBody: onPostBody
@@ -169,17 +205,42 @@
 
             }
 
+            function operateFormatter1(value, row, index) {
+                if (row.sign_apply_status == 2) {
+                    return '<div class="checkbox"><input type="checkbox" id="checkbox' + value + '" value="' + row.id + '"><label style="top: 8px;" for="checkbox' + value + '"></label></div>';
+                }
+            }
+
             function refresh() {
                 $('#sign_apply_table').bootstrapTable('refresh', {url: 'getSignApplyList'});
             }
 
             var sign_apply_id;
+            var sign_apply_id_arr = [];
 
             function onPostBody(res) {
                 $("[data-toggle='tooltip']").tooltip();
                 $('.checkSignApply').click(function () {
                     sign_apply_id = $(this).attr('data-sign-apply-id');
                     $('#checkSignApplyModal').modal('show');
+                });
+                $(":checkbox[id!='checkbox0']").click(function () {
+                    var checkedElt = $(this).prop('checked');
+                    if (checkedElt) {
+                        var allCheck = $(":checkbox[id!='checkbox0']");
+                        var check = true;
+                        for (var i = 0; i < allCheck.length; i++) {
+                            if (!allCheck[i].checked) {
+                                check = false;
+                                break;
+                            }
+                        }
+                        if (check) {
+                            $('#checkbox0').prop('checked', true);
+                        }
+                    } else {
+                        $('#checkbox0').prop('checked', false);
+                    }
                 });
             }
 
@@ -259,6 +320,132 @@
                             });
                         } else {
                             $('#checkSignApplyModal').modal('hide');
+                            $.toast({
+                                heading: '成功',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'success',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                            refresh()
+                        }
+                    },
+                    error: function (doc) {
+                        $.toast({
+                            heading: '错误',
+                            text: '网络错误，请稍后重试！',
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'error',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                });
+            });
+
+            $('#checkbox0').click(function () {
+                var chElt = $('#checkbox0');
+                var checkedElt = chElt.prop('checked');
+                var allCheck = $(":checkbox[id!='checkbox0']");
+                if (checkedElt) {
+                    for (var i = 0; i < allCheck.length; i++) {
+                        allCheck[i].checked = true;
+                    }
+                } else {
+                    for (var i = 0; i < allCheck.length; i++) {
+                        allCheck[i].checked = false;
+                    }
+                }
+            });
+
+            $('.checkMoreSignApply').click(function () {
+                sign_apply_id_arr = [];
+                var allCheck = $(":checkbox[id!='checkbox0']");
+                for (var i = 0; i < allCheck.length; i++) {
+                    if (allCheck[i].checked) {
+                        sign_apply_id_arr.push(allCheck[i].value);
+                    }
+                }
+                if (sign_apply_id_arr.length) {
+                    $('#checkMoreSignApplyModal').modal('show');
+                }
+            });
+
+            $('#check-more-sign-apply-yes').click(function () {
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: 'checkMoreSignApply',
+                    type: 'POST',
+                    data: {
+                        sign_apply_id_arr: sign_apply_id_arr,
+                        approval_note: $('#add-more-approval-note').val(),
+                        sign_apply_status: 1
+                    },
+                    success: function (doc) {
+                        if (doc.code) {
+                            $.toast({
+                                heading: '警告',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'warning',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        } else {
+                            $('#checkMoreSignApplyModal').modal('hide');
+                            $.toast({
+                                heading: '成功',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'success',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                            refresh()
+                        }
+                    },
+                    error: function (doc) {
+                        $.toast({
+                            heading: '错误',
+                            text: '网络错误，请稍后重试！',
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'error',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                });
+            });
+
+            $('#check-more-sign-apply-no').click(function () {
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: 'checkMoreSignApply',
+                    type: 'POST',
+                    data: {
+                        sign_apply_id_arr: sign_apply_id_arr,
+                        approval_note: $('#add-approval-note').val(),
+                        sign_apply_status: 0
+                    },
+                    success: function (doc) {
+                        if (doc.code) {
+                            $.toast({
+                                heading: '警告',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'warning',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        } else {
+                            $('#checkMoreSignApplyModal').modal('hide');
                             $.toast({
                                 heading: '成功',
                                 text: doc.data,

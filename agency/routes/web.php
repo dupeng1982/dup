@@ -57,12 +57,14 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->get('signapplylist', 'AdminController@signapplylist');
     $router->post('getSignApplyList', 'AdminController@getSignApplyList');
     $router->post('checkSignApply', 'AdminController@checkSignApply');
+    $router->post('checkMoreSignApply', 'AdminController@checkMoreSignApply');
 
     $router->get('leaveapplylist', 'AdminController@leaveapplylist');
     $router->post('getLeaveApplyList', 'AdminController@getLeaveApplyList');
     $router->post('checkLeaveApply', 'AdminController@checkLeaveApply');
+    $router->post('checkMoreLeaveApply', 'AdminController@checkMoreLeaveApply');
 
-    $router->post('test', 'AdminController@getLeaveApplyList');
+    $router->post('test', 'AdminController@getSignApplyList');
 });
 
 

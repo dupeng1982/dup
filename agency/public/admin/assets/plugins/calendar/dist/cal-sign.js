@@ -39,6 +39,7 @@
                 sign_apply_reason = '';
             }
             $this.$modal.find('#admin-sign-apply-description').val(sign_apply_reason);
+            $this.$modal.find('#admin-sign-apply-check-description').val(calEvent.check_reason);
         },
         CalendarApp.prototype.onEventClick2 = function (calEvent, jsEvent, view) {
             var $this = this;
@@ -64,6 +65,7 @@
                 $this.$modal2.find('#leave-type-show').val('其他');
             }
             $this.$modal2.find('#leave-reason-show').val(leave_info.leave_reason);
+            $this.$modal2.find('#leave-check-reason-show').val(leave_info.approval_note);
         },
         /* Initializing */
         CalendarApp.prototype.init = function () {
@@ -102,7 +104,8 @@
                                     className: $(this).attr('className'),
                                     order: $(this).attr('order'),
                                     apply_reason: $(this).attr('apply_reason'),
-                                    leave_info: $(this).attr('leave_info')
+                                    leave_info: $(this).attr('leave_info'),
+                                    check_reason: $(this).attr('approval_note')
                                 });
                             });
                             callback(events);
@@ -147,8 +150,8 @@
                 eventOrder: 'order',
 
                 eventClick: function (calEvent, jsEvent, view) {
-                    if (((calEvent.order == 2) || (calEvent.order == 3)) &&
-                        ((calEvent.className[0] == 'bg-danger') || (calEvent.className[0] == 'bg-warning'))) {
+                    if (((calEvent.order == 2) || (calEvent.order == 3)) && (calEvent.className[0] == 'bg-danger') &&
+                        (calEvent.title != '待签到 ') && (calEvent.title != '待签退 ')) {
                         $this.onEventClick(calEvent, jsEvent, view);
                     }
                     if (calEvent.order == 4) {

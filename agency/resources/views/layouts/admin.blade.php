@@ -171,8 +171,8 @@
                             <li><a href="{{ url('admin/mysign') }}">我的考勤</a></li>
                             <li><a href="{{ url('admin/signapplylist') }}">补签审核</a></li>
                             <li><a href="{{ url('admin/leaveapplylist') }}">请假审核</a></li>
-                            <li><a href="{{ url('admin/fff') }}">考勤统计</a></li>
-                            <li><a href="{{ url('admin/ggg') }}">考勤汇总</a></li>
+                            <li><a href="{{ url('admin/signandleavestatistics') }}">考勤统计</a></li>
+                            <li><a href="{{ url('admin/signandleavesummary') }}">考勤汇总</a></li>
                             <li><a href="{{ url('admin/dateset') }}">考勤设置</a></li>
                         </ul>
                     </li>

@@ -64,7 +64,11 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('checkLeaveApply', 'AdminController@checkLeaveApply');
     $router->post('checkMoreLeaveApply', 'AdminController@checkMoreLeaveApply');
 
-    $router->post('test', 'AdminController@getSignApplyList');
+    $router->get('signandleavestatistics', 'AdminController@SignAndLeaveStatistics');
+
+    $router->get('signandleavesummary', 'AdminController@SignAndLeaveSummary');
+
+    $router->any('test', 'AdminController@getMonthAttendanceStatistics');
 });
 
 

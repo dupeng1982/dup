@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\AdminLeave;
 use App\Models\AdminPermission;
 use App\Models\AdminRole;
@@ -829,6 +830,40 @@ class AdminController extends Controller
             return $this->resp(0, '操作成功');
         }
         return $this->resp(10000, '操作失败');
+    }
+
+    /*******考勤统计视图*******/
+    public function SignAndLeaveStatistics()
+    {
+        return view('admin/signandleavestatistics');
+    }
+
+    //按月获取考勤统计
+    public function getMonthAttendanceStatistics(Request $request)
+    {
+        $rs = Admin::select('admininfo.name as realname',
+            DB::raw("DATE_FORMAT(sign_time,'%Y-%m-%d') as sign_date,DATE_FORMAT(sign_time,'%H:%i:%s') as sign_hour"))
+            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admins.id')
+            ->leftjoin('admin_sign', 'admin_sign.admin_id', '=', 'admins.id')
+            //->leftjoin('admin_sign_apply', 'admin_sign_apply.admin_id', '=', 'admins.id')
+            ->where('admins.is_attendance', 1)
+            ->whereYear('admin_sign.sign_time', '2018')
+            ->whereMonth('admin_sign.sign_time', '8')
+            ->groupBy('sign_date')
+            ->get();
+        return $rs;
+    }
+
+    /*******考勤汇总视图*******/
+    public function SignAndLeaveSummary()
+    {
+        return view('admin/signandleavesummary');
+    }
+
+    //按月获取考勤汇总
+    public function getMonthAttendanceSummary(Request $request)
+    {
+
     }
 
 }

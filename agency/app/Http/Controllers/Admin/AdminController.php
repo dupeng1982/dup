@@ -9,6 +9,7 @@ use App\Models\AdminPermission;
 use App\Models\AdminRole;
 use App\Models\AdminSign;
 use App\Models\AdminSignApply;
+use App\Models\AdminSignStatistic;
 use App\Models\DateSet;
 use App\Models\TimeSet;
 use Illuminate\Http\Request;
@@ -52,12 +53,20 @@ class AdminController extends Controller
         }
         $set_start_time = TimeSet::where('set_month', $now_month)->pluck('set_start_time')->first();
         if ($now_time <= $set_start_time) {
-            AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 1]);
-            return $this->resp(0, '签到成功');
+            return DB::transaction(function () use ($admin_id, $now_date, $now) {
+                AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 1]);
+                AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
+                    ['sign_in_time' => $now, 'sign_in_status' => 0]);
+                return $this->resp(0, '签到成功');
+            });
         }
-        AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 1,
-            'sign_status' => 0]);
-        return $this->resp(0, '签到成功');
+        return DB::transaction(function () use ($admin_id, $now_date, $now) {
+            AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 1,
+                'sign_status' => 0]);
+            AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
+                ['sign_in_time' => $now, 'sign_in_status' => 2]);
+            return $this->resp(0, '签到成功');
+        });
     }
 
     //签退
@@ -71,17 +80,27 @@ class AdminController extends Controller
         $set_end_time = TimeSet::where('set_month', $now_month)->pluck('set_end_time')->first();
         if ($now_time >= $set_end_time) {
             $sign_status = 1;
+            $sign_status_tmp = 0;
         } else {
             $sign_status = 0;
+            $sign_status_tmp = 2;
         }
         $sign_id = $this->_adminSignCheck($admin_id, $now_date, 2);
         if ($sign_id) {
-            AdminSign::where('id', $sign_id)->update(['sign_time' => $now, 'sign_status' => $sign_status]);
-            return $this->resp(0, '签退成功');
+            return DB::transaction(function () use ($admin_id, $now_date, $sign_id, $sign_status, $sign_status_tmp, $now) {
+                AdminSign::where('id', $sign_id)->update(['sign_time' => $now, 'sign_status' => $sign_status]);
+                AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
+                    ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp]);
+                return $this->resp(0, '签退成功');
+            });
         }
-        AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 2,
-            'sign_status' => $sign_status]);
-        return $this->resp(0, '签退成功');
+        return DB::transaction(function () use ($admin_id, $sign_id, $sign_status, $sign_status_tmp, $now_date, $now) {
+            AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 2,
+                'sign_status' => $sign_status]);
+            AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
+                ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp]);
+            return $this->resp(0, '签退成功');
+        });
     }
 
     //签到签退判断
@@ -723,13 +742,27 @@ class AdminController extends Controller
             return $this->resp(10000, $validator->messages()->first());
         }
         $admin_id = Auth::guard('admin')->user()->id;
-        $rs = AdminSignApply::where('id', $request->sign_apply_id)
-            ->update(['sign_apply_approval' => $admin_id, 'approval_time' => Date::now(),
-                'approval_note' => $request->approval_note, 'sign_apply_status' => $request->sign_apply_status]);
-        if ($rs) {
-            return $this->resp(0, '操作成功');
-        }
-        return $this->resp(10000, '操作失败');
+        return DB::transaction(function () use ($admin_id, $request) {
+            $rs = AdminSignApply::where('id', $request->sign_apply_id)
+                ->update(['sign_apply_approval' => $admin_id, 'approval_time' => Date::now(),
+                    'approval_note' => $request->approval_note, 'sign_apply_status' => $request->sign_apply_status]);
+            $sign_apply = AdminSignApply::find($request->sign_apply_id);
+            if ($request->sign_apply_status == 1) {
+                $user_id = $sign_apply->admin_id;
+                $now_date = $sign_apply->sign_apply_date;
+                if ($sign_apply->sign_apply_type == 1) {
+                    AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
+                        ['sign_in_status' => 1]);
+                } elseif ($sign_apply->sign_apply_type == 2) {
+                    AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
+                        ['sign_out_status' => 1]);
+                }
+            }
+            if ($rs) {
+                return $this->resp(0, '操作成功');
+            }
+            return $this->resp(10000, '操作失败');
+        });
     }
 
     //批量审核补签申请
@@ -745,13 +778,30 @@ class AdminController extends Controller
             return $this->resp(10000, $validator->messages()->first());
         }
         $admin_id = Auth::guard('admin')->user()->id;
-        $rs = AdminSignApply::whereIn('id', $request->sign_apply_id_arr)
-            ->update(['sign_apply_approval' => $admin_id, 'approval_time' => Date::now(),
-                'approval_note' => $request->approval_note, 'sign_apply_status' => $request->sign_apply_status]);
-        if ($rs) {
-            return $this->resp(0, '操作成功');
-        }
-        return $this->resp(10000, '操作失败');
+
+        return DB::transaction(function () use ($admin_id, $request) {
+            $sign_apply = AdminSignApply::whereIn('id', $request->sign_apply_id_arr)->get();
+            foreach ($sign_apply as $v) {
+                if ($request->sign_apply_status == 1) {
+                    $user_id = $v->admin_id;
+                    $now_date = $v->sign_apply_date;
+                    if ($v->sign_apply_type == 1) {
+                        AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
+                            ['sign_in_status' => 1]);
+                    } elseif ($v->sign_apply_type == 2) {
+                        AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
+                            ['sign_out_status' => 1]);
+                    }
+                }
+            }
+            $rs = AdminSignApply::whereIn('id', $request->sign_apply_id_arr)
+                ->update(['sign_apply_approval' => $admin_id, 'approval_time' => Date::now(),
+                    'approval_note' => $request->approval_note, 'sign_apply_status' => $request->sign_apply_status]);
+            if ($rs) {
+                return $this->resp(0, '操作成功');
+            }
+            return $this->resp(10000, '操作失败');
+        });
     }
 
     /*******请假审核视图*******/

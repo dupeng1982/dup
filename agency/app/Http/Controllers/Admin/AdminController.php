@@ -822,8 +822,7 @@ class AdminController extends Controller
             return $this->resp(10000, $validator->messages()->first());
         }
         $search = $request->search;
-        $data = AdminLeave::select('admininfo.name as realname', 'admin_leave.*',
-            'admin_leave.leave_type as leave_type_name', 'approval.name as approval_name')
+        $data = AdminLeave::select('admininfo.name as realname', 'admin_leave.*', 'approval.name as approval_name')
             ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admin_leave.admin_id')
             ->leftjoin('admininfo as approval', 'approval.admin_id', '=', 'admin_leave.leave_approval')
             ->where(function ($q) use ($search) {
@@ -836,6 +835,75 @@ class AdminController extends Controller
             ->orderBy('admin_leave.submit_time', 'DESC')
             ->paginate($request->item);
         return $this->resp(0, $data);
+    }
+
+    //按天创建请假信息
+    public function _createLeaveInfo($leave_id = 24)
+    {
+        $leave = AdminLeave::find($leave_id);
+        $admin_id = $leave->admin_id;
+        $leave_start_time = $leave->leave_start_time;
+        $leave_end_time = $leave->leave_end_time;
+        $leave_type = $leave->leave_type;
+
+        $start_date = Date::parse($leave_start_time)->format('Y-m-d');
+        $end_date = Date::parse($leave_end_time)->format('Y-m-d');
+
+        while ($start_date <= $end_date) {
+            //获取当天上班时间
+            $month = Date::parse($start_date)->format('m');
+            $time_set = TimeSet::find($month);
+            //获取上班时间与请假时间交集
+            $ins = $this->_getTimeIntersection($start_date . ' ' . $time_set->set_start_time,
+                $start_date . ' ' . $time_set->set_end_time, $leave_start_time, $leave_end_time);
+            if ($ins) {
+                $tmp_start = Date::parse($ins[0])->format('H:i');
+                $tmp_end = Date::parse($ins[1])->format('H:i');
+                $leave_time = $tmp_start . '-' . $tmp_end;
+                if (($tmp_start == $time_set->set_start_time) && ($tmp_end == $time_set->set_end_time)) {
+                    $leave_time_type = 1;
+                } else {
+                    $leave_time_type = 2;
+                }
+                AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $start_date],
+                    ['leave_type' => $leave_type, 'leave_start_time' => $leave_start_time,
+                        'leave_end_time' => $leave_end_time, 'leave_time' => $leave_time,
+                        'leave_time_type' => $leave_time_type]);
+            }
+            $start_date = Date::parse($start_date)->add('+1 day')->format('Y-m-d');
+        }
+    }
+
+    //获取两个时间段的交集
+    private function _getTimeIntersection($beginTime1, $endTime1, $beginTime2, $endTime2)
+    {
+        $time = Array();
+        if ($beginTime2 > $beginTime1) {
+            if ($beginTime2 >= $endTime1) {
+                return null;
+            } else {
+                $time[] = $beginTime2;
+                if ($endTime2 < $beginTime2) {
+                    $time[] = $endTime2;
+                } else {
+                    $time[] = $endTime1;
+                }
+                return $time;
+            }
+        } else {
+            if ($endTime2 > $beginTime1) {
+                if ($endTime2 < $endTime1) {
+                    $time[] = $beginTime1;
+                    $time[] = $endTime2;
+                } else {
+                    $time[] = $beginTime1;
+                    $time[] = $endTime1;
+                }
+                return $time;
+            } else {
+                return null;
+            }
+        }
     }
 
     //审核请假申请

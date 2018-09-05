@@ -746,19 +746,19 @@ class AdminController extends Controller
             $rs = AdminSignApply::where('id', $request->sign_apply_id)
                 ->update(['sign_apply_approval' => $admin_id, 'approval_time' => Date::now(),
                     'approval_note' => $request->approval_note, 'sign_apply_status' => $request->sign_apply_status]);
-            $sign_apply = AdminSignApply::find($request->sign_apply_id);
-            if ($request->sign_apply_status == 1) {
-                $user_id = $sign_apply->admin_id;
-                $now_date = $sign_apply->sign_apply_date;
-                if ($sign_apply->sign_apply_type == 1) {
-                    AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
-                        ['sign_in_status' => 1]);
-                } elseif ($sign_apply->sign_apply_type == 2) {
-                    AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
-                        ['sign_out_status' => 1]);
-                }
-            }
             if ($rs) {
+                $sign_apply = AdminSignApply::find($request->sign_apply_id);
+                if ($request->sign_apply_status == 1) {
+                    $user_id = $sign_apply->admin_id;
+                    $now_date = $sign_apply->sign_apply_date;
+                    if ($sign_apply->sign_apply_type == 1) {
+                        AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
+                            ['sign_in_status' => 1]);
+                    } elseif ($sign_apply->sign_apply_type == 2) {
+                        AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
+                            ['sign_out_status' => 1]);
+                    }
+                }
                 return $this->resp(0, '操作成功');
             }
             return $this->resp(10000, '操作失败');
@@ -780,24 +780,24 @@ class AdminController extends Controller
         $admin_id = Auth::guard('admin')->user()->id;
 
         return DB::transaction(function () use ($admin_id, $request) {
-            $sign_apply = AdminSignApply::whereIn('id', $request->sign_apply_id_arr)->get();
-            foreach ($sign_apply as $v) {
-                if ($request->sign_apply_status == 1) {
-                    $user_id = $v->admin_id;
-                    $now_date = $v->sign_apply_date;
-                    if ($v->sign_apply_type == 1) {
-                        AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
-                            ['sign_in_status' => 1]);
-                    } elseif ($v->sign_apply_type == 2) {
-                        AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
-                            ['sign_out_status' => 1]);
-                    }
-                }
-            }
             $rs = AdminSignApply::whereIn('id', $request->sign_apply_id_arr)
                 ->update(['sign_apply_approval' => $admin_id, 'approval_time' => Date::now(),
                     'approval_note' => $request->approval_note, 'sign_apply_status' => $request->sign_apply_status]);
             if ($rs) {
+                $sign_apply = AdminSignApply::whereIn('id', $request->sign_apply_id_arr)->get();
+                foreach ($sign_apply as $v) {
+                    if ($request->sign_apply_status == 1) {
+                        $user_id = $v->admin_id;
+                        $now_date = $v->sign_apply_date;
+                        if ($v->sign_apply_type == 1) {
+                            AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
+                                ['sign_in_status' => 1]);
+                        } elseif ($v->sign_apply_type == 2) {
+                            AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
+                                ['sign_out_status' => 1]);
+                        }
+                    }
+                }
                 return $this->resp(0, '操作成功');
             }
             return $this->resp(10000, '操作失败');
@@ -838,7 +838,7 @@ class AdminController extends Controller
     }
 
     //按天创建请假信息
-    public function _createLeaveInfo($leave_id = 24)
+    private function _createLeaveInfo($leave_id)
     {
         $leave = AdminLeave::find($leave_id);
         $admin_id = $leave->admin_id;
@@ -919,13 +919,16 @@ class AdminController extends Controller
             return $this->resp(10000, $validator->messages()->first());
         }
         $admin_id = Auth::guard('admin')->user()->id;
-        $rs = AdminLeave::where('id', $request->leave_id)
-            ->update(['leave_approval' => $admin_id, 'approval_time' => Date::now(),
-                'approval_note' => $request->approval_note, 'leave_status' => $request->leave_status]);
-        if ($rs) {
-            return $this->resp(0, '操作成功');
-        }
-        return $this->resp(10000, '操作失败');
+        return DB::transaction(function () use ($admin_id, $request) {
+            $rs = AdminLeave::where('id', $request->leave_id)
+                ->update(['leave_approval' => $admin_id, 'approval_time' => Date::now(),
+                    'approval_note' => $request->approval_note, 'leave_status' => $request->leave_status]);
+            if ($rs) {
+                $this->_createLeaveInfo($request->leave_id);
+                return $this->resp(0, '操作成功');
+            }
+            return $this->resp(10000, '操作失败');
+        });
     }
 
     //批量审核请假申请
@@ -941,13 +944,18 @@ class AdminController extends Controller
             return $this->resp(10000, $validator->messages()->first());
         }
         $admin_id = Auth::guard('admin')->user()->id;
-        $rs = AdminLeave::whereIn('id', $request->leave_id_arr)
-            ->update(['leave_approval' => $admin_id, 'approval_time' => Date::now(),
-                'approval_note' => $request->approval_note, 'leave_status' => $request->leave_status]);
-        if ($rs) {
-            return $this->resp(0, '操作成功');
-        }
-        return $this->resp(10000, '操作失败');
+        return DB::transaction(function () use ($admin_id, $request) {
+            $rs = AdminLeave::whereIn('id', $request->leave_id_arr)
+                ->update(['leave_approval' => $admin_id, 'approval_time' => Date::now(),
+                    'approval_note' => $request->approval_note, 'leave_status' => $request->leave_status]);
+            if ($rs) {
+                foreach ($request->leave_id_arr as $v) {
+                    $this->_createLeaveInfo($v);
+                }
+                return $this->resp(0, '操作成功');
+            }
+            return $this->resp(10000, '操作失败');
+        });
     }
 
     /*******考勤统计视图*******/
@@ -959,15 +967,10 @@ class AdminController extends Controller
     //按月获取考勤统计
     public function getMonthAttendanceStatistics(Request $request)
     {
-        $rs = Admin::select('admininfo.name as realname',
-            DB::raw("DATE_FORMAT(sign_time,'%Y-%m-%d') as sign_date,DATE_FORMAT(sign_time,'%H:%i:%s') as sign_hour"))
-            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admins.id')
-            ->leftjoin('admin_sign', 'admin_sign.admin_id', '=', 'admins.id')
-            //->leftjoin('admin_sign_apply', 'admin_sign_apply.admin_id', '=', 'admins.id')
-            ->where('admins.is_attendance', 1)
-            ->whereYear('admin_sign.sign_time', '2018')
-            ->whereMonth('admin_sign.sign_time', '8')
-            ->groupBy('sign_date')
+        $rs = AdminSignStatistic::select()
+            ->leftjoin('date_set', 'date_set.set_date', '=', 'admin_sign_statistic.sign_date')
+            ->whereYear('admin_sign_statistic.sign_date', '2018')
+            ->whereMonth('admin_sign_statistic.sign_date', '8')
             ->get();
         return $rs;
     }

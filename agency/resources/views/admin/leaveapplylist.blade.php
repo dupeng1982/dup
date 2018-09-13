@@ -202,7 +202,6 @@
                 } else {
                     return '驳回';
                 }
-
             }
 
             function operateFormatter1(value, row, index) {

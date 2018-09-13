@@ -47,7 +47,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('setWinterTime', 'AdminController@setWinterTime');
 
     $router->get('roleset', 'AdminController@roleset');
-    $router->any('getRoleList', 'AdminController@getRoleList');
+    $router->post('getRoleList', 'AdminController@getRoleList');
     $router->post('delRole', 'AdminController@delRole');
     $router->post('addRole', 'AdminController@addRole');
     $router->post('editRole', 'AdminController@editRole');
@@ -65,8 +65,11 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('checkMoreLeaveApply', 'AdminController@checkMoreLeaveApply');
 
     $router->get('signandleavestatistics', 'AdminController@SignAndLeaveStatistics');
+    $router->post('getMonthAttendanceStatistics', 'AdminController@getMonthAttendanceStatistics');
+    $router->any('importMonthAttendanceStatistics', 'AdminController@importMonthAttendanceStatistics');
 
     $router->get('signandleavesummary', 'AdminController@SignAndLeaveSummary');
+    $router->post('getMonthAttendanceSummary', 'AdminController@getMonthAttendanceSummary');
 
     $router->any('test', 'AdminController@getMonthAttendanceStatistics');
 });

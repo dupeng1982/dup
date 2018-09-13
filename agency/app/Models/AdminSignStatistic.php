@@ -9,6 +9,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Date;
 
 class AdminSignStatistic extends Model
 {
@@ -16,7 +17,7 @@ class AdminSignStatistic extends Model
     public $timestamps = false;
     protected $fillable = ['admin_id', 'sign_date', 'sign_in_time', 'sign_in_status', 'sign_out_time',
         'sign_out_status', 'leave_type', 'leave_start_time', 'leave_end_time', 'leave_time', 'leave_time_type'];
-    protected $appends = ['leave_type_name'];
+    protected $appends = ['leave_type_name', 'sign_in_time_format', 'sign_out_time_format'];
 
     public function getLeaveTypeNameAttribute()
     {
@@ -33,6 +34,48 @@ class AdminSignStatistic extends Model
             return '下现场';
         } else {
             return null;
+        }
+    }
+
+    public function getSignInTimeFormatAttribute()
+    {
+        if ($this->sign_in_time) {
+            $sign_in_time = Date::parse($this->sign_in_time)->format('H:i:s');
+            //补签到状态：0-未补签，1-已补签，2-迟到
+            if ($this->sign_in_status == 1) {
+                return '已补签';
+            } elseif ($this->sign_in_status == 2) {
+                return $sign_in_time . '<span style="color:#c12e2a;">(迟到)</span>';
+            } else {
+                return $sign_in_time;
+            }
+        } else {
+            if ($this->sign_in_status == 1) {
+                return '已补签';
+            } else {
+                return '<span style="color:#c12e2a;">未签到</span>';
+            }
+        }
+    }
+
+    public function getSignOutTimeFormatAttribute()
+    {
+        if ($this->sign_out_time) {
+            $sign_in_time = Date::parse($this->sign_out_time)->format('H:i:s');
+            //补签到状态：0-未补签，1-已补签，2-早退
+            if ($this->sign_out_status == 1) {
+                return '已补签';
+            } elseif ($this->sign_out_status == 2) {
+                return $sign_in_time . '<span style="color:#c12e2a;">(早退)</span>';
+            } else {
+                return $sign_in_time;
+            }
+        } else {
+            if ($this->sign_out_status == 1) {
+                return '已补签';
+            } else {
+                return '<span style="color:#c12e2a;">未签退</span>';
+            }
         }
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin;
 use App\Models\AdminLeave;
 use App\Models\AdminPermission;
 use App\Models\AdminRole;
@@ -967,12 +966,75 @@ class AdminController extends Controller
     //按月获取考勤统计
     public function getMonthAttendanceStatistics(Request $request)
     {
-        $rs = AdminSignStatistic::select()
-            ->leftjoin('date_set', 'date_set.set_date', '=', 'admin_sign_statistic.sign_date')
-            ->whereYear('admin_sign_statistic.sign_date', '2018')
-            ->whereMonth('admin_sign_statistic.sign_date', '8')
+        $rule = [
+            'page' => 'integer',
+            'item' => 'integer',
+            'month' => 'date_format:Y-m'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $year = $request->month ? Date::parse($request->month)->format('Y') : Date::now()->format('Y');
+        $month = $request->month ? Date::parse($request->month)->format('m') : Date::now()->format('m');
+        $search = $request->search;
+        $rs = AdminSignStatistic::select('admin_sign_statistic.*', 'admininfo.name  as realname')
+            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admin_sign_statistic.admin_id')
+            ->whereYear('admin_sign_statistic.sign_date', $year)
+            ->whereMonth('admin_sign_statistic.sign_date', $month)
+            ->where(function ($q) use ($search) {
+                $search &&
+                $q->orWhere('admininfo.name', 'like', '%' . $search . '%')
+                    ->orWhere('admin_sign_statistic.sign_date', 'like', '%' . $search . '%');
+            })
+            ->paginate($request->item);
+        return $this->resp(0, $rs);
+    }
+
+    //按月获取考勤统计导出EXCEL
+    public function importMonthAttendanceStatistics(Request $request)
+    {
+        $rule = [
+            'month' => 'required|date_format:Y-m'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $year = Date::parse($request->month)->format('Y');
+        $month = Date::parse($request->month)->format('m');
+        $search = $request->search;
+        $rs = AdminSignStatistic::select('admin_sign_statistic.*', 'admininfo.name  as realname')
+            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admin_sign_statistic.admin_id')
+            ->whereYear('admin_sign_statistic.sign_date', $year)
+            ->whereMonth('admin_sign_statistic.sign_date', $month)
+            ->where(function ($q) use ($search) {
+                $search &&
+                $q->orWhere('admininfo.name', 'like', '%' . $search . '%')
+                    ->orWhere('admin_sign_statistic.sign_date', 'like', '%' . $search . '%');
+            })
             ->get();
-        return $rs;
+        $id = 1;
+        $cellData[] = ['序号', '姓名', '日期', '签到时间', '签退时间', '请假情况', '请假时间'];
+        foreach ($rs as $v) {
+            $cellData[] = array($id, $v->realname, $v->sign_date, $v->sign_in_time_format, $v->sign_out_time_format,
+                $v->leave_type_name, $v->leave_time);
+            $id = $id + 1;
+        }
+//        Excel::create('月考勤统计表', function ($excel) use ($cellData) {
+//            $excel->sheet('月考勤统计表', function ($sheet) use ($cellData) {
+//                $sheet->rows($cellData);
+//            });
+//        })->export('xls');
+        Excel::fake();
+
+//        $this->actingAs($this->givenUser())
+//            ->get('/invoices/download/xlsx');
+
+        Excel::assertDownloaded('filename.xlsx', function(\InvoicesExport $export) {
+            // Assert that the correct export is downloaded.
+            return $export->collection()->contains('#2018-01');
+        });
     }
 
     /*******考勤汇总视图*******/

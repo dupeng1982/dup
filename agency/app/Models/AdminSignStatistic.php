@@ -16,7 +16,8 @@ class AdminSignStatistic extends Model
     protected $table = 'admin_sign_statistic';
     public $timestamps = false;
     protected $fillable = ['admin_id', 'sign_date', 'sign_in_time', 'sign_in_status', 'sign_out_time',
-        'sign_out_status', 'leave_type', 'leave_start_time', 'leave_end_time', 'leave_time', 'leave_time_type'];
+        'sign_out_status', 'leave_type', 'leave_start_time', 'leave_end_time', 'leave_time', 'leave_time_type',
+        'date_attendance_time', 'date_other_time', 'date_leave_time'];
     protected $appends = ['leave_type_name', 'sign_in_time_format', 'sign_out_time_format'];
 
     public function getLeaveTypeNameAttribute()

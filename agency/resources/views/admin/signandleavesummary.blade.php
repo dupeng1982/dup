@@ -2,6 +2,8 @@
 
 @section('admin-css')
     <link href="{{ asset('admin/assets/plugins/bootstrap-table/dist/bootstrap-table.min.css') }}" rel="stylesheet"/>
+    <link href="{{ asset('admin/assets/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}"
+          rel="stylesheet"/>
 @endsection
 
 @section('admin-title')
@@ -30,16 +32,22 @@
             <div class="card">
                 <div class="card-body">
                     <table class="table table-bordered table-hover toggle-circle"
-                           data-page-size="7" id="leave_apply_table">
+                           data-page-size="7" id="attendance-statistic-table">
                         <div class="m-t-40">
                             <div class="d-flex">
-                                <h4 class="card-title">请假申请列表</h4>
+                                <h4 class="card-title">考勤汇总列表</h4>
                                 <div class="ml-auto">
                                     <div class="form-group">
+                                        <input id="demo-input-search2" type="text" class="datetimeStart"
+                                               value="{{ Date::now()->format('Y-m') }}" autocomplete="off">
                                         <input id="demo-input-search2" type="text" placeholder="Search"
-                                               autocomplete="off">
-                                        <span><button id="leave-apply-search"
+                                               class="attendance-statistic-search" autocomplete="off">
+                                        <span><button id="attendance-statistic-search"
                                                       class="btn btn-info btn-search">查找</button></span>
+                                        <span><button id="import-attendance-statistic" class="btn btn-info btn-search"
+                                                      onclick="event.preventDefault();
+                                                      document.getElementById('import-excel-form').submit();">
+                                                导出EXCEL</button></span>
                                     </div>
                                 </div>
                             </div>
@@ -49,73 +57,23 @@
             </div>
         </div>
     </div>
-    <div class="modal fade show" id="checkLeaveApplyModal" tabindex="-1" role="dialog"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">请假审核</h4>
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label>审核说明</label>
-                            <input type="text" class="form-control"
-                                   id="add-approval-note"></div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="check-leave-apply-yes"
-                            class="btn btn-success">通过
-                    </button>
-                    <button type="button" id="check-leave-apply-no"
-                            class="btn btn-secondary">驳回
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade show" id="checkMoreLeaveApplyModal" tabindex="-1" role="dialog"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">请假批量审核</h4>
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label>审核说明</label>
-                            <input type="text" class="form-control"
-                                   id="add-more-approval-note"></div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="check-more-leave-apply-yes"
-                            class="btn btn-success">通过
-                    </button>
-                    <button type="button" id="check-more-leave-apply-no"
-                            class="btn btn-secondary">驳回
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <form id="import-excel-form" action="importMonthAttendanceStatistics" method="GET"
+          style="display: none;">
+        @csrf
+        <input type="text" value="" name="month" id="req-month">
+        <input type="text" value="" name="search" id="req-search">
+    </form>
 @endsection
 
 @section('admin-js')
     <script src="{{ asset('admin/assets/plugins/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>
     <script src="{{ asset('admin/assets/plugins/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js') }}"></script>
+    <script src="{{ asset('admin/assets/plugins/moment/moment.js') }}"></script>
+    <script src="{{ asset('admin/assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
     <script>
         $(function () {
-            $('#leave_apply_table').bootstrapTable({
-                url: 'getLeaveApplyList',
+            $('#attendance-statistic-table').bootstrapTable({
+                url: 'getMonthAttendanceStatistics',
                 ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
                 cache: false,
                 method: 'POST',
@@ -128,50 +86,32 @@
                 pageSize: 10,//单页记录数
                 pageList: [10, 15, 20],
                 responseHandler: responseHandler,
-                onPageChange: function () {
-                    $(":checkbox").prop('checked', false);
-                },
                 columns: [{
-                    field: 'id',
-                    title: '<div class="checkbox"><input type="checkbox" id="checkbox0" value="check"><label for="checkbox0" style="top: 16px;"></label></div>',
-                    formatter: operateFormatter1
-                }, {
                     field: 'SerialNumber',
                     title: '序号',
                     formatter: function (value, row, index) {
-                        var pageSize = $('#leave_apply_table').bootstrapTable('getOptions').pageSize;//通过表的#id 可以得到每页多少条
-                        var pageNumber = $('#leave_apply_table').bootstrapTable('getOptions').pageNumber;//通过表的#id 可以得到当前第几页
+                        var pageSize = $('#attendance-statistic-table').bootstrapTable('getOptions').pageSize;//通过表的#id 可以得到每页多少条
+                        var pageNumber = $('#attendance-statistic-table').bootstrapTable('getOptions').pageNumber;//通过表的#id 可以得到当前第几页
                         return pageSize * (pageNumber - 1) + index + 1;
                     }
                 }, {
                     field: 'realname',
                     title: '姓名'
                 }, {
-                    field: 'submit_time',
-                    title: '请假申请时间'
+                    field: 'sign_date',
+                    title: '日期'
+                }, {
+                    field: 'sign_in_time_format',
+                    title: '签到时间'
+                }, {
+                    field: 'sign_out_time_format',
+                    title: '签退时间'
                 }, {
                     field: 'leave_type_name',
-                    title: '请假类型'
+                    title: '请假情况'
                 }, {
-                    field: 'leave_start_time',
-                    title: '开始时间'
-                }, {
-                    field: 'leave_end_time',
-                    title: '结束时间'
-                }, {
-                    field: 'leave_reason',
-                    title: '请假原因',
-                    width: '15%'
-                }, {
-                    field: 'approval_name',
-                    title: '审核人'
-                }, {
-                    field: 'approval_note',
-                    title: '审核备注'
-                }, {
-                    field: 'id',
-                    title: '操作<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn checkMoreLeaveApply" data-toggle="tooltip" data-original-title="批量审核"><i class="ti-marker-alt" aria-hidden="true"></i></button>',
-                    formatter: operateFormatter
+                    field: 'leave_time',
+                    title: '请假时间'
                 }],
                 onPostBody: onPostBody
             });
@@ -179,7 +119,8 @@
                 return {
                     page: (params.offset / params.limit) + 1,
                     item: params.limit,
-                    search: $('#demo-input-search2').val()
+                    search: $('.attendance-statistic-search').val(),
+                    month: $('.datetimeStart').val()
                 }
             }
 
@@ -194,283 +135,29 @@
                 };
             }
 
-            function operateFormatter(value, row, index) {
-                if (row.leave_status == 2) {
-                    return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn checkLeaveApply" data-leave-apply-id=' + value + ' data-toggle="tooltip" data-original-title="审核"><i class="ti-marker-alt" aria-hidden="true"></i></button>';
-                } else if (row.leave_status == 1) {
-                    return '审核通过';
-                } else {
-                    return '驳回';
-                }
-
-            }
-
-            function operateFormatter1(value, row, index) {
-                if (row.leave_status == 2) {
-                    return '<div class="checkbox"><input type="checkbox" id="checkbox' + value + '" value="' + row.id + '"><label style="top: 8px;" for="checkbox' + value + '"></label></div>';
-                }
-            }
-
             function refresh() {
-                $('#leave_apply_table').bootstrapTable('refresh', {url: 'getLeaveApplyList'});
+                $('#attendance-statistic-table').bootstrapTable('refresh', {url: 'getMonthAttendanceStatistics'});
             }
-
-            var leave_apply_id;
-            var leave_apply_id_arr;
 
             function onPostBody(res) {
                 $("[data-toggle='tooltip']").tooltip();
-                $('.checkLeaveApply').click(function () {
-                    leave_apply_id = $(this).attr('data-leave-apply-id');
-                    $('#checkLeaveApplyModal').modal('show');
-                });
-                $(":checkbox[id!='checkbox0']").click(function () {
-                    var checkedElt = $(this).prop('checked');
-                    if (checkedElt) {
-                        var allCheck = $(":checkbox[id!='checkbox0']");
-                        var check = true;
-                        for (var i = 0; i < allCheck.length; i++) {
-                            if (!allCheck[i].checked) {
-                                check = false;
-                                break;
-                            }
-                        }
-                        if (check) {
-                            $('#checkbox0').prop('checked', true);
-                        }
-                    } else {
-                        $('#checkbox0').prop('checked', false);
-                    }
-                });
             }
 
-            $('#leave-apply-search').click(function () {
+            $('#attendance-statistic-search').click(function () {
                 refresh();
+                $('#req-month').val($('.datetimeStart').val());
+                $('#req-search').val($('.attendance-statistic-search').val());
             });
 
-            $('#check-leave-apply-yes').click(function () {
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'checkLeaveApply',
-                    type: 'POST',
-                    data: {
-                        leave_id: leave_apply_id,
-                        approval_note: $('#add-approval-note').val(),
-                        leave_status: 1
-                    },
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $('#checkLeaveApplyModal').modal('hide');
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            refresh()
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
-            });
+            $('.datetimeStart').bootstrapMaterialDatePicker({format: 'YYYY-MM', day: false, time: false});
 
-            $('#check-leave-apply-no').click(function () {
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'checkLeaveApply',
-                    type: 'POST',
-                    data: {
-                        leave_id: leave_apply_id,
-                        approval_note: $('#add-approval-note').val(),
-                        leave_status: 0
-                    },
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $('#checkLeaveApplyModal').modal('hide');
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            refresh()
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
+            $('.dtp-btn-ok').click(function () {
+                refresh();
+                $('#req-month').val($('.datetimeStart').val());
+                $('#req-search').val($('.attendance-statistic-search').val());
             });
-
-            $('#checkbox0').click(function () {
-                var chElt = $('#checkbox0');
-                var checkedElt = chElt.prop('checked');
-                var allCheck = $(":checkbox[id!='checkbox0']");
-                if (checkedElt) {
-                    for (var i = 0; i < allCheck.length; i++) {
-                        allCheck[i].checked = true;
-                    }
-                } else {
-                    for (var i = 0; i < allCheck.length; i++) {
-                        allCheck[i].checked = false;
-                    }
-                }
-            });
-
-            $('.checkMoreLeaveApply').click(function () {
-                leave_apply_id_arr = [];
-                var allCheck = $(":checkbox[id!='checkbox0']");
-                for (var i = 0; i < allCheck.length; i++) {
-                    if (allCheck[i].checked) {
-                        leave_apply_id_arr.push(allCheck[i].value);
-                    }
-                }
-                if (leave_apply_id_arr.length) {
-                    $('#checkMoreLeaveApplyModal').modal('show');
-                }
-            });
-
-            $('#check-more-leave-apply-yes').click(function () {
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'checkMoreLeaveApply',
-                    type: 'POST',
-                    data: {
-                        leave_id_arr: leave_apply_id_arr,
-                        approval_note: $('#add-more-approval-note').val(),
-                        leave_status: 1
-                    },
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $('#checkMoreLeaveApplyModal').modal('hide');
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            refresh()
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
-            });
-
-            $('#check-more-leave-apply-no').click(function () {
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'checkMoreLeaveApply',
-                    type: 'POST',
-                    data: {
-                        leave_id_arr: leave_apply_id_arr,
-                        approval_note: $('#add-approval-note').val(),
-                        leave_status: 0
-                    },
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $('#checkMoreLeaveApplyModal').modal('hide');
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            refresh()
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
-            });
+            $('#req-month').val($('.datetimeStart').val());
+            $('#req-search').val($('.attendance-statistic-search').val());
         });
     </script>
 @endsection

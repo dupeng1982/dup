@@ -44,8 +44,10 @@
                                                class="attendance-statistic-search" autocomplete="off">
                                         <span><button id="attendance-statistic-search"
                                                       class="btn btn-info btn-search">查找</button></span>
-                                        <span><button id="import-attendance-statistic"
-                                                      class="btn btn-info btn-search"><a href="importMonthAttendanceStatistics?month=2018-09">导出EXCEL</a></button></span>
+                                        <span><button id="import-attendance-statistic" class="btn btn-info btn-search"
+                                                      onclick="event.preventDefault();
+                                                      document.getElementById('import-excel-form').submit();">
+                                                导出EXCEL</button></span>
                                     </div>
                                 </div>
                             </div>
@@ -55,6 +57,12 @@
             </div>
         </div>
     </div>
+    <form id="import-excel-form" action="importMonthAttendanceStatistics" method="GET"
+          style="display: none;">
+        @csrf
+        <input type="text" value="" name="month" id="req-month">
+        <input type="text" value="" name="search" id="req-search">
+    </form>
 @endsection
 
 @section('admin-js')
@@ -112,7 +120,7 @@
                     page: (params.offset / params.limit) + 1,
                     item: params.limit,
                     search: $('.attendance-statistic-search').val(),
-                    month:$('.datetimeStart').val()
+                    month: $('.datetimeStart').val()
                 }
             }
 
@@ -137,17 +145,19 @@
 
             $('#attendance-statistic-search').click(function () {
                 refresh();
+                $('#req-month').val($('.datetimeStart').val());
+                $('#req-search').val($('.attendance-statistic-search').val());
             });
 
             $('.datetimeStart').bootstrapMaterialDatePicker({format: 'YYYY-MM', day: false, time: false});
 
-            $('.dtp-btn-ok').click(function(){
+            $('.dtp-btn-ok').click(function () {
                 refresh();
+                $('#req-month').val($('.datetimeStart').val());
+                $('#req-search').val($('.attendance-statistic-search').val());
             });
-
-            $('#import-attendance-statistic').click(function(){
-
-            });
+            $('#req-month').val($('.datetimeStart').val());
+            $('#req-search').val($('.attendance-statistic-search').val());
         });
     </script>
 @endsection

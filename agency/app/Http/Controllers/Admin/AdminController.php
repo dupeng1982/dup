@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\ExportController;
 use App\Models\AdminLeave;
 use App\Models\AdminPermission;
 use App\Models\AdminRole;
@@ -76,28 +77,47 @@ class AdminController extends Controller
         $now_date = $now->format('Y-m-d');
         $now_month = $now->format('m');
         $now_time = $now->format('H:i:s');
+        $now_time_tmp = $now->format('H:i');
         $set_end_time = TimeSet::where('set_month', $now_month)->pluck('set_end_time')->first();
         if ($now_time >= $set_end_time) {
             $sign_status = 1;
             $sign_status_tmp = 0;
+            $date_other_time = $this->getTimeSub($set_end_time, $now_time_tmp);
         } else {
             $sign_status = 0;
             $sign_status_tmp = 2;
+            $date_other_time = 0;
+        }
+        $date_attendance_time = 0;
+        $sign_in_time = AdminSign::where('admin_id', $admin_id)
+            ->whereDate('sign_time', $now_date)
+            ->where('sign_type', 1)->first();
+        if ($sign_in_time && $sign_in_time->sign_time && $sign_in_time->sign_time < $now) {
+            $date_attendance_time = $this->getTimeSub(Date::parse($sign_in_time->sign_time)->format('H:i'),
+                $now_time_tmp);
         }
         $sign_id = $this->_adminSignCheck($admin_id, $now_date, 2);
         if ($sign_id) {
-            return DB::transaction(function () use ($admin_id, $now_date, $sign_id, $sign_status, $sign_status_tmp, $now) {
+            return DB::transaction(function () use (
+                $admin_id, $now_date, $sign_id, $sign_status, $sign_status_tmp,
+                $now, $date_attendance_time, $date_other_time
+            ) {
                 AdminSign::where('id', $sign_id)->update(['sign_time' => $now, 'sign_status' => $sign_status]);
                 AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
-                    ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp]);
+                    ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp,
+                        'date_attendance_time' => $date_attendance_time, 'date_other_time' => $date_other_time]);
                 return $this->resp(0, '签退成功');
             });
         }
-        return DB::transaction(function () use ($admin_id, $sign_id, $sign_status, $sign_status_tmp, $now_date, $now) {
+        return DB::transaction(function () use (
+            $admin_id, $sign_id, $sign_status, $sign_status_tmp, $now_date, $now,
+            $date_attendance_time, $date_other_time
+        ) {
             AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 2,
                 'sign_status' => $sign_status]);
             AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
-                ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp]);
+                ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp,
+                    'date_attendance_time' => $date_attendance_time, 'date_other_time' => $date_other_time]);
             return $this->resp(0, '签退成功');
         });
     }
@@ -1004,7 +1024,7 @@ class AdminController extends Controller
         $year = Date::parse($request->month)->format('Y');
         $month = Date::parse($request->month)->format('m');
         $search = $request->search;
-        $rs = AdminSignStatistic::select('admin_sign_statistic.*', 'admininfo.name  as realname')
+        $rs = AdminSignStatistic::select('admininfo.name  as realname', 'admin_sign_statistic.*')
             ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admin_sign_statistic.admin_id')
             ->whereYear('admin_sign_statistic.sign_date', $year)
             ->whereMonth('admin_sign_statistic.sign_date', $month)
@@ -1015,26 +1035,48 @@ class AdminController extends Controller
             })
             ->get();
         $id = 1;
-        $cellData[] = ['序号', '姓名', '日期', '签到时间', '签退时间', '请假情况', '请假时间'];
+        $cellData = Array();
         foreach ($rs as $v) {
-            $cellData[] = array($id, $v->realname, $v->sign_date, $v->sign_in_time_format, $v->sign_out_time_format,
+            if ($v->sign_in_time) {
+                $sign_in_time = Date::parse($v->sign_in_time)->format('H:i:s');
+                //补签到状态：0-未补签，1-已补签，2-迟到
+                if ($v->sign_in_status == 1) {
+                    $sign_in_time_show = '已补签';
+                } elseif ($v->sign_in_status == 2) {
+                    $sign_in_time_show = $sign_in_time . '(迟到)';
+                } else {
+                    $sign_in_time_show = $sign_in_time;
+                }
+            } else {
+                if ($v->sign_in_status == 1) {
+                    $sign_in_time_show = '已补签';
+                } else {
+                    $sign_in_time_show = '未签到';
+                }
+            }
+            if ($v->sign_out_time) {
+                $sign_in_time = Date::parse($v->sign_out_time)->format('H:i:s');
+                //补签到状态：0-未补签，1-已补签，2-早退
+                if ($v->sign_out_status == 1) {
+                    $sign_out_time_show = '已补签';
+                } elseif ($v->sign_out_status == 2) {
+                    $sign_out_time_show = $sign_in_time . '(早退)';
+                } else {
+                    $sign_out_time_show = $sign_in_time;
+                }
+            } else {
+                if ($v->sign_out_status == 1) {
+                    $sign_out_time_show = '已补签';
+                } else {
+                    $sign_out_time_show = '未签退';
+                }
+            }
+            $cellData[] = array($id, $v->realname, $v->sign_date, $sign_in_time_show, $sign_out_time_show,
                 $v->leave_type_name, $v->leave_time);
             $id = $id + 1;
         }
-//        Excel::create('月考勤统计表', function ($excel) use ($cellData) {
-//            $excel->sheet('月考勤统计表', function ($sheet) use ($cellData) {
-//                $sheet->rows($cellData);
-//            });
-//        })->export('xls');
-        Excel::fake();
-
-//        $this->actingAs($this->givenUser())
-//            ->get('/invoices/download/xlsx');
-
-        Excel::assertDownloaded('filename.xlsx', function(\InvoicesExport $export) {
-            // Assert that the correct export is downloaded.
-            return $export->collection()->contains('#2018-01');
-        });
+        $cellHarder = ['序号', '姓名', '日期', '签到时间', '签退时间', '请假情况', '请假时间'];
+        return new ExportController(collect($cellData), '月考勤统计表.xls', $cellHarder);
     }
 
     /*******考勤汇总视图*******/
@@ -1046,7 +1088,63 @@ class AdminController extends Controller
     //按月获取考勤汇总
     public function getMonthAttendanceSummary(Request $request)
     {
+        $rule = [
+            'page' => 'integer',
+            'item' => 'integer',
+            'month' => 'date_format:Y-m'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $year = $request->month ? Date::parse($request->month)->format('Y') : Date::now()->format('Y');
+        $month = $request->month ? Date::parse($request->month)->format('m') : Date::now()->format('m');
+        $search = $request->search ? array(['admininfo.name', 'like', '%' . $request->search . '%']) : array();
+        $rs = AdminSignStatistic::select('admininfo.name  as realname',
+            DB::raw($this->_getAttendanceDay($request->month)[0] . ' as attendance_day,' .
+                $this->_getAttendanceDay($request->month)[1] . ' as attendance_time,' .
+                'sum(case when jx_admin_sign_statistic.sign_in_status = 2 then 1 else 0 end) as sign_in_sum,' .
+                'sum(case when jx_admin_sign_statistic.sign_out_status = 2 then 1 else 0 end) as sign_out_sum,' .
+                'sum(case when ((jx_admin_sign_statistic.sign_in_status = 1) or (jx_admin_sign_statistic.sign_in_time != "")) and ((jx_admin_sign_statistic.sign_out_status = 1) or (jx_admin_sign_statistic.sign_out_time != "")) then 1 else 0 end) as tmp1_sign_day_sum'
+            ))
+            ->where($search)
+            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admin_sign_statistic.admin_id')
+            ->whereYear('admin_sign_statistic.sign_date', $year)
+            ->whereMonth('admin_sign_statistic.sign_date', $month)
+            ->groupBy('admininfo.name')
+            ->paginate(10);
+        return $rs;
+        //$this->resp(0, $rs);
+    }
 
+    //获取当月出勤天数和时长
+    private function _getAttendanceDay($date)
+    {
+        $rs = Array();
+        $month_day = date('t', strtotime($date));
+        $year = Date::parse($date)->format('Y');
+        $month = Date::parse($date)->format('m');
+        $set_day = DateSet::whereYear('set_date', $year)
+            ->whereMonth('set_date', $month)
+            ->count();
+        $all_day = $month_day - $set_day;
+        $rs[] = $all_day;
+        $sign_time = TimeSet::where('set_month', $month)->first();
+        $tmp = Date::parse($sign_time->set_end_time)->timespan($sign_time->set_start_time);
+        $tmp = preg_replace('/[小时|分钟]/i', '', $tmp);
+        $tmp = explode(',', $tmp);
+        if (count($tmp) == 2) {
+            $rs[] = round($all_day * ($tmp[0] + ($tmp[1] / 60)), 1);
+        } else {
+            $rs[] = $all_day * ($tmp[0]);
+        }
+        return $rs;
+    }
+
+    //按月获取考勤汇总导出EXCEL
+    public function importMonthAttendanceSummary(Request $request)
+    {
+        return $this->getTimeSub('10:12', '15:12');
     }
 
 }

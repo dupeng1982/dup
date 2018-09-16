@@ -10,8 +10,12 @@ use App\Models\AdminRole;
 use App\Models\AdminSign;
 use App\Models\AdminSignApply;
 use App\Models\AdminSignStatistic;
+use App\Models\AdminSignSummary;
+use App\Models\AdminSignSummaryStatistic;
 use App\Models\DateSet;
 use App\Models\TimeSet;
+use App\Models\User;
+use App\Sdk\ArrayGroupBy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Validator, DB, Date, Excel;
@@ -82,42 +86,24 @@ class AdminController extends Controller
         if ($now_time >= $set_end_time) {
             $sign_status = 1;
             $sign_status_tmp = 0;
-            $date_other_time = $this->getTimeSub($set_end_time, $now_time_tmp);
         } else {
             $sign_status = 0;
             $sign_status_tmp = 2;
-            $date_other_time = 0;
-        }
-        $date_attendance_time = 0;
-        $sign_in_time = AdminSign::where('admin_id', $admin_id)
-            ->whereDate('sign_time', $now_date)
-            ->where('sign_type', 1)->first();
-        if ($sign_in_time && $sign_in_time->sign_time && $sign_in_time->sign_time < $now) {
-            $date_attendance_time = $this->getTimeSub(Date::parse($sign_in_time->sign_time)->format('H:i'),
-                $now_time_tmp);
         }
         $sign_id = $this->_adminSignCheck($admin_id, $now_date, 2);
         if ($sign_id) {
-            return DB::transaction(function () use (
-                $admin_id, $now_date, $sign_id, $sign_status, $sign_status_tmp,
-                $now, $date_attendance_time, $date_other_time
-            ) {
+            return DB::transaction(function () use ($admin_id, $now_date, $sign_id, $sign_status, $sign_status_tmp, $now) {
                 AdminSign::where('id', $sign_id)->update(['sign_time' => $now, 'sign_status' => $sign_status]);
                 AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
-                    ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp,
-                        'date_attendance_time' => $date_attendance_time, 'date_other_time' => $date_other_time]);
+                    ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp]);
                 return $this->resp(0, '签退成功');
             });
         }
-        return DB::transaction(function () use (
-            $admin_id, $sign_id, $sign_status, $sign_status_tmp, $now_date, $now,
-            $date_attendance_time, $date_other_time
-        ) {
+        return DB::transaction(function () use ($admin_id, $sign_id, $sign_status, $sign_status_tmp, $now_date, $now) {
             AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 2,
                 'sign_status' => $sign_status]);
             AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
-                ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp,
-                    'date_attendance_time' => $date_attendance_time, 'date_other_time' => $date_other_time]);
+                ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp]);
             return $this->resp(0, '签退成功');
         });
     }
@@ -1041,7 +1027,7 @@ class AdminController extends Controller
                 $sign_in_time = Date::parse($v->sign_in_time)->format('H:i:s');
                 //补签到状态：0-未补签，1-已补签，2-迟到
                 if ($v->sign_in_status == 1) {
-                    $sign_in_time_show = '已补签';
+                    $sign_in_time_show = $v->sign_in_time_format;
                 } elseif ($v->sign_in_status == 2) {
                     $sign_in_time_show = $sign_in_time . '(迟到)';
                 } else {
@@ -1049,7 +1035,7 @@ class AdminController extends Controller
                 }
             } else {
                 if ($v->sign_in_status == 1) {
-                    $sign_in_time_show = '已补签';
+                    $sign_in_time_show = $v->sign_in_time_format;
                 } else {
                     $sign_in_time_show = '未签到';
                 }
@@ -1058,7 +1044,7 @@ class AdminController extends Controller
                 $sign_in_time = Date::parse($v->sign_out_time)->format('H:i:s');
                 //补签到状态：0-未补签，1-已补签，2-早退
                 if ($v->sign_out_status == 1) {
-                    $sign_out_time_show = '已补签';
+                    $sign_out_time_show = $v->sign_out_time_format;
                 } elseif ($v->sign_out_status == 2) {
                     $sign_out_time_show = $sign_in_time . '(早退)';
                 } else {
@@ -1066,7 +1052,7 @@ class AdminController extends Controller
                 }
             } else {
                 if ($v->sign_out_status == 1) {
-                    $sign_out_time_show = '已补签';
+                    $sign_out_time_show = $v->sign_out_time_format;
                 } else {
                     $sign_out_time_show = '未签退';
                 }
@@ -1100,24 +1086,23 @@ class AdminController extends Controller
         $year = $request->month ? Date::parse($request->month)->format('Y') : Date::now()->format('Y');
         $month = $request->month ? Date::parse($request->month)->format('m') : Date::now()->format('m');
         $search = $request->search ? array(['admininfo.name', 'like', '%' . $request->search . '%']) : array();
-        $rs = AdminSignStatistic::select('admininfo.name  as realname',
-            DB::raw($this->_getAttendanceDay($request->month)[0] . ' as attendance_day,' .
-                $this->_getAttendanceDay($request->month)[1] . ' as attendance_time,' .
-                'sum(case when jx_admin_sign_statistic.sign_in_status = 2 then 1 else 0 end) as sign_in_sum,' .
-                'sum(case when jx_admin_sign_statistic.sign_out_status = 2 then 1 else 0 end) as sign_out_sum,' .
-                'sum(case when ((jx_admin_sign_statistic.sign_in_status = 1) or (jx_admin_sign_statistic.sign_in_time != "")) and ((jx_admin_sign_statistic.sign_out_status = 1) or (jx_admin_sign_statistic.sign_out_time != "")) then 1 else 0 end) as tmp1_sign_day_sum'
+        $getAttendanceDay = $this->_getAttendanceDay($request->month);
+        $rs = AdminSignSummary::select('admininfo.admin_id', 'admininfo.name  as realname',
+            DB::raw($getAttendanceDay[0] . ' as attendance_day,' . $getAttendanceDay[1] . ' as attendance_time,' .
+                'sum(case when jx_admin_sign_statistic.sign_in_status = 2 then 1 else 0 end) as late_sum,' .
+                'sum(case when jx_admin_sign_statistic.sign_out_status = 2 then 1 else 0 end) as left_early_sum,' .
+                'sum(case when (((jx_admin_sign_statistic.sign_in_status = 1) or (jx_admin_sign_statistic.sign_in_time != "")) and ((jx_admin_sign_statistic.sign_out_status = 1) or (jx_admin_sign_statistic.sign_out_time != ""))) or (((jx_admin_sign_statistic.leave_type = 4) or (jx_admin_sign_statistic.leave_type = 5)) and (jx_admin_sign_statistic.leave_time_type = 1)) then 1 else 0 end) as sign_day_sum'
             ))
             ->where($search)
             ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admin_sign_statistic.admin_id')
             ->whereYear('admin_sign_statistic.sign_date', $year)
             ->whereMonth('admin_sign_statistic.sign_date', $month)
             ->groupBy('admininfo.name')
-            ->paginate(10);
-        return $rs;
-        //$this->resp(0, $rs);
+            ->get();
+        return $this->resp(0, $rs);
     }
 
-    //获取当月出勤天数和时长
+    //获取当月应出勤天数和时长
     private function _getAttendanceDay($date)
     {
         $rs = Array();
@@ -1144,7 +1129,41 @@ class AdminController extends Controller
     //按月获取考勤汇总导出EXCEL
     public function importMonthAttendanceSummary(Request $request)
     {
-        return $this->getTimeSub('10:12', '15:12');
+
+        $records = [
+            ['order_date' => '2014-01-01', 'price' => 5, 'aaa'=>123],
+            ['order_date' => '2014-01-02', 'price' => 10, 'aaa'=>123],
+            ['order_date' => '2014-01-03', 'price' => 20, 'aaa'=>123],
+            ['order_date' => '2015-01-04', 'price' => 25, 'aaa'=>456],
+        ];
+
+        $group_by_fields = [
+            'order_date' => function($value){
+                return date('Y', strtotime($value));
+            }
+        ];
+
+        $group_by_value = [
+            'order_date' => [
+                'callback' => function($value_array){
+                    return substr($value_array[0]['order_date'], 0, 4);
+                },
+                'as' => 'year'
+            ],
+            'price' => function($data){
+                return array_sum(array_column($data, 'price'));
+            },
+
+            'aaa' => [
+                'callback' => function($value_array){
+                    return 1;
+                }
+            ],
+        ];
+
+        $grouped = ArrayGroupBy::groupBy($records, $group_by_fields, $group_by_value);
+        //print_r($grouped);
+        return AdminSignSummary::get();
     }
 
 }

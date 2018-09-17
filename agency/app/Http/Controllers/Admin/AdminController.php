@@ -81,7 +81,6 @@ class AdminController extends Controller
         $now_date = $now->format('Y-m-d');
         $now_month = $now->format('m');
         $now_time = $now->format('H:i:s');
-        $now_time_tmp = $now->format('H:i');
         $set_end_time = TimeSet::where('set_month', $now_month)->pluck('set_end_time')->first();
         if ($now_time >= $set_end_time) {
             $sign_status = 1;
@@ -1086,20 +1085,55 @@ class AdminController extends Controller
         $year = $request->month ? Date::parse($request->month)->format('Y') : Date::now()->format('Y');
         $month = $request->month ? Date::parse($request->month)->format('m') : Date::now()->format('m');
         $search = $request->search ? array(['admininfo.name', 'like', '%' . $request->search . '%']) : array();
-        $getAttendanceDay = $this->_getAttendanceDay($request->month);
-        $rs = AdminSignSummary::select('admininfo.admin_id', 'admininfo.name  as realname',
-            DB::raw($getAttendanceDay[0] . ' as attendance_day,' . $getAttendanceDay[1] . ' as attendance_time,' .
-                'sum(case when jx_admin_sign_statistic.sign_in_status = 2 then 1 else 0 end) as late_sum,' .
-                'sum(case when jx_admin_sign_statistic.sign_out_status = 2 then 1 else 0 end) as left_early_sum,' .
-                'sum(case when (((jx_admin_sign_statistic.sign_in_status = 1) or (jx_admin_sign_statistic.sign_in_time != "")) and ((jx_admin_sign_statistic.sign_out_status = 1) or (jx_admin_sign_statistic.sign_out_time != ""))) or (((jx_admin_sign_statistic.leave_type = 4) or (jx_admin_sign_statistic.leave_type = 5)) and (jx_admin_sign_statistic.leave_time_type = 1)) then 1 else 0 end) as sign_day_sum'
-            ))
+        $rs = AdminSignSummary::select('admininfo.admin_id', 'admininfo.name  as realname', 'admin_sign_statistic.*')
             ->where($search)
             ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admin_sign_statistic.admin_id')
             ->whereYear('admin_sign_statistic.sign_date', $year)
             ->whereMonth('admin_sign_statistic.sign_date', $month)
-            ->groupBy('admininfo.name')
             ->get();
-        return $this->resp(0, $rs);
+        $group_by_fields = [
+            'admin_id' => function ($value) {
+                return $value;
+            }
+        ];
+        $getAttendanceDay = $this->_getAttendanceDay($request->month);
+        $group_by_value = [
+            'admin_id' => function ($data) {
+                return array_column($data, 'admin_id')[0];
+            },
+            'realname' => function ($data) {
+                return array_column($data, 'realname')[0];
+            },
+            'attendance_day' => function ($data) use ($getAttendanceDay) {
+                return $getAttendanceDay[0];
+            },
+            'attendance_time' => function ($data) use ($getAttendanceDay) {
+                return $getAttendanceDay[1];
+            },
+            'sign_day_sum' => function ($data) {
+                return array_sum(array_column($data, 'sign_day_sum'));
+            },
+            'date_attendance_time' => function ($data) {
+                return array_sum(array_column($data, 'date_attendance_time'));
+            },
+            'date_other_time' => function ($data) {
+                return array_sum(array_column($data, 'date_other_time'));
+            },
+            'late_num' => function ($data) {
+                return array_sum(array_column($data, 'late_num'));
+            },
+            'left_early_num' => function ($data) {
+                return array_sum(array_column($data, 'left_early_num'));
+            },
+            'date_leave_day' => function ($data) {
+                return array_sum(array_column($data, 'date_leave_day'));
+            },
+            'date_leave_time' => function ($data) {
+                return array_sum(array_column($data, 'date_leave_time'));
+            }
+        ];
+        $grouped = ArrayGroupBy::groupBy($rs->toArray(), $group_by_fields, $group_by_value);
+        return $this->resp(0, $grouped);
     }
 
     //获取当月应出勤天数和时长
@@ -1131,31 +1165,31 @@ class AdminController extends Controller
     {
 
         $records = [
-            ['order_date' => '2014-01-01', 'price' => 5, 'aaa'=>123],
-            ['order_date' => '2014-01-02', 'price' => 10, 'aaa'=>123],
-            ['order_date' => '2014-01-03', 'price' => 20, 'aaa'=>123],
-            ['order_date' => '2015-01-04', 'price' => 25, 'aaa'=>456],
+            ['order_date' => '2014-01-01', 'price' => 5, 'aaa' => 123],
+            ['order_date' => '2014-01-02', 'price' => 10, 'aaa' => 123],
+            ['order_date' => '2014-01-03', 'price' => 20, 'aaa' => 123],
+            ['order_date' => '2015-01-04', 'price' => 25, 'aaa' => 456],
         ];
 
         $group_by_fields = [
-            'order_date' => function($value){
+            'order_date' => function ($value) {
                 return date('Y', strtotime($value));
             }
         ];
 
         $group_by_value = [
             'order_date' => [
-                'callback' => function($value_array){
+                'callback' => function ($value_array) {
                     return substr($value_array[0]['order_date'], 0, 4);
                 },
                 'as' => 'year'
             ],
-            'price' => function($data){
+            'price' => function ($data) {
                 return array_sum(array_column($data, 'price'));
             },
 
             'aaa' => [
-                'callback' => function($value_array){
+                'callback' => function ($value_array) {
                     return 1;
                 }
             ],

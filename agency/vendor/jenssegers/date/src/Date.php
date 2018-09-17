@@ -224,10 +224,10 @@ class Date extends Carbon
         ];
 
         // Get DateInterval and cast to array
-        $interval = (array) $this->diff($time);
+        $interval = (array)$this->diff($time);
 
         // Get weeks
-        $interval['w'] = (int) ($interval['d'] / 7);
+        $interval['w'] = (int)($interval['d'] / 7);
         $interval['d'] = $interval['d'] % 7;
 
         // Get ready to build
@@ -239,8 +239,21 @@ class Date extends Carbon
                 $str[] = $lang->transChoice($unit, $interval[$k], [':count' => $interval[$k]]);
             }
         }
-
+        dd($str);
         return implode(', ', $str);
+    }
+
+    public function timespanm($time = null, $timezone = null)
+    {
+        // Create Date instance if needed
+        if (!$time instanceof static) {
+            $time = Date::parse($time, $timezone);
+        }
+
+        // Get DateInterval and cast to array
+        $interval = (array)$this->diff($time);
+
+        return ($interval['h'] * 60) + $interval['i'];
     }
 
     /**
@@ -307,7 +320,7 @@ class Date extends Carbon
         $found = false;
 
         foreach ($files as $file) {
-            $resource = __DIR__.'/Lang/'.$file.'.php';
+            $resource = __DIR__ . '/Lang/' . $file . '.php';
 
             if (file_exists($resource)) {
                 $found = true;
@@ -409,7 +422,7 @@ class Date extends Carbon
 
         // Get all the language lines of the current locale.
         $all = static::getTranslator()->getCatalogue()->all();
-        $terms = array_intersect_key($all['messages'], array_flip((array) $keys));
+        $terms = array_intersect_key($all['messages'], array_flip((array)$keys));
 
         // Split terms with a | sign.
         foreach ($terms as $i => $term) {

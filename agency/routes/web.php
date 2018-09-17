@@ -71,7 +71,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->get('signandleavesummary', 'AdminController@SignAndLeaveSummary');
     $router->post('getMonthAttendanceSummary', 'AdminController@getMonthAttendanceSummary');
 
-    $router->any('test', 'AdminController@importMonthAttendanceSummary');
+    $router->any('test', 'AdminController@adminSignOut');
 });
 
 

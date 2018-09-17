@@ -15,10 +15,66 @@ class AdminSignSummary extends Model
 {
     protected $table = 'admin_sign_statistic';
     public $timestamps = false;
-    protected $fillable = ['admin_id', 'sign_date', 'sign_in_time', 'sign_in_status', 'sign_out_time',
-        'sign_out_status', 'leave_type', 'leave_start_time', 'leave_end_time', 'leave_time', 'leave_time_type'];
+    protected $fillable = ['admin_id', 'sign_date', 'sign_in_time', 'sign_out_time',
+        'leave_type', 'leave_start_time', 'leave_end_time', 'leave_time', 'leave_time_type'];
     protected $appends = ['late_num', 'left_early_num', 'sign_day_sum', 'date_attendance_time',
-        'date_other_time', 'date_leave_time', 'date_leave_day'];
+        'date_other_time', 'date_leave_time', 'date_leave_day', 'sign_out_status', 'sign_in_status'];
+
+    public function getSignInStatusAttribute()
+    {
+        $date = $this->sign_date;
+        $month = Date::parse($date)->format('m');
+        $date_set = DateSet::find($date);
+        if ($date_set) {
+            return 0;
+        } else {
+            $admin_sign_apply = AdminSignApply::where([['admin_id', $this->admin_id], ['sign_apply_date', $date],
+                ['sign_apply_type', 1], ['sign_apply_status', 1]])->first();
+            if ($admin_sign_apply) {
+                return 1;
+            }else{
+                if ($this->sign_in_time) {
+                    $time_set = TimeSet::find($month);
+                    $sign_time = Date::parse($this->sign_in_time)->format('H:i');
+                    if ($sign_time <= $time_set['set_start_time']) {
+                        return 0;
+                    } else {
+                        return 2;
+                    }
+                } else {
+                    return 0;
+                }
+            }
+        }
+    }
+
+    public function getSignOutStatusAttribute()
+    {
+        $date = $this->sign_date;
+        $month = Date::parse($date)->format('m');
+        $date_set = DateSet::find($date);
+        if ($date_set) {
+            return 0;
+        } else {
+            $admin_sign_apply = AdminSignApply::where([['admin_id', $this->admin_id], ['sign_apply_date', $date],
+                ['sign_apply_type', 2], ['sign_apply_status', 1]])->first();
+            if ($admin_sign_apply) {
+                return 1;
+            }else{
+                if ($this->sign_out_time) {
+                    $time_set = TimeSet::find($month);
+                    $sign_time = Date::parse($this->sign_out_time)->format('H:i');
+                    if ($sign_time >= $time_set['set_start_time']) {
+                        return 0;
+                    } else {
+                        return 2;
+                    }
+                } else {
+                    return 0;
+                }
+            }
+        }
+    }
 
     //获取迟到次数
     public function getLateNumAttribute()

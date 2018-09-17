@@ -22,11 +22,6 @@ use Validator, DB, Date, Excel;
 
 class AdminController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('auth.admin:admin');
@@ -35,12 +30,6 @@ class AdminController extends Controller
     //公用页面
     public function index()
     {
-//        $user = Auth::guard('admin')->user();
-//        if ($user->hasRole('admin123')) {
-//            dd(123);
-//        } else {
-//            dd(456);
-//        }
         return view('admin/index');
     }
 
@@ -50,25 +39,31 @@ class AdminController extends Controller
         $admin_id = Auth::guard('admin')->user()->id;
         $now = Date::now();
         $now_date = $now->format('Y-m-d');
-        $now_month = $now->format('m');
-        $now_time = $now->format('H:i:s');
+//        $now_month = $now->format('m');
+//        $now_time = $now->format('H:i:s');
         if ($this->_adminSignCheck($admin_id, $now_date, 1)) {
             return $this->resp(10000, '您已签到');
         }
-        $set_start_time = TimeSet::where('set_month', $now_month)->pluck('set_start_time')->first();
-        if ($now_time <= $set_start_time) {
-            return DB::transaction(function () use ($admin_id, $now_date, $now) {
-                AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 1]);
-                AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
-                    ['sign_in_time' => $now, 'sign_in_status' => 0]);
-                return $this->resp(0, '签到成功');
-            });
-        }
+//        $set_start_time = TimeSet::where('set_month', $now_month)->pluck('set_start_time')->first();
+//        if ($now_time <= $set_start_time) {
+//            return DB::transaction(function () use ($admin_id, $now_date, $now) {
+//                AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 1]);
+//                AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
+//                    ['sign_in_time' => $now, 'sign_in_status' => 0]);
+//                return $this->resp(0, '签到成功');
+//            });
+//        }
+//        return DB::transaction(function () use ($admin_id, $now_date, $now) {
+//            AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 1,
+//                'sign_status' => 0]);
+//            AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
+//                ['sign_in_time' => $now, 'sign_in_status' => 2]);
+//            return $this->resp(0, '签到成功');
+//        });
         return DB::transaction(function () use ($admin_id, $now_date, $now) {
-            AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 1,
-                'sign_status' => 0]);
+            AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 1]);
             AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
-                ['sign_in_time' => $now, 'sign_in_status' => 2]);
+                ['sign_in_time' => $now]);
             return $this->resp(0, '签到成功');
         });
     }
@@ -79,30 +74,45 @@ class AdminController extends Controller
         $admin_id = Auth::guard('admin')->user()->id;
         $now = Date::now();
         $now_date = $now->format('Y-m-d');
-        $now_month = $now->format('m');
-        $now_time = $now->format('H:i:s');
-        $set_end_time = TimeSet::where('set_month', $now_month)->pluck('set_end_time')->first();
-        if ($now_time >= $set_end_time) {
-            $sign_status = 1;
-            $sign_status_tmp = 0;
-        } else {
-            $sign_status = 0;
-            $sign_status_tmp = 2;
-        }
+//        $now_month = $now->format('m');
+//        $now_time = $now->format('H:i:s');
+//        $set_end_time = TimeSet::where('set_month', $now_month)->pluck('set_end_time')->first();
+//        if ($now_time >= $set_end_time) {
+//            $sign_status = 1;
+//            $sign_status_tmp = 0;
+//        } else {
+//            $sign_status = 0;
+//            $sign_status_tmp = 2;
+//        }
+//        $sign_id = $this->_adminSignCheck($admin_id, $now_date, 2);
+//        if ($sign_id) {
+//            return DB::transaction(function () use ($admin_id, $now_date, $sign_id, $sign_status, $sign_status_tmp, $now) {
+//                AdminSign::where('id', $sign_id)->update(['sign_time' => $now, 'sign_status' => $sign_status]);
+//                AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
+//                    ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp]);
+//                return $this->resp(0, '签退成功');
+//            });
+//        }
+//        return DB::transaction(function () use ($admin_id, $sign_id, $sign_status, $sign_status_tmp, $now_date, $now) {
+//            AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 2,
+//                'sign_status' => $sign_status]);
+//            AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
+//                ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp]);
+//            return $this->resp(0, '签退成功');
+//        });
         $sign_id = $this->_adminSignCheck($admin_id, $now_date, 2);
         if ($sign_id) {
-            return DB::transaction(function () use ($admin_id, $now_date, $sign_id, $sign_status, $sign_status_tmp, $now) {
-                AdminSign::where('id', $sign_id)->update(['sign_time' => $now, 'sign_status' => $sign_status]);
+            return DB::transaction(function () use ($admin_id, $now_date, $sign_id, $now) {
+                AdminSign::where('id', $sign_id)->update(['sign_time' => $now]);
                 AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
-                    ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp]);
+                    ['sign_out_time' => $now]);
                 return $this->resp(0, '签退成功');
             });
         }
-        return DB::transaction(function () use ($admin_id, $sign_id, $sign_status, $sign_status_tmp, $now_date, $now) {
-            AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 2,
-                'sign_status' => $sign_status]);
+        return DB::transaction(function () use ($admin_id, $sign_id, $now_date, $now) {
+            AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 2]);
             AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
-                ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp]);
+                ['sign_out_time' => $now]);
             return $this->resp(0, '签退成功');
         });
     }
@@ -126,7 +136,7 @@ class AdminController extends Controller
         return view('admin/mysign');
     }
 
-    //请假
+    //申请请假
     public function adminAskForLeave(Request $request)
     {
         $rule = [
@@ -172,7 +182,7 @@ class AdminController extends Controller
         return $this->resp(0, '提交成功');
     }
 
-    //补签
+    //申请补签
     public function adminSignApply(Request $request)
     {
         $rule = [
@@ -755,13 +765,14 @@ class AdminController extends Controller
                 if ($request->sign_apply_status == 1) {
                     $user_id = $sign_apply->admin_id;
                     $now_date = $sign_apply->sign_apply_date;
-                    if ($sign_apply->sign_apply_type == 1) {
-                        AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
-                            ['sign_in_status' => 1]);
-                    } elseif ($sign_apply->sign_apply_type == 2) {
-                        AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
-                            ['sign_out_status' => 1]);
-                    }
+//                    if ($sign_apply->sign_apply_type == 1) {
+//                        AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
+//                            ['sign_in_status' => 1]);
+//                    } elseif ($sign_apply->sign_apply_type == 2) {
+//                        AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
+//                            ['sign_out_status' => 1]);
+//                    }
+                    AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date]);
                 }
                 return $this->resp(0, '操作成功');
             }
@@ -793,13 +804,14 @@ class AdminController extends Controller
                     if ($request->sign_apply_status == 1) {
                         $user_id = $v->admin_id;
                         $now_date = $v->sign_apply_date;
-                        if ($v->sign_apply_type == 1) {
-                            AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
-                                ['sign_in_status' => 1]);
-                        } elseif ($v->sign_apply_type == 2) {
-                            AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
-                                ['sign_out_status' => 1]);
-                        }
+//                        if ($v->sign_apply_type == 1) {
+//                            AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
+//                                ['sign_in_status' => 1]);
+//                        } elseif ($v->sign_apply_type == 2) {
+//                            AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
+//                                ['sign_out_status' => 1]);
+//                        }
+                        AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date]);
                     }
                 }
                 return $this->resp(0, '操作成功');
@@ -1149,14 +1161,8 @@ class AdminController extends Controller
         $all_day = $month_day - $set_day;
         $rs[] = $all_day;
         $sign_time = TimeSet::where('set_month', $month)->first();
-        $tmp = Date::parse($sign_time->set_end_time)->timespan($sign_time->set_start_time);
-        $tmp = preg_replace('/[小时|分钟]/i', '', $tmp);
-        $tmp = explode(',', $tmp);
-        if (count($tmp) == 2) {
-            $rs[] = round($all_day * ($tmp[0] + ($tmp[1] / 60)), 1);
-        } else {
-            $rs[] = $all_day * ($tmp[0]);
-        }
+        $tmp = Date::parse($sign_time->set_end_time)->timespanm($sign_time->set_start_time);
+        $rs[] = round($all_day * $tmp / 60, 1);
         return $rs;
     }
 

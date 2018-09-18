@@ -32,7 +32,7 @@
             <div class="card">
                 <div class="card-body">
                     <table class="table table-bordered table-hover toggle-circle"
-                           data-page-size="7" id="attendance-statistic-table">
+                           data-page-size="7" id="attendance-summary-table">
                         <div class="m-t-40">
                             <div class="d-flex">
                                 <h4 class="card-title">考勤汇总列表</h4>
@@ -41,10 +41,10 @@
                                         <input id="demo-input-search2" type="text" class="datetimeStart"
                                                value="{{ Date::now()->format('Y-m') }}" autocomplete="off">
                                         <input id="demo-input-search2" type="text" placeholder="Search"
-                                               class="attendance-statistic-search" autocomplete="off">
-                                        <span><button id="attendance-statistic-search"
+                                               class="attendance-summary-search" autocomplete="off">
+                                        <span><button id="attendance-summary-search"
                                                       class="btn btn-info btn-search">查找</button></span>
-                                        <span><button id="import-attendance-statistic" class="btn btn-info btn-search"
+                                        <span><button id="import-attendance-summary" class="btn btn-info btn-search"
                                                       onclick="event.preventDefault();
                                                       document.getElementById('import-excel-form').submit();">
                                                 导出EXCEL</button></span>
@@ -57,7 +57,7 @@
             </div>
         </div>
     </div>
-    <form id="import-excel-form" action="importMonthAttendanceStatistics" method="GET"
+    <form id="import-excel-form" action="importMonthAttendanceSummary" method="GET"
           style="display: none;">
         @csrf
         <input type="text" value="" name="month" id="req-month">
@@ -72,8 +72,8 @@
     <script src="{{ asset('admin/assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
     <script>
         $(function () {
-            $('#attendance-statistic-table').bootstrapTable({
-                url: 'getMonthAttendanceStatistics',
+            $('#attendance-summary-table').bootstrapTable({
+                url: 'getMonthAttendanceSummary',
                 ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
                 cache: false,
                 method: 'POST',
@@ -82,71 +82,78 @@
                 pageNumber: 1,
                 pagination: true,
                 queryParams: queryParams,
-                sidePagination: 'server',
-                pageSize: 10,//单页记录数
-                pageList: [10, 15, 20],
+                sidePagination: 'client',
+                pageSize: 10,
                 responseHandler: responseHandler,
                 columns: [{
                     field: 'SerialNumber',
                     title: '序号',
                     formatter: function (value, row, index) {
-                        var pageSize = $('#attendance-statistic-table').bootstrapTable('getOptions').pageSize;//通过表的#id 可以得到每页多少条
-                        var pageNumber = $('#attendance-statistic-table').bootstrapTable('getOptions').pageNumber;//通过表的#id 可以得到当前第几页
-                        return pageSize * (pageNumber - 1) + index + 1;
+                        return index + 1;
                     }
                 }, {
                     field: 'realname',
                     title: '姓名'
                 }, {
-                    field: 'sign_date',
-                    title: '日期'
+                    field: 'attendance_day',
+                    title: '应出勤(天)'
                 }, {
-                    field: 'sign_in_time_format',
-                    title: '签到时间'
+                    field: 'attendance_time',
+                    title: '应出勤(时)'
                 }, {
-                    field: 'sign_out_time_format',
-                    title: '签退时间'
+                    field: 'sign_day_sum',
+                    title: '实出勤(天)'
                 }, {
-                    field: 'leave_type_name',
-                    title: '请假情况'
+                    field: 'date_attendance_time',
+                    title: '实出勤(时)'
                 }, {
-                    field: 'leave_time',
-                    title: '请假时间'
+                    field: 'date_other_time',
+                    title: '加班(时)'
+                }, {
+                    field: 'late_num',
+                    title: '迟到(次)'
+                }, {
+                    field: 'left_early_num',
+                    title: '早退(次)'
+                }, {
+                    field: 'date_leave_day',
+                    title: '请假(天)'
+                }, {
+                    field: 'date_leave_time',
+                    title: '请假(时)'
                 }],
                 onPostBody: onPostBody
             });
             function queryParams(params) {
                 return {
-                    page: (params.offset / params.limit) + 1,
-                    item: params.limit,
-                    search: $('.attendance-statistic-search').val(),
+                    search: $('.attendance-summary-search').val(),
                     month: $('.datetimeStart').val()
                 }
             }
 
             function responseHandler(result) {
-                var errcode = result.code;//在此做了错误代码的判断
+                var errcode = result.code;
                 if (errcode) {
                     return;
                 }
                 return {
-                    total: result.data.total,
-                    data: result.data.data
+                    total: result.data.length,
+                    data: result.data
                 };
             }
 
             function refresh() {
-                $('#attendance-statistic-table').bootstrapTable('refresh', {url: 'getMonthAttendanceStatistics'});
+                $('#attendance-summary-table').bootstrapTable('refresh', {url: 'getMonthAttendanceSummary'});
             }
 
             function onPostBody(res) {
                 $("[data-toggle='tooltip']").tooltip();
             }
 
-            $('#attendance-statistic-search').click(function () {
+            $('#attendance-summary-search').click(function () {
                 refresh();
                 $('#req-month').val($('.datetimeStart').val());
-                $('#req-search').val($('.attendance-statistic-search').val());
+                $('#req-search').val($('.attendance-summary-search').val());
             });
 
             $('.datetimeStart').bootstrapMaterialDatePicker({format: 'YYYY-MM', day: false, time: false});
@@ -154,10 +161,10 @@
             $('.dtp-btn-ok').click(function () {
                 refresh();
                 $('#req-month').val($('.datetimeStart').val());
-                $('#req-search').val($('.attendance-statistic-search').val());
+                $('#req-search').val($('.attendance-summary-search').val());
             });
             $('#req-month').val($('.datetimeStart').val());
-            $('#req-search').val($('.attendance-statistic-search').val());
+            $('#req-search').val($('.attendance-summary-search').val());
         });
     </script>
 @endsection

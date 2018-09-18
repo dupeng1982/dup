@@ -18,7 +18,7 @@ class AdminSignStatistic extends Model
     protected $fillable = ['admin_id', 'sign_date', 'sign_in_time', 'sign_out_time', 'leave_type', 'leave_start_time',
         'leave_end_time', 'leave_time', 'leave_time_type'];
     protected $appends = ['leave_type_name', 'sign_in_time_format', 'sign_out_time_format',
-        'sign_in_status', 'sign_out_status'];
+        'sign_in_status', 'sign_out_status', 'date_format'];
 
     public function getSignInStatusAttribute()
     {
@@ -32,7 +32,7 @@ class AdminSignStatistic extends Model
                 ['sign_apply_type', 1], ['sign_apply_status', 1]])->first();
             if ($admin_sign_apply) {
                 return 1;
-            }else{
+            } else {
                 if ($this->sign_in_time) {
                     $time_set = TimeSet::find($month);
                     $sign_time = Date::parse($this->sign_in_time)->format('H:i');
@@ -60,7 +60,7 @@ class AdminSignStatistic extends Model
                 ['sign_apply_type', 2], ['sign_apply_status', 1]])->first();
             if ($admin_sign_apply) {
                 return 1;
-            }else{
+            } else {
                 if ($this->sign_out_time) {
                     $time_set = TimeSet::find($month);
                     $sign_time = Date::parse($this->sign_out_time)->format('H:i');
@@ -158,5 +158,45 @@ class AdminSignStatistic extends Model
                 return '<span style="color:#c12e2a;">未签退</span>';
             }
         }
+    }
+
+    public function getDateFormatAttribute()
+    {
+        $date = $this->sign_date;
+        $date_set = DateSet::find($date);
+        $x = null;
+        if ($date_set) {
+            $x = '休';
+        } else {
+            $x = '班';
+        }
+        $n = Date::parse('2018-09-10')->format('N');
+        $m = null;
+        switch ($n) {
+            case 1:
+                $m = '星期一(' . $x . ')';
+                break;
+            case 2:
+                $m = '星期二(' . $x . ')';
+                break;
+            case 3:
+                $m = '星期三(' . $x . ')';
+                break;
+            case 4:
+                $m = '星期四(' . $x . ')';
+                break;
+            case 5:
+                $m = '星期五(' . $x . ')';
+                break;
+            case 6:
+                $m = '星期六(' . $x . ')';
+                break;
+            case 7:
+                $m = '星期日(' . $x . ')';
+                break;
+            default:
+                $m = null;
+        }
+        return $m;
     }
 }

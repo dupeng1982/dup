@@ -70,8 +70,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
 
     $router->get('signandleavesummary', 'AdminController@SignAndLeaveSummary');
     $router->post('getMonthAttendanceSummary', 'AdminController@getMonthAttendanceSummary');
+    $router->any('importMonthAttendanceSummary', 'AdminController@importMonthAttendanceSummary');
 
-    $router->any('test', 'AdminController@getMonthAttendanceStatistics');
+    $router->any('test', 'AdminController@getMonthAttendanceSummary');
 });
 
 

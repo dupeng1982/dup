@@ -13,6 +13,7 @@ use App\Models\AdminSignStatistic;
 use App\Models\AdminSignSummary;
 use App\Models\AdminSignSummaryStatistic;
 use App\Models\DateSet;
+use App\Models\ParkNew;
 use App\Models\TimeSet;
 use App\Models\User;
 use App\Sdk\ArrayGroupBy;
@@ -1068,11 +1069,11 @@ class AdminController extends Controller
                     $sign_out_time_show = '未签退';
                 }
             }
-            $cellData[] = array($id, $v->realname, $v->sign_date, $sign_in_time_show, $sign_out_time_show,
+            $cellData[] = array($id, $v->realname, $v->sign_date, $v->date_format, $sign_in_time_show, $sign_out_time_show,
                 $v->leave_type_name, $v->leave_time);
             $id = $id + 1;
         }
-        $cellHarder = ['序号', '姓名', '日期', '签到时间', '签退时间', '请假情况', '请假时间'];
+        $cellHarder = ['序号', '姓名', '日期', '星期', '签到时间', '签退时间', '请假情况', '请假时间'];
         return new ExportController(collect($cellData), '月考勤统计表.xls', $cellHarder);
     }
 
@@ -1086,8 +1087,6 @@ class AdminController extends Controller
     public function getMonthAttendanceSummary(Request $request)
     {
         $rule = [
-            'page' => 'integer',
-            'item' => 'integer',
             'month' => 'date_format:Y-m'
         ];
         $validator = Validator::make($request->all(), $rule);
@@ -1123,25 +1122,25 @@ class AdminController extends Controller
                 return $getAttendanceDay[1];
             },
             'sign_day_sum' => function ($data) {
-                return array_sum(array_column($data, 'sign_day_sum'));
+                return round(array_sum(array_column($data, 'sign_day_sum')), 1);
             },
             'date_attendance_time' => function ($data) {
-                return array_sum(array_column($data, 'date_attendance_time'));
+                return round(array_sum(array_column($data, 'date_attendance_time')), 1);
             },
             'date_other_time' => function ($data) {
-                return array_sum(array_column($data, 'date_other_time'));
+                return round(array_sum(array_column($data, 'date_other_time')), 1);
             },
             'late_num' => function ($data) {
-                return array_sum(array_column($data, 'late_num'));
+                return round(array_sum(array_column($data, 'late_num')), 1);
             },
             'left_early_num' => function ($data) {
-                return array_sum(array_column($data, 'left_early_num'));
+                return round(array_sum(array_column($data, 'left_early_num')), 1);
             },
             'date_leave_day' => function ($data) {
-                return array_sum(array_column($data, 'date_leave_day'));
+                return round(array_sum(array_column($data, 'date_leave_day')), 1);
             },
             'date_leave_time' => function ($data) {
-                return array_sum(array_column($data, 'date_leave_time'));
+                return round(array_sum(array_column($data, 'date_leave_time')), 1);
             }
         ];
         $grouped = ArrayGroupBy::groupBy($rs->toArray(), $group_by_fields, $group_by_value);
@@ -1169,41 +1168,65 @@ class AdminController extends Controller
     //按月获取考勤汇总导出EXCEL
     public function importMonthAttendanceSummary(Request $request)
     {
-
-        $records = [
-            ['order_date' => '2014-01-01', 'price' => 5, 'aaa' => 123],
-            ['order_date' => '2014-01-02', 'price' => 10, 'aaa' => 123],
-            ['order_date' => '2014-01-03', 'price' => 20, 'aaa' => 123],
-            ['order_date' => '2015-01-04', 'price' => 25, 'aaa' => 456],
+        $rule = [
+            'month' => 'date_format:Y-m'
         ];
-
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $year = $request->month ? Date::parse($request->month)->format('Y') : Date::now()->format('Y');
+        $month = $request->month ? Date::parse($request->month)->format('m') : Date::now()->format('m');
+        $search = $request->search ? array(['admininfo.name', 'like', '%' . $request->search . '%']) : array();
+        $rs = AdminSignSummary::select('admininfo.admin_id', 'admininfo.name  as realname', 'admin_sign_statistic.*')
+            ->where($search)
+            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admin_sign_statistic.admin_id')
+            ->whereYear('admin_sign_statistic.sign_date', $year)
+            ->whereMonth('admin_sign_statistic.sign_date', $month)
+            ->get();
         $group_by_fields = [
-            'order_date' => function ($value) {
-                return date('Y', strtotime($value));
+            'admin_id' => function ($value) {
+                return $value;
             }
         ];
-
+        $getAttendanceDay = $this->_getAttendanceDay($request->month);
         $group_by_value = [
-            'order_date' => [
-                'callback' => function ($value_array) {
-                    return substr($value_array[0]['order_date'], 0, 4);
-                },
-                'as' => 'year'
-            ],
-            'price' => function ($data) {
-                return array_sum(array_column($data, 'price'));
+            'realname' => function ($data) {
+                return array_column($data, 'realname')[0];
             },
-
-            'aaa' => [
-                'callback' => function ($value_array) {
-                    return 1;
-                }
-            ],
+            'attendance_day' => function ($data) use ($getAttendanceDay) {
+                return $getAttendanceDay[0];
+            },
+            'attendance_time' => function ($data) use ($getAttendanceDay) {
+                return $getAttendanceDay[1];
+            },
+            'sign_day_sum' => function ($data) {
+                return round(array_sum(array_column($data, 'sign_day_sum')), 1);
+            },
+            'date_attendance_time' => function ($data) {
+                return round(array_sum(array_column($data, 'date_attendance_time')), 1);
+            },
+            'date_other_time' => function ($data) {
+                return round(array_sum(array_column($data, 'date_other_time')), 1);
+            },
+            'late_num' => function ($data) {
+                return round(array_sum(array_column($data, 'late_num')), 1);
+            },
+            'left_early_num' => function ($data) {
+                return round(array_sum(array_column($data, 'left_early_num')), 1);
+            },
+            'date_leave_day' => function ($data) {
+                return round(array_sum(array_column($data, 'date_leave_day')), 1);
+            },
+            'date_leave_time' => function ($data) {
+                return round(array_sum(array_column($data, 'date_leave_time')), 1);
+            }
         ];
+        $grouped = ArrayGroupBy::groupBy($rs->toArray(), $group_by_fields, $group_by_value);
+        $cellHarder = ['姓名', '应出勤(天)', '应出勤(时)', '实出勤(天)', '实出勤(时)', '加班(时)', '迟到(次)',
+            '早退(次)', '请假(天)', '请假(时)'];
+        return new ExportController(collect($grouped), '月考勤汇总表.xls', $cellHarder);
 
-        $grouped = ArrayGroupBy::groupBy($records, $group_by_fields, $group_by_value);
-        //print_r($grouped);
-        return AdminSignSummary::get();
     }
 
 }

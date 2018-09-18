@@ -101,6 +101,9 @@
                     field: 'sign_date',
                     title: '日期'
                 }, {
+                    field: 'date_format',
+                    title: '星期'
+                }, {
                     field: 'sign_in_time_format',
                     title: '签到时间'
                 }, {

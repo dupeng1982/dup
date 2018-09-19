@@ -64,7 +64,7 @@ class AdminSignStatistic extends Model
                 if ($this->sign_out_time) {
                     $time_set = TimeSet::find($month);
                     $sign_time = Date::parse($this->sign_out_time)->format('H:i');
-                    if ($sign_time >= $time_set['set_start_time']) {
+                    if ($sign_time >= $time_set['set_end_time']) {
                         return 0;
                     } else {
                         return 2;
@@ -170,7 +170,7 @@ class AdminSignStatistic extends Model
         } else {
             $x = '班';
         }
-        $n = Date::parse('2018-09-10')->format('N');
+        $n = Date::parse($date)->format('N');
         $m = null;
         switch ($n) {
             case 1:

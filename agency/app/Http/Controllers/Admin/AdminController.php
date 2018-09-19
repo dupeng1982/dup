@@ -1229,4 +1229,95 @@ class AdminController extends Controller
 
     }
 
+    private function _getDateFormat($date)
+    {
+        $date_set = DateSet::find($date);
+        $x = null;
+        if ($date_set) {
+            $x = '休';
+        } else {
+            $x = '班';
+        }
+        $n = Date::parse($date)->format('N');
+        $m = null;
+        switch ($n) {
+            case 1:
+                $m = '星期一(' . $x . ')';
+                break;
+            case 2:
+                $m = '星期二(' . $x . ')';
+                break;
+            case 3:
+                $m = '星期三(' . $x . ')';
+                break;
+            case 4:
+                $m = '星期四(' . $x . ')';
+                break;
+            case 5:
+                $m = '星期五(' . $x . ')';
+                break;
+            case 6:
+                $m = '星期六(' . $x . ')';
+                break;
+            case 7:
+                $m = '星期日(' . $x . ')';
+                break;
+            default:
+                $m = null;
+        }
+        return $m;
+    }
+
+    //获取考勤汇总详情
+    public function getAdminAttendanceSummary(Request $request)
+    {
+        $rule = [
+            'admin_id' => 'required|integer|exists:admins,id',
+            'month' => 'required|date_format:Y-m'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $year = $request->month ? Date::parse($request->month)->format('Y') : Date::now()->format('Y');
+        $month = $request->month ? Date::parse($request->month)->format('m') : Date::now()->format('m');
+        $rs = AdminSignStatistic::select('admininfo.admin_id', 'admininfo.name  as realname', 'admin_sign_statistic.*')
+            ->where('admininfo.admin_id', $request->admin_id)
+            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admin_sign_statistic.admin_id')
+            ->whereYear('admin_sign_statistic.sign_date', $year)
+            ->whereMonth('admin_sign_statistic.sign_date', $month)
+            ->get();
+        $month_day = date('t', strtotime($request->month));
+        $start = $request->month . '-01';
+        $end = $request->month . '-' . $month_day;
+        $arr = Array();
+        while ($start <= $end) {
+            $tmp = $rs->where('sign_date', $start)->first();
+            if ($tmp) {
+                $arr[] = $tmp;
+            } else {
+
+                $arr[] = ["admin_id" => null,
+                    "realname" => null,
+                    "id" => null,
+                    "sign_date" => $start,
+                    "sign_in_time" => null,
+                    "sign_out_time" => null,
+                    "leave_type" => null,
+                    "leave_start_time" => null,
+                    "leave_end_time" => null,
+                    "leave_time" => null,
+                    "leave_time_type" => null,
+                    "leave_type_name" => null,
+                    "sign_in_time_format" => null,
+                    "sign_out_time_format" => null,
+                    "sign_in_status" => null,
+                    "sign_out_status" => null,
+                    "date_format" => $this->_getDateFormat($start)];
+            }
+            $start = Date::parse($start)->add('+1 day')->format('Y-m-d');
+        }
+        return $this->resp(0, $arr);
+    }
+
 }

@@ -178,7 +178,7 @@
                     var admin_id = $(this).attr('data-admin-id');
                     var now_month = $('.datetimeStart').val();
                     var admin_realname = $(this).attr('data-admin-realname');
-                    $('h4[class="modal-title"]').text(admin_realname + now_month + '考勤汇总详情');
+                    $('h4[class="modal-title"]').text(now_month + '月 ' + admin_realname + ' 考勤汇总详情');
                     $('#getAdminAttendanceSummary').modal('show');
 
                     $('#admin-attendance-summary').bootstrapTable({

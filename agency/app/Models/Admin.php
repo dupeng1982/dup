@@ -16,7 +16,7 @@ class Admin extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'password'
+        'name', 'password', 'is_attendance'
     ];
 
     /**
@@ -27,4 +27,16 @@ class Admin extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    protected $appends = ['admininfo'];
+
+    public function getAdmininfoAttribute()
+    {
+        $admin = Admininfo::find($this->id);
+        if ($admin) {
+            return $admin;
+        } else {
+            return null;
+        }
+    }
 }

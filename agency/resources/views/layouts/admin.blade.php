@@ -12,6 +12,7 @@
     <title>{{ config('app.name', '测试应用') }}</title>
     <link href="{{ asset('admin/assets/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('admin/assets/plugins/toast-master/css/jquery.toast.css') }}" rel="stylesheet"/>
+    <link href="{{ asset('admin/assets/plugins/dropify/dist/css/dropify.min.css') }}" rel="stylesheet">
     @yield('admin-css')
     <link href="{{ asset('admin/css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('admin/css/colors/blue.css') }}" id="theme" rel="stylesheet">
@@ -33,7 +34,7 @@
     <header class="topbar">
         <nav class="navbar top-navbar navbar-expand-md navbar-light">
             <div class="navbar-header">
-                <a class="navbar-brand" href="index.html">
+                <a class="navbar-brand" href="{{ url('admin/index') }}">
                     <b>
                         <img src="{{ asset('admin/assets/images/logo-icon.png') }}" alt="homepage" class="dark-logo"/>
                         <img src="{{ asset('admin/assets/images/logo-light-icon.png') }}" alt="homepage"
@@ -81,26 +82,39 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img
-                                    src="{{ asset('admin/assets/images/users/1.jpg') }}" alt="user"
-                                    class="profile-pic"/></a>
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <img src="{{ Auth::guard('admin')->user()->avatar }}" alt="user" class="profile-pic"/></a>
                         <div class="dropdown-menu dropdown-menu-right scale-up">
                             <ul class="dropdown-user">
                                 <li>
                                     <div class="dw-user-box">
-                                        <div class="u-img"><img src="{{ asset('admin/assets/images/users/1.jpg') }}"
-                                                                alt="user"></div>
+                                        <div class="u-img">
+                                            <input type="file" class="dropify"
+                                                   data-show-remove="false" data-height="70" data-max-file-size="1M"
+                                                   data-default-file="{{ Auth::guard('admin')->user()->avatar }}"/>
+                                        </div>
                                         <div class="u-text">
-                                            <h4>Steave Jobs</h4>
-                                            <p class="text-muted">管理员</p>
-                                            <a href="profile.html" class="btn btn-rounded btn-danger btn-sm">上传头像</a>
+                                            <h4>{{ Auth::guard('admin')->user()->name }}</h4>
+                                            <p class="text-muted">
+                                                @if(Auth::guard('admin')->user()->roles->first())
+                                                    {{ Auth::guard('admin')->user()->roles->first()->display_name }}
+                                                @else
+                                                    无角色
+                                                @endif
+                                            </p>
+                                            <p class="u-text">
+                                                @if(Auth::guard('admin')->user()->admininfo)
+                                                    {{ Auth::guard('admin')->user()->admininfo->name }}，欢迎您！
+                                                @endif
+                                            </p>
+                                            {{--<button class="btn btn-rounded btn-danger btn-sm">上传头像</button>--}}
                                         </div>
                                     </div>
                                 </li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="#"><i class="ti-user"></i>&nbsp&nbsp我的信息</a></li>
+                                <li><a href="{{ url('admin/myinfo') }}"><i class="ti-user"></i>&nbsp&nbsp我的信息</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="#"><i class="ti-settings"></i>&nbsp&nbsp密码修改</a></li>
+                                <li id="change-password"><a href="#"><i class="ti-settings"></i>&nbsp&nbsp修改密码</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="{{ route('logout') }}"
                                        onclick="event.preventDefault();document.getElementById('logout-form').submit();"><i
@@ -116,19 +130,13 @@
         <div class="scroll-sidebar">
             <div class="user-profile"
                  style="background: url({{ asset('admin/assets/images/background/user-info.jpg') }}) no-repeat;">
-                <div class="profile-img"><img src="{{ asset('admin/assets/images/users/profile.png') }}" alt="user"/>
+                <div class="profile-img"><img src="{{ Auth::guard('admin')->user()->avatar }}" alt="user"/>
                 </div>
-                <div class="profile-text"><a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown"
-                                             role="button" aria-haspopup="true" aria-expanded="true">Markarn Doe</a>
-                    <div class="dropdown-menu animated flipInY">
-                        <a href="#" class="dropdown-item"><i class="ti-user"></i>&nbsp&nbsp我的信息</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item"><i class="ti-settings"></i>&nbsp&nbsp修改密码</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="{{ route('logout') }}"
-                           onclick="event.preventDefault();document.getElementById('logout-form').submit();"
-                           class="dropdown-item"><i class="fa fa-power-off"></i>&nbsp&nbsp退出</a>
-                    </div>
+                <div class="profile-text"><a href="javascript:void(0)" role="button">
+                        @if(Auth::guard('admin')->user()->admininfo)
+                            {{ Auth::guard('admin')->user()->admininfo->name }}，欢迎您！
+                        @endif
+                    </a>
                 </div>
             </div>
             <nav class="sidebar-nav">
@@ -160,7 +168,8 @@
                            aria-expanded="false"><i
                                     class="mdi mdi-account-edit"></i><span class="hide-menu">人员管理</span></a>
                         <ul aria-expanded="false" class="collapse">
-                            <li><a href="{{ url('admin/ddd') }}">人员设置</a></li>
+                            <li><a href="{{ url('admin/myinfo') }}">我的信息</a></li>
+                            <li><a href="{{ url('admin/adminmanagelist') }}">员工列表</a></li>
                         </ul>
                     </li>
                     <li>
@@ -241,6 +250,43 @@
         </footer>
     </div>
 </div>
+<div class="modal fade show" id="changePasswordModal" tabindex="-1" role="dialog"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">修改密码</h4>
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label>原始密码：</label>
+                        <input type="password" class="form-control" value=""
+                               id="old-password"></div>
+                    <div class="form-group">
+                        <label>新 密 码：</label>
+                        <input type="password" class="form-control" value=""
+                               id="new-password"></div>
+                    <div class="form-group">
+                        <label>确认密码：</label>
+                        <input type="password" class="form-control" value=""
+                               id="new-password-confirmation"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal">关闭
+                </button>
+                <button type="button" id="changePassword"
+                        class="btn btn-success">确定
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="{{ asset('admin/assets/plugins/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('admin/assets/plugins/bootstrap/js/popper.min.js') }}"></script>
 <script src="{{ asset('admin/assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
@@ -253,6 +299,7 @@
 <script src="{{ asset('admin/assets/plugins/toast-master/js/jquery.toast.js') }}"></script>
 @yield('admin-js')
 <script src="{{ asset('admin/assets/plugins/styleswitcher/jQuery.style.switcher.js') }}"></script>
+<script src="{{ asset('admin/assets/plugins/dropify/dist/js/dropify.min.js') }}"></script>
 <script>
     $('#admin-sign-in').click(function () {
         $.ajax({
@@ -342,7 +389,82 @@
             }
         });
     });
+    $('#change-password').click(function () {
+        $('#changePasswordModal').modal('show');
+        $('#old-password').val('');
+        $('#new-password').val('');
+        $('#new-password-confirmation').val('');
+    });
+    $('#changePassword').click(function () {
+        var old_password = $('#old-password').val();
+        var new_password = $('#new-password').val();
+        var new_password_confirmation = $('#new-password-confirmation').val();
+        $.ajax({
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+            url: 'changePassword',
+            type: 'POST',
+            data: {
+                old_password: old_password,
+                new_password: new_password,
+                new_password_confirmation: new_password_confirmation
+            },
+            success: function (doc) {
+                if (doc.code) {
+                    $.toast({
+                        heading: '警告',
+                        text: doc.data,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'warning',
+                        hideAfter: 3000,
+                        stack: 6
+                    });
+                } else {
+                    $('#changePasswordModal').modal('hide');
+                    $.toast({
+                        heading: '成功',
+                        text: doc.data,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'success',
+                        hideAfter: 3000,
+                        stack: 6
+                    });
+                }
+            },
+            error: function (doc) {
+                $.toast({
+                    heading: '错误',
+                    text: '网络错误，请稍后重试！',
+                    position: 'top-right',
+                    loaderBg: '#ff6849',
+                    icon: 'error',
+                    hideAfter: 3000,
+                    stack: 6
+                });
+            }
+        });
+    });
+    $(function () {
+        $('.dropify').dropify({
+            messages: {
+                'default': '',
+                'replace': '',
+                'remove':  '',
+                'error':   'error'
+            },
+            error: {
+                'fileSize': 'error',
+                'minWidth': 'error',
+                'maxWidth': 'error',
+                'minHeight': 'error',
+                'maxHeight': 'error',
+                'imageFormat': 'error'
+            }
+        }).on('dropify.beforeClear', function(event, element){
+            alert(element.filename);
+        });
+    });
 </script>
 </body>
-
 </html>

@@ -29,6 +29,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->get('login', 'LoginController@showLoginForm')->name('admin.login');
     $router->post('login', 'LoginController@login');
     $router->match(['get', 'post'], 'logout', 'LoginController@logout')->name('admin.logout');
+    $router->post('changePassword', 'AdminController@changePassword');
 
     $router->get('index', 'AdminController@index');
     $router->post('adminSignIn', 'AdminController@adminSignIn');
@@ -64,16 +65,22 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('checkLeaveApply', 'AdminController@checkLeaveApply');
     $router->post('checkMoreLeaveApply', 'AdminController@checkMoreLeaveApply');
 
-    $router->get('signandleavestatistics', 'AdminController@SignAndLeaveStatistics');
+    $router->get('signandleavestatistics', 'AdminController@signandleavestatistics');
     $router->post('getMonthAttendanceStatistics', 'AdminController@getMonthAttendanceStatistics');
     $router->any('importMonthAttendanceStatistics', 'AdminController@importMonthAttendanceStatistics');
 
-    $router->get('signandleavesummary', 'AdminController@SignAndLeaveSummary');
+    $router->get('signandleavesummary', 'AdminController@signandleavesummary');
     $router->post('getMonthAttendanceSummary', 'AdminController@getMonthAttendanceSummary');
     $router->any('importMonthAttendanceSummary', 'AdminController@importMonthAttendanceSummary');
     $router->post('getAdminAttendanceSummary', 'AdminController@getAdminAttendanceSummary');
 
-    $router->any('test', 'AdminController@getAdminAttendanceSummary');
+    $router->get('myinfo', 'AdminController@myinfo');
+
+    $router->get('adminmanagelist', 'AdminController@adminmanagelist');
+
+    $router->get('admininfo', 'AdminController@admininfo');
+
+    $router->any('test', 'AdminController@getAdminInfo');
 });
 
 

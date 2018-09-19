@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ExportController;
+use App\Models\Admin;
 use App\Models\AdminLeave;
 use App\Models\AdminPermission;
 use App\Models\AdminRole;
@@ -11,15 +12,12 @@ use App\Models\AdminSign;
 use App\Models\AdminSignApply;
 use App\Models\AdminSignStatistic;
 use App\Models\AdminSignSummary;
-use App\Models\AdminSignSummaryStatistic;
 use App\Models\DateSet;
-use App\Models\ParkNew;
 use App\Models\TimeSet;
-use App\Models\User;
 use App\Sdk\ArrayGroupBy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Validator, DB, Date, Excel;
+use Validator, DB, Date, Excel, Hash;
 
 class AdminController extends Controller
 {
@@ -466,6 +464,31 @@ class AdminController extends Controller
         $rs = $this->_getLeaveInfo($date, $leave);
         $rs && $arr[] = $rs;
         return $arr;
+    }
+
+    //修改密码
+    public function changePassword(Request $request)
+    {
+        $rule = [
+            'old_password' => 'required',
+            'new_password' => 'required|confirmed',
+            'new_password_confirmation' => 'required'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $admin_id = Auth::guard('admin')->user()->id;
+        $old_password = $request->old_password;
+        $new_password = $request->new_password;
+        $password = Admin::find($admin_id)->password;
+        if (!Hash::check($old_password, $password)) {
+            return $this->resp(10000, '您的初始密码不正确!');
+        }
+        if (Admin::where('id', $admin_id)->update(['password' => bcrypt($new_password)])) {
+            return $this->resp(0, '修改密码成功!');
+        }
+        return $this->resp(10000, '修改密码失败!');
     }
 
     /*******日期事件视图*******/
@@ -976,7 +999,7 @@ class AdminController extends Controller
     }
 
     /*******考勤统计视图*******/
-    public function SignAndLeaveStatistics()
+    public function signandleavestatistics()
     {
         return view('admin/signandleavestatistics');
     }
@@ -998,6 +1021,8 @@ class AdminController extends Controller
         $search = $request->search;
         $rs = AdminSignStatistic::select('admin_sign_statistic.*', 'admininfo.name  as realname')
             ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admin_sign_statistic.admin_id')
+            ->leftjoin('admins', 'admins.id', '=', 'admininfo.admin_id')
+            ->where('admins.is_attendance', 1)
             ->whereYear('admin_sign_statistic.sign_date', $year)
             ->whereMonth('admin_sign_statistic.sign_date', $month)
             ->where(function ($q) use ($search) {
@@ -1024,6 +1049,8 @@ class AdminController extends Controller
         $search = $request->search;
         $rs = AdminSignStatistic::select('admininfo.name  as realname', 'admin_sign_statistic.*')
             ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admin_sign_statistic.admin_id')
+            ->leftjoin('admins', 'admins.id', '=', 'admininfo.admin_id')
+            ->where('admins.is_attendance', 1)
             ->whereYear('admin_sign_statistic.sign_date', $year)
             ->whereMonth('admin_sign_statistic.sign_date', $month)
             ->where(function ($q) use ($search) {
@@ -1078,7 +1105,7 @@ class AdminController extends Controller
     }
 
     /*******考勤汇总视图*******/
-    public function SignAndLeaveSummary()
+    public function signandleavesummary()
     {
         return view('admin/signandleavesummary');
     }
@@ -1096,11 +1123,18 @@ class AdminController extends Controller
         $year = $request->month ? Date::parse($request->month)->format('Y') : Date::now()->format('Y');
         $month = $request->month ? Date::parse($request->month)->format('m') : Date::now()->format('m');
         $search = $request->search ? array(['admininfo.name', 'like', '%' . $request->search . '%']) : array();
-        $rs = AdminSignSummary::select('admininfo.admin_id', 'admininfo.name  as realname', 'admin_sign_statistic.*')
+        $rs = AdminSignSummary::select('admininfo.name  as realname', 'admin_sign_statistic.*', 'admins.id as admin_id')
+            ->rightjoin('admins', 'admins.id', '=', 'admin_sign_statistic.admin_id')
+            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admins.id')
+            ->where('admins.is_attendance', 1)
+            ->where(function ($query) use ($year, $month) {
+                $query->orWhere(function ($query) use ($year, $month) {
+                    $query->whereYear('admin_sign_statistic.sign_date', $year)
+                        ->whereMonth('admin_sign_statistic.sign_date', $month);
+                })
+                    ->orWhere('admin_sign_statistic.sign_date', null);
+            })
             ->where($search)
-            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admin_sign_statistic.admin_id')
-            ->whereYear('admin_sign_statistic.sign_date', $year)
-            ->whereMonth('admin_sign_statistic.sign_date', $month)
             ->get();
         $group_by_fields = [
             'admin_id' => function ($value) {
@@ -1178,11 +1212,18 @@ class AdminController extends Controller
         $year = $request->month ? Date::parse($request->month)->format('Y') : Date::now()->format('Y');
         $month = $request->month ? Date::parse($request->month)->format('m') : Date::now()->format('m');
         $search = $request->search ? array(['admininfo.name', 'like', '%' . $request->search . '%']) : array();
-        $rs = AdminSignSummary::select('admininfo.admin_id', 'admininfo.name  as realname', 'admin_sign_statistic.*')
+        $rs = AdminSignSummary::select('admininfo.name  as realname', 'admin_sign_statistic.*', 'admins.id as admin_id')
+            ->rightjoin('admins', 'admins.id', '=', 'admin_sign_statistic.admin_id')
+            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admins.id')
+            ->where('admins.is_attendance', 1)
+            ->where(function ($query) use ($year, $month) {
+                $query->orWhere(function ($query) use ($year, $month) {
+                    $query->whereYear('admin_sign_statistic.sign_date', $year)
+                        ->whereMonth('admin_sign_statistic.sign_date', $month);
+                })
+                    ->orWhere('admin_sign_statistic.sign_date', null);
+            })
             ->where($search)
-            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'admin_sign_statistic.admin_id')
-            ->whereYear('admin_sign_statistic.sign_date', $year)
-            ->whereMonth('admin_sign_statistic.sign_date', $month)
             ->get();
         $group_by_fields = [
             'admin_id' => function ($value) {
@@ -1318,6 +1359,18 @@ class AdminController extends Controller
             $start = Date::parse($start)->add('+1 day')->format('Y-m-d');
         }
         return $this->resp(0, $arr);
+    }
+
+    /*******我的信息视图*******/
+    public function myinfo()
+    {
+        return view('admin/myinfo');
+    }
+
+    /*******人员管理列表视图*******/
+    public function adminmanagelist()
+    {
+        return view('admin/adminmanagelist');
     }
 
 }

@@ -514,7 +514,11 @@ class AdminController extends Controller
         $filename = $disk->put($img_name, $img);
         if ($filename) {
             $img_url = $disk->url($img_name);
-            Admin::where('id', $admin_id)->update(['avatar' => $img_url]);
+            $admin = Admin::find($admin_id);
+            $old_filename = substr($admin->avatar, 14);
+            $admin->avatar = $img_url;
+            $admin->save();
+            $disk->delete($old_filename);
             return $this->resp(0, '上传成功!');
         }
         return $this->resp(10000, '上传失败!');

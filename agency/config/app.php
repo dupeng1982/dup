@@ -153,6 +153,7 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Jenssegers\Date\DateServiceProvider::class,
         Zizaco\Entrust\EntrustServiceProvider::class,
+        AetherUpload\AetherUploadServiceProvider::class,
 
         /*
          * Application Service Providers...

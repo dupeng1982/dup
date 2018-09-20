@@ -38,7 +38,7 @@
                                 <h4 class="card-title">考勤汇总列表</h4>
                                 <div class="ml-auto">
                                     <div class="form-group">
-                                        <input id="demo-input-search2" type="text" class="datetimeStart"
+                                        <input id="demo-input-search1" type="text" class="datetimeStart"
                                                value="{{ Date::now()->format('Y-m') }}" autocomplete="off">
                                         <input id="demo-input-search2" type="text" placeholder="Search"
                                                class="attendance-summary-search" autocomplete="off">

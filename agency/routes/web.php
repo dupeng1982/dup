@@ -34,6 +34,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->get('index', 'AdminController@index');
     $router->post('adminSignIn', 'AdminController@adminSignIn');
     $router->post('adminSignOut', 'AdminController@adminSignOut');
+    $router->post('uploadAvatar', 'AdminController@uploadAvatar');
 
     $router->get('mysign', 'AdminController@mysign');
     $router->post('adminAskForLeave', 'AdminController@adminAskForLeave');
@@ -80,7 +81,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
 
     $router->get('admininfo', 'AdminController@admininfo');
 
-    $router->any('test', 'AdminController@getAdminInfo');
+    $router->any('test', 'AdminController@_checkPicbase64');
 });
 
 

@@ -17,7 +17,7 @@ use App\Models\TimeSet;
 use App\Sdk\ArrayGroupBy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Validator, DB, Date, Excel, Hash;
+use Validator, DB, Date, Excel, Hash, Storage;
 
 class AdminController extends Controller
 {
@@ -489,6 +489,44 @@ class AdminController extends Controller
             return $this->resp(0, '修改密码成功!');
         }
         return $this->resp(10000, '修改密码失败!');
+    }
+
+    //上传头像
+    public function uploadAvatar(Request $request)
+    {
+        $rule = [
+            'avatar' => 'required'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $avatar = $request->avatar;
+        if (!$this->_checkPicbase64($avatar)) {
+            return $this->resp(10000, '请选择头像后上传！');
+        }
+        $base64 = explode(',', $avatar);
+        $admin_id = Auth::guard('admin')->user()->id;
+
+        $img = base64_decode($base64[1]);
+        $disk = Storage::disk('avatar');
+        $img_name = 'avatar-' . date('Y-m-d-H-i-s-') . $admin_id . '.png';
+        $filename = $disk->put($img_name, $img);
+        if ($filename) {
+            $img_url = $disk->url($img_name);
+            Admin::where('id', $admin_id)->update(['avatar' => $img_url]);
+            return $this->resp(0, '上传成功!');
+        }
+        return $this->resp(10000, '上传失败!');
+    }
+
+    private function _checkPicbase64($base64)
+    {
+        $tmp = substr($base64, 0, 4);
+        if ($tmp == 'data') {
+            return 1;
+        }
+        return 0;
     }
 
     /*******日期事件视图*******/

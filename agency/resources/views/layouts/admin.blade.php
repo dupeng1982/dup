@@ -89,8 +89,9 @@
                                 <li>
                                     <div class="dw-user-box">
                                         <div class="u-img">
-                                            <input type="file" class="dropify"
+                                            <input type="file" class="dropify" id="admin-avatar"
                                                    data-show-remove="false" data-height="70" data-max-file-size="1M"
+                                                   data-allowed-file-extensions="jpg png"
                                                    data-default-file="{{ Auth::guard('admin')->user()->avatar }}"/>
                                         </div>
                                         <div class="u-text">
@@ -102,12 +103,7 @@
                                                     无角色
                                                 @endif
                                             </p>
-                                            <p class="u-text">
-                                                @if(Auth::guard('admin')->user()->admininfo)
-                                                    {{ Auth::guard('admin')->user()->admininfo->name }}，欢迎您！
-                                                @endif
-                                            </p>
-                                            {{--<button class="btn btn-rounded btn-danger btn-sm">上传头像</button>--}}
+                                            <button id="save-admin-avatar" class="btn btn-rounded btn-danger btn-sm">上传头像</button>
                                         </div>
                                     </div>
                                 </li>
@@ -461,10 +457,59 @@
                 'maxHeight': 'error',
                 'imageFormat': 'error'
             }
-        }).on('dropify.beforeClear', function(event, element){
-            alert(element.filename);
+        });
+
+        $('#save-admin-avatar').click(function(){
+            var file = $('#admin-avatar').siblings('.dropify-preview')
+                .children('.dropify-render').children('img')
+                .attr('src');
+            $.ajax({
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                url: 'uploadAvatar',
+                type: 'POST',
+                data: {
+                    avatar: file
+                },
+                success: function (doc) {
+                    if (doc.code) {
+                        $.toast({
+                            heading: '警告',
+                            text: doc.data,
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'warning',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    } else {
+                        $.toast({
+                            heading: '成功',
+                            text: doc.data,
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'success',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                        location.reload();
+                    }
+                },
+                error: function (doc) {
+                    $.toast({
+                        heading: '错误',
+                        text: '网络错误，请稍后重试！',
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'error',
+                        hideAfter: 3000,
+                        stack: 6
+                    });
+                }
+            });
         });
     });
+
 </script>
 </body>
+
 </html>

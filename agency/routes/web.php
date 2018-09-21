@@ -81,6 +81,15 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
 
     $router->get('admininfo', 'AdminController@admininfo');
 
+    //上传大文件
+    Route::any('aetherupload/preprocess', '\AetherUpload\UploadHandler@preprocess');
+    Route::post('aetherupload/uploading', '\AetherUpload\UploadHandler@saveChunk');
+
+    //预览大文件
+    Route::get('aetherupload/display/{group}/{subDir}/{resourceName}', '\AetherUpload\ResourceHandler@displayResource');
+    //下载大文件
+    Route::get('aetherupload/download/{group}/{subDir}/{resourceName}/{newName}', '\AetherUpload\ResourceHandler@downloadResource');
+
     $router->any('test', 'AdminController@_checkPicbase64');
 });
 

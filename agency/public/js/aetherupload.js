@@ -171,7 +171,7 @@ var AetherUpload = {
 
                 _this.savedPathDom.val(_this.savedPath);
 
-                _this.fileDom.attr("disabled", "disabled");
+                // _this.fileDom.attr("disabled", "disabled");
 
                 _this.outputDom.text(_this.messages.status_instant_completion_success);
 
@@ -251,7 +251,7 @@ var AetherUpload = {
 
                     _this.savedPathDom.val(_this.savedPath);
 
-                    _this.fileDom.attr("disabled", "disabled");
+                    // _this.fileDom.attr("disabled", "disabled");
 
                     _this.outputDom.text(_this.messages.status_upload_success);
 

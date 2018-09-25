@@ -50,20 +50,7 @@
             $this.$modal2.find('#leave-apply-time-show').val(leave_info.submit_time);
             $this.$modal2.find('#leave-start-time-show').val(leave_info.leave_start_time);
             $this.$modal2.find('#leave-end-time-show').val(leave_info.leave_end_time);
-            //请假类型：1-调休，2-事假，3-病假，4-出差，5-下现场
-            if (leave_info.leave_type == 1) {
-                $this.$modal2.find('#leave-type-show').val('调休');
-            } else if (leave_info.leave_type == 2) {
-                $this.$modal2.find('#leave-type-show').val('事假');
-            } else if (leave_info.leave_type == 3) {
-                $this.$modal2.find('#leave-type-show').val('病假');
-            } else if (leave_info.leave_type == 4) {
-                $this.$modal2.find('#leave-type-show').val('出差');
-            } else if (leave_info.leave_type == 5) {
-                $this.$modal2.find('#leave-type-show').val('下现场');
-            } else {
-                $this.$modal2.find('#leave-type-show').val('其他');
-            }
+            $this.$modal2.find('#leave-type-show').val(leave_info.leave_type_name);
             $this.$modal2.find('#leave-reason-show').val(leave_info.leave_reason);
             $this.$modal2.find('#leave-check-reason-show').val(leave_info.approval_note);
         },

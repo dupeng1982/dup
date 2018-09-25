@@ -38,27 +38,9 @@ class AdminController extends Controller
         $admin_id = Auth::guard('admin')->user()->id;
         $now = Date::now();
         $now_date = $now->format('Y-m-d');
-//        $now_month = $now->format('m');
-//        $now_time = $now->format('H:i:s');
         if ($this->_adminSignCheck($admin_id, $now_date, 1)) {
             return $this->resp(10000, '您已签到');
         }
-//        $set_start_time = TimeSet::where('set_month', $now_month)->pluck('set_start_time')->first();
-//        if ($now_time <= $set_start_time) {
-//            return DB::transaction(function () use ($admin_id, $now_date, $now) {
-//                AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 1]);
-//                AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
-//                    ['sign_in_time' => $now, 'sign_in_status' => 0]);
-//                return $this->resp(0, '签到成功');
-//            });
-//        }
-//        return DB::transaction(function () use ($admin_id, $now_date, $now) {
-//            AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 1,
-//                'sign_status' => 0]);
-//            AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
-//                ['sign_in_time' => $now, 'sign_in_status' => 2]);
-//            return $this->resp(0, '签到成功');
-//        });
         return DB::transaction(function () use ($admin_id, $now_date, $now) {
             AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 1]);
             AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
@@ -73,32 +55,6 @@ class AdminController extends Controller
         $admin_id = Auth::guard('admin')->user()->id;
         $now = Date::now();
         $now_date = $now->format('Y-m-d');
-//        $now_month = $now->format('m');
-//        $now_time = $now->format('H:i:s');
-//        $set_end_time = TimeSet::where('set_month', $now_month)->pluck('set_end_time')->first();
-//        if ($now_time >= $set_end_time) {
-//            $sign_status = 1;
-//            $sign_status_tmp = 0;
-//        } else {
-//            $sign_status = 0;
-//            $sign_status_tmp = 2;
-//        }
-//        $sign_id = $this->_adminSignCheck($admin_id, $now_date, 2);
-//        if ($sign_id) {
-//            return DB::transaction(function () use ($admin_id, $now_date, $sign_id, $sign_status, $sign_status_tmp, $now) {
-//                AdminSign::where('id', $sign_id)->update(['sign_time' => $now, 'sign_status' => $sign_status]);
-//                AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
-//                    ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp]);
-//                return $this->resp(0, '签退成功');
-//            });
-//        }
-//        return DB::transaction(function () use ($admin_id, $sign_id, $sign_status, $sign_status_tmp, $now_date, $now) {
-//            AdminSign::create(['admin_id' => $admin_id, 'sign_time' => $now, 'sign_type' => 2,
-//                'sign_status' => $sign_status]);
-//            AdminSignStatistic::updateOrCreate(['admin_id' => $admin_id, 'sign_date' => $now_date],
-//                ['sign_out_time' => $now, 'sign_out_status' => $sign_status_tmp]);
-//            return $this->resp(0, '签退成功');
-//        });
         $sign_id = $this->_adminSignCheck($admin_id, $now_date, 2);
         if ($sign_id) {
             return DB::transaction(function () use ($admin_id, $now_date, $sign_id, $now) {
@@ -166,15 +122,6 @@ class AdminController extends Controller
         if ($tmp) {
             return $this->resp(10000, '您提交的请假时间与已准假时间冲突，请核实修改后重新提交提交');
         }
-//        $tmp_start_time = Date::parse($leave_start_time)->format('Y-m-d');
-//        $tmp_end_time = Date::parse($leave_end_time)->format('Y-m-d');
-//        while ($tmp_start_time <= $tmp_end_time) {
-//            $tmp = DateSet::where('set_date', $tmp_start_time)->first();
-//            if ($tmp) {
-//                return $this->resp(10000, '您请假的时间包含休息天，请重新选择时间！');
-//            }
-//            $tmp_start_time = Date::parse($tmp_start_time)->add('+1 day')->format('Y-m-d');
-//        }
         AdminLeave::create(['admin_id' => $admin_id, 'submit_time' => Date::now(),
             'leave_start_time' => $leave_start_time, 'leave_end_time' => $leave_end_time,
             'leave_type' => $request->leave_type, 'leave_reason' => $request->leave_reason]);
@@ -416,25 +363,7 @@ class AdminController extends Controller
                     default:
                         $leave_status = null;
                 }
-                switch ($rs->leave_type) {
-                    case 1:
-                        $tmp['title'] = '调休' . $leave_status;
-                        break;
-                    case 2:
-                        $tmp['title'] = '事假' . $leave_status;
-                        break;
-                    case 3:
-                        $tmp['title'] = '病假' . $leave_status;
-                        break;
-                    case 4:
-                        $tmp['title'] = '出差' . $leave_status;
-                        break;
-                    case 5:
-                        $tmp['title'] = '下现场' . $leave_status;
-                        break;
-                    default:
-                        $tmp['title'] = '请假';
-                }
+                $tmp['title'] = $rs->leave_type_name . $leave_status;
                 $tmp['className'] = 'bg-primary';
                 $tmp['order'] = 4;
                 $tmp['leave_info'] = $rs;
@@ -831,13 +760,6 @@ class AdminController extends Controller
                 if ($request->sign_apply_status == 1) {
                     $user_id = $sign_apply->admin_id;
                     $now_date = $sign_apply->sign_apply_date;
-//                    if ($sign_apply->sign_apply_type == 1) {
-//                        AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
-//                            ['sign_in_status' => 1]);
-//                    } elseif ($sign_apply->sign_apply_type == 2) {
-//                        AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
-//                            ['sign_out_status' => 1]);
-//                    }
                     AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date]);
                 }
                 return $this->resp(0, '操作成功');
@@ -870,13 +792,6 @@ class AdminController extends Controller
                     if ($request->sign_apply_status == 1) {
                         $user_id = $v->admin_id;
                         $now_date = $v->sign_apply_date;
-//                        if ($v->sign_apply_type == 1) {
-//                            AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
-//                                ['sign_in_status' => 1]);
-//                        } elseif ($v->sign_apply_type == 2) {
-//                            AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date],
-//                                ['sign_out_status' => 1]);
-//                        }
                         AdminSignStatistic::updateOrCreate(['admin_id' => $user_id, 'sign_date' => $now_date]);
                     }
                 }

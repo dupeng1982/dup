@@ -32,7 +32,7 @@ class AdminLeave extends Model
         } elseif ($this->leave_type == 5) {
             return '下现场';
         } else {
-            return null;
+            return '请假';
         }
     }
 }

@@ -90,7 +90,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     //下载大文件
     Route::get('aetherupload/download/{group}/{subDir}/{resourceName}/{newName}', '\AetherUpload\ResourceHandler@downloadResource');
 
-    $router->any('test', 'AdminController@_checkPicbase64');
+    $router->any('test', 'AdminController@getMySign');
 });
 
 

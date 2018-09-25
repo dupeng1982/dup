@@ -20,17 +20,9 @@ class AdminLeave extends Model
 
     public function getLeaveTypeNameAttribute()
     {
-        //请假类型：1-调休，2-事假，3-病假，4-出差，5-下现场
-        if ($this->leave_type == 1) {
-            return '调休';
-        } elseif ($this->leave_type == 2) {
-            return '事假';
-        } elseif ($this->leave_type == 3) {
-            return '病假';
-        } elseif ($this->leave_type == 4) {
-            return '出差';
-        } elseif ($this->leave_type == 5) {
-            return '下现场';
+        $tmp = AdminLeaveType::find($this->leave_type);
+        if ($tmp) {
+            return $tmp->name;
         } else {
             return '请假';
         }

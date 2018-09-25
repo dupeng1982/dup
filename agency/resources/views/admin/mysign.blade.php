@@ -98,21 +98,11 @@
                         <div class="form-group">
                             <label>请假类型</label>
                             <div class="demo-radio-button">
-                                <input name="leave_type_radio_group" type="radio" id="leave_type_1"
-                                       class="with-gap radio-col-red" value="1"/>
-                                <label for="leave_type_1">调休</label>
-                                <input name="leave_type_radio_group" type="radio" id="leave_type_2"
-                                       class="with-gap radio-col-brown" value="2"/>
-                                <label for="leave_type_2">事假</label>
-                                <input name="leave_type_radio_group" type="radio" id="leave_type_3"
-                                       class="with-gap radio-col-orange" value="3"/>
-                                <label for="leave_type_3">病假</label>
-                                <input name="leave_type_radio_group" type="radio" id="leave_type_4"
-                                       class="with-gap radio-col-blue" value="4"/>
-                                <label for="leave_type_4">出差</label>
-                                <input name="leave_type_radio_group" type="radio" id="leave_type_5"
-                                       class="with-gap radio-col-yellow" value="5"/>
-                                <label for="leave_type_5">下现场</label>
+                                @foreach($data['leave_type'] as $v)
+                                    <input name="leave_type_radio_group" type="radio" id="leave_type_{{ $v->id }}"
+                                           class="with-gap radio-col-red" value="{{ $v->id }}"/>
+                                    <label for="leave_type_{{ $v->id }}">{{ $v->name }}</label>
+                                @endforeach
                             </div>
                         </div>
                         <div class="form-group">

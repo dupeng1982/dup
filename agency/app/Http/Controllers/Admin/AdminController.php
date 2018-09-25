@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\ExportController;
 use App\Models\Admin;
 use App\Models\AdminLeave;
+use App\Models\AdminLeaveType;
 use App\Models\AdminPermission;
 use App\Models\AdminRole;
 use App\Models\AdminSign;
@@ -88,7 +89,8 @@ class AdminController extends Controller
     //我的考勤
     public function mysign()
     {
-        return view('admin/mysign');
+        $data['leave_type'] = AdminLeaveType::get();
+        return view('admin/mysign', ['data' => $data]);
     }
 
     //申请请假

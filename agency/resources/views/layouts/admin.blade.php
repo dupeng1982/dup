@@ -165,7 +165,7 @@
                                     class="mdi mdi-account-edit"></i><span class="hide-menu">人员管理</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="{{ url('admin/myinfo') }}">我的信息</a></li>
-                            <li><a href="{{ url('admin/adminmanagelist') }}">员工列表</a></li>
+                            <li><a href="{{ url('admin/adminmanagelist') }}">人员列表</a></li>
                         </ul>
                     </li>
                     <li>

@@ -86,7 +86,7 @@
                                             <br>
                                             <p class="text-muted">杜鹏</p>
                                         </div>
-                                        <div class="col-md-2 col-xs-4 b-r"><strong>性别</strong>
+                                        <div class="col-md-1 col-xs-2 b-r"><strong>性别</strong>
                                             <br>
                                             <p class="text-muted">男</p>
                                         </div>
@@ -94,9 +94,13 @@
                                             <br>
                                             <p class="text-muted">1982-12-06</p>
                                         </div>
-                                        <div class="col-md-4 col-xs-8"><strong>身份证号码</strong>
+                                        <div class="col-md-3 col-xs-6 b-r"><strong>身份证号码</strong>
                                             <br>
                                             <p class="text-muted">622801198212060030</p>
+                                        </div>
+                                        <div class="col-md-2 col-xs-4"><strong>在职状态</strong>
+                                            <br>
+                                            <p class="text-muted">正式员工</p>
                                         </div>
                                     </div>
                                     <hr>

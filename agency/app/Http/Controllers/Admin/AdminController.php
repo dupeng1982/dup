@@ -5,16 +5,26 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ExportController;
 use App\Models\Admin;
+use App\Models\Admininfo;
 use App\Models\AdminLeave;
 use App\Models\AdminLeaveType;
+use App\Models\AdminLevel;
 use App\Models\AdminPermission;
 use App\Models\AdminRole;
 use App\Models\AdminSign;
 use App\Models\AdminSignApply;
 use App\Models\AdminSignStatistic;
 use App\Models\AdminSignSummary;
+use App\Models\Certificate;
 use App\Models\DateSet;
+use App\Models\Department;
+use App\Models\Education;
+use App\Models\Family;
+use App\Models\Level;
+use App\Models\Profession;
+use App\Models\TechnicalLevel;
 use App\Models\TimeSet;
+use App\Models\WorkStatus;
 use App\Sdk\ArrayGroupBy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -1329,7 +1339,163 @@ class AdminController extends Controller
     /*******人员管理列表视图*******/
     public function adminmanagelist()
     {
-        return view('admin/adminmanagelist');
+        $data['education'] = Education::get();
+        $data['level'] = Level::get();
+        $data['department'] = Department::get();
+        $data['admin_level'] = AdminLevel::get();
+        $data['technical_level'] = TechnicalLevel::get();
+        $data['work_status'] = WorkStatus::get();
+        $data['professions'] = Profession::get();
+        return view('admin/adminmanagelist', ['data' => $data]);
+    }
+
+    //获取人员列表
+    public function getAdminInfoList(Request $request)
+    {
+        $rule = [
+            'page' => 'integer',
+            'item' => 'integer',
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $data = Admininfo::with('professions')
+            ->select('admininfo.id', 'admininfo.admin_id', 'admininfo.name', 'admininfo.sex', 'admininfo.cardno',
+                'admininfo.phone', 'admininfo.work_status', 'admininfo.department_id', 'admininfo.technical_level_id',
+                'admininfo.admin_level_id', 'admininfo.level_id', 'admininfo.education_id', 'admininfo.major')
+            ->rightjoin('admins', 'admins.id', '=', 'admininfo.admin_id')
+            ->paginate($request->item);
+        return $this->resp(0, $data);
+    }
+
+    //添加临时家庭关系
+    public function addAdminFamily(Request $request)
+    {
+        $rule = [
+            'family_name' => 'required|max:10',
+            'family_relation' => 'required|max:10',
+            'family_phone' => 'required|max:20',
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $operator_id = Auth::guard('admin')->user()->id;
+        Family::create(['admininfo_id' => 0, 'name' => $request->family_name,
+            'relation' => $request->family_relation, 'phone' => $request->family_phone,
+            'operator_id' => $operator_id]);
+        return $this->resp(0, '添加成功');
+    }
+
+    //获取临时家庭关系
+    public function getAdminFamily(Request $request)
+    {
+        $operator_id = Auth::guard('admin')->user()->id;
+        $rs = Family::where('operator_id', $operator_id)->where('admininfo_id', 0)->get();
+        return $this->resp(0, $rs);
+    }
+
+    //删除家庭关系
+    public function delAdminFamily(Request $request)
+    {
+        $rule = [
+            'family_id' => 'required|integer|exists:family,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        Family::where('id', $request->family_id)->delete();
+        return $this->resp(0, '删除成功');
+    }
+
+    //添加执业证书
+    public function addAdminCertificate(Request $request)
+    {
+        $rule = [
+            'certificate_name' => 'required|max:20',
+            'certificate_number' => 'max:50',
+            'continue_password' => 'max:20',
+            'study_password' => 'max:20',
+            'change_password' => 'max:20',
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $operator_id = Auth::guard('admin')->user()->id;
+        Certificate::create(['admininfo_id' => 0, 'name' => $request->certificate_name,
+            'number' => $request->certificate_number, 'continue_password' => $request->continue_password,
+            'study_password' => $request->study_password, 'change_password' => $request->change_password,
+            'operator_id' => $operator_id]);
+        return $this->resp(0, '添加成功');
+    }
+
+    //获取临时执业证书
+    public function getAdminCertificate(Request $request)
+    {
+        $operator_id = Auth::guard('admin')->user()->id;
+        $rs = Certificate::where('operator_id', $operator_id)->where('admininfo_id', 0)->get();
+        return $this->resp(0, $rs);
+    }
+
+    //删除执业证书
+    public function delAdminCertificate(Request $request)
+    {
+        $rule = [
+            'certificate_id' => 'required|integer|exists:certificate,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        Certificate::where('id', $request->certificate_id)->delete();
+        return $this->resp(0, '删除成功');
+    }
+
+    //添加人员信息附件
+    public function addAdmininfoPic(Request $request)
+    {
+        $rule = [
+            'certificate_name' => 'required|max:20',
+            'certificate_number' => 'max:50',
+            'continue_password' => 'max:20',
+            'study_password' => 'max:20',
+            'change_password' => 'max:20',
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $operator_id = Auth::guard('admin')->user()->id;
+        Certificate::create(['admininfo_id' => 0, 'name' => $request->certificate_name,
+            'number' => $request->certificate_number, 'continue_password' => $request->continue_password,
+            'study_password' => $request->study_password, 'change_password' => $request->change_password,
+            'operator_id' => $operator_id]);
+        return $this->resp(0, '添加成功');
+    }
+
+    //获取人员信息附件
+    public function getAdmininfoPic(Request $request)
+    {
+        $operator_id = Auth::guard('admin')->user()->id;
+        $rs = Certificate::where('operator_id', $operator_id)->where('admininfo_id', 0)->get();
+        return $this->resp(0, $rs);
+    }
+
+    //删除人员信息附件
+    public function delAdmininfoPic(Request $request)
+    {
+        $rule = [
+            'certificate_id' => 'required|integer|exists:certificate,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        Certificate::where('id', $request->certificate_id)->delete();
+        return $this->resp(0, '删除成功');
     }
 
 }

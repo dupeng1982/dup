@@ -3,15 +3,16 @@
 @section('admin-css')
     <link href="{{ asset('admin/assets/plugins/bootstrap-table/dist/bootstrap-table.min.css') }}" rel="stylesheet"/>
     <link href="{{ asset('admin/assets/plugins/bootstrap-switch/bootstrap-switch.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('admin/assets/plugins/wizard/steps.css') }}" rel="stylesheet">
 @endsection
 
 @section('admin-title')
     <div class="row page-titles">
         <div class="col-md-5 col-8 align-self-center">
-            <h3 class="text-themecolor m-b-0 m-t-0">角色管理</h3>
+            <h3 class="text-themecolor m-b-0 m-t-0">人员列表</h3>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url('admin/index') }}">首页</a></li>
-                <li class="breadcrumb-item active">角色管理</li>
+                <li class="breadcrumb-item active">人员列表</li>
             </ol>
         </div>
         <div class="col-md-7 col-4 align-self-center">
@@ -30,37 +31,447 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">角色列表</h4>
                     <table class="table table-bordered table-hover toggle-circle"
-                           data-page-size="7" id="admin_role_table">
-                        <div class="m-t-40">
-                            <div class="d-flex">
-                                <div class="mr-auto">
-                                    <div class="form-group">
-                                        <button type="button"
-                                                class="btn waves-effect waves-light btn-rounded btn-secondary"
-                                                data-toggle="modal" data-target="#addRoleModal">
-                                            添加角色...
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="ml-auto">
-                                    <div class="form-group">
-                                        <input id="demo-input-search2" type="text" placeholder="Search"
-                                               autocomplete="off">
-                                        <span><button id="role-search"
-                                                      class="btn btn-info btn-search">查找</button></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
+                           data-page-size="7" id="admin_info_table">
                     </table>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="modal bs-example-modal-lg fade show" id="addAdminInfoModal" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">添加人员</h4>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="validation">
+                        <div class="col-12 wizard-content">
+                            <form action="#" class="validation-wizard wizard-circle">
+                                {{--<!-- Step 1 -->--}}
+                                {{--<h6>基本信息</h6>--}}
+                                {{--<section>--}}
+                                    {{--<div class="row">--}}
+                                        {{--<div class="col-md-4">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="username"> 用户名 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<input type="text" class="form-control required"--}}
+                                                       {{--id="username" name="username"></div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-4">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="realname"> 姓名 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<input type="text" class="form-control required" id="realname"--}}
+                                                       {{--name="realname"></div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-4">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="adminsex"> 性别 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<select class="custom-select form-control required"--}}
+                                                        {{--id="adminsex" name="adminsex">--}}
+                                                    {{--<option value="">选择性别</option>--}}
+                                                    {{--<option value="1">男</option>--}}
+                                                    {{--<option value="2">女</option>--}}
+                                                {{--</select>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                    {{--</div>--}}
+                                    {{--<div class="row">--}}
+                                        {{--<div class="col-md-6">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="birthday"> 出生年月 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<input type="date" class="form-control required"--}}
+                                                       {{--id="birthday" name="birthday"--}}
+                                                       {{--style="padding-top: 6px;padding-bottom: 6px;"></div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-6">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="cardno"> 身份证号码 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<input type="text" class="form-control required"--}}
+                                                       {{--id="cardno" name="cardno"></div>--}}
+                                        {{--</div>--}}
+                                    {{--</div>--}}
+                                    {{--<div class="row">--}}
+                                        {{--<div class="col-md-4">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="phone"> 手机号码 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<input type="tel" class="form-control required" id="phone"--}}
+                                                       {{--name="phone">--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-8">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="address"> 现在住址 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<input type="text" class="form-control required"--}}
+                                                       {{--id="address" name="address"></div>--}}
+                                        {{--</div>--}}
+                                    {{--</div>--}}
+                                    {{--<div class="row">--}}
+                                        {{--<div class="col-md-4">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="education"> 学历 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<select class="custom-select form-control required"--}}
+                                                        {{--id="education" name="education">--}}
+                                                    {{--<option value="">选择学历</option>--}}
+                                                    {{--@foreach($data['education'] as $v)--}}
+                                                        {{--<option value="{{ $v->id }}">{{ $v->name }}</option>--}}
+                                                    {{--@endforeach--}}
+                                                {{--</select>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-4">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="school"> 毕业院校 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<input type="text" class="form-control required" id="school"--}}
+                                                       {{--name="school"></div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-4">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="major"> 所学专业 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<input type="text" class="form-control required" id="major"--}}
+                                                       {{--name="major"></div>--}}
+                                        {{--</div>--}}
+                                    {{--</div>--}}
+                                    {{--<div class="row">--}}
+                                        {{--<div class="col-md-4">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="graduate_date"> 毕业时间 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<input type="date" class="form-control required"--}}
+                                                       {{--id="graduate_date" name="graduate_date"></div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-2">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="work_year"> 工作年限 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<input type="text" class="form-control required" id="work_year"--}}
+                                                       {{--name="work_year"></div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-3">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="level_id"> 所获职称 :</label>--}}
+                                                {{--<select class="custom-select form-control"--}}
+                                                        {{--id="level_id" name="level_id">--}}
+                                                    {{--<option value="">选择职称</option>--}}
+                                                    {{--@foreach($data['level'] as $v)--}}
+                                                        {{--<option value="{{ $v->id }}">{{ $v->name }}</option>--}}
+                                                    {{--@endforeach--}}
+                                                {{--</select>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-3">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="level_type"> 职称类别 :</label>--}}
+                                                {{--<input type="text" class="form-control" id="level_type"--}}
+                                                       {{--name="level_type"></div>--}}
+                                        {{--</div>--}}
+                                    {{--</div>--}}
+                                {{--</section>--}}
+                                {{--<!-- Step 2 -->--}}
+                                {{--<h6>职务信息</h6>--}}
+                                {{--<section>--}}
+                                    {{--<div class="row">--}}
+                                        {{--<div class="col-md-4">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="department"> 所属部门 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<select class="custom-select form-control required"--}}
+                                                        {{--id="department" name="department">--}}
+                                                    {{--<option value="">选择部门</option>--}}
+                                                    {{--@foreach($data['department'] as $v)--}}
+                                                        {{--<option value="{{ $v->id }}">{{ $v->name }}</option>--}}
+                                                    {{--@endforeach--}}
+                                                {{--</select>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-4">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="admin_level"> 行政职务 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<select class="custom-select form-control required"--}}
+                                                        {{--id="admin_level" name="admin_level">--}}
+                                                    {{--<option value="">选择职务</option>--}}
+                                                    {{--@foreach($data['admin_level'] as $v)--}}
+                                                        {{--<option value="{{ $v->id }}">{{ $v->name }}</option>--}}
+                                                    {{--@endforeach--}}
+                                                {{--</select>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-4">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="work_start_date"> 入职时间 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<input type="date" class="form-control required"--}}
+                                                       {{--id="work_start_date" name="work_start_date">--}}
+                                                {{--</select>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                    {{--</div>--}}
+                                    {{--<div class="row">--}}
+                                        {{--<div class="col-md-6">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="technical_level"> 人员类别 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<select class="custom-select form-control required"--}}
+                                                        {{--id="technical_level" name="technical_level">--}}
+                                                    {{--<option value="">选择类别</option>--}}
+                                                    {{--@foreach($data['technical_level'] as $v)--}}
+                                                        {{--<option value="{{ $v->id }}">{{ $v->name }}</option>--}}
+                                                    {{--@endforeach--}}
+                                                {{--</select>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-6">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="work_status"> 在职状态 : <span--}}
+                                                            {{--class="danger">*</span> </label>--}}
+                                                {{--<select class="custom-select form-control required"--}}
+                                                        {{--id="work_status" name="work_status">--}}
+                                                    {{--<option value="">选择类别</option>--}}
+                                                    {{--@foreach($data['work_status'] as $v)--}}
+                                                        {{--<option value="{{ $v->id }}">{{ $v->name }}</option>--}}
+                                                    {{--@endforeach--}}
+                                                {{--</select>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                    {{--</div>--}}
+                                    {{--<div class="row">--}}
+                                        {{--<div class="col-md-12">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label> 专业类别 :</label>--}}
+                                                {{--<div class="c-inputs-stacked">--}}
+                                                    {{--<div class="row">--}}
+                                                        {{--@foreach($data['professions'] as $v)--}}
+                                                            {{--<div class="col-md-4">--}}
+                                                                {{--<label class="inline custom-control custom-checkbox block">--}}
+                                                                    {{--<input type="checkbox" class="custom-control-input"--}}
+                                                                           {{--name="admin_professions_checkbox_group"--}}
+                                                                           {{--id="admin_profession_{{ $v->id }}"--}}
+                                                                           {{--value="{{ $v->id }}"> <span--}}
+                                                                            {{--class="custom-control-indicator"></span>--}}
+                                                                    {{--<span--}}
+                                                                            {{--class="custom-control-description ml-0">{{ $v->name }}</span>--}}
+                                                                {{--</label>--}}
+                                                            {{--</div>--}}
+                                                        {{--@endforeach--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-12">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="remark"> 备注 :</label>--}}
+                                                {{--<textarea name="remark" id="remark"--}}
+                                                          {{--rows="6" class="form-control"></textarea>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                    {{--</div>--}}
+                                {{--</section>--}}
+                                {{--<!-- Step 3 -->--}}
+                                {{--<h6>工作及学习</h6>--}}
+                                {{--<section>--}}
+                                    {{--<div class="row">--}}
+                                        {{--<div class="col-md-12">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="work_resume"> 工作简历 :</label>--}}
+                                                {{--<textarea name="work_resume" id="work_resume"--}}
+                                                          {{--rows="6" class="form-control"></textarea>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-12">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="study_resume"> 学习简历 :</label>--}}
+                                                {{--<textarea name="study_resume" id="study_resume"--}}
+                                                          {{--rows="6" class="form-control"></textarea>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                    {{--</div>--}}
+                                {{--</section>--}}
+                                {{--<!-- Step 4 -->--}}
+                                {{--<h6>业绩及奖惩</h6>--}}
+                                {{--<section>--}}
+                                    {{--<div class="row">--}}
+                                        {{--<div class="col-md-12">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="performance"> 主要业绩 :</label>--}}
+                                                {{--<textarea name="performance" id="performance"--}}
+                                                          {{--rows="6" class="form-control"></textarea>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-12">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="rewards"> 奖惩情况 :</label>--}}
+                                                {{--<textarea name="rewards" id="rewards"--}}
+                                                          {{--rows="6" class="form-control"></textarea>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                    {{--</div>--}}
+                                {{--</section>--}}
+                                {{--<!-- Step 5 -->--}}
+                                {{--<h6>所获证书</h6>--}}
+                                {{--<section>--}}
+                                    {{--<div class="row">--}}
+                                        {{--<div class="col-md-6">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="certificate_name"> 证书名称 :</label>--}}
+                                                {{--<input type="text" class="form-control" name="certificate_name"--}}
+                                                       {{--id="certificate_name">--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-6">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="certificate_number"> 证书编号 :</label>--}}
+                                                {{--<input type="text" class="form-control" name="certificate_number"--}}
+                                                       {{--id="certificate_number">--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-3">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="certificate_continue_password"> 延续注册密码 :</label>--}}
+                                                {{--<input type="text" class="form-control"--}}
+                                                       {{--name="certificate_continue_password"--}}
+                                                       {{--id="certificate_continue_password">--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-3">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="certificate_study_password"> 继续再教育密码 :</label>--}}
+                                                {{--<input type="text" class="form-control"--}}
+                                                       {{--name="certificate_study_password"--}}
+                                                       {{--id="certificate_study_password">--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-3">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="certificate_change_password"> 变更密码 :</label>--}}
+                                                {{--<input type="text" class="form-control"--}}
+                                                       {{--name="certificate_change_password"--}}
+                                                       {{--id="certificate_change_password">--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-3">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="add_tmp_certificate_info"> </label>--}}
+                                                {{--<p>--}}
+                                                    {{--<button type="button" id="add_tmp_certificate_info"--}}
+                                                            {{--class="btn waves-effect waves-light btn-rounded btn-secondary"--}}
+                                                            {{--style="top :10px;">--}}
+                                                        {{--添加--}}
+                                                    {{--</button>--}}
+                                                {{--</p>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-12">--}}
+                                            {{--<table class="table table-bordered table-hover toggle-circle"--}}
+                                                   {{--data-page-size="7" id="admin_certificate_table">--}}
+                                            {{--</table>--}}
+                                        {{--</div>--}}
+                                    {{--</div>--}}
+                                {{--</section>--}}
+                                {{--<!-- Step 6 -->--}}
+                                {{--<h6>家庭主要成员</h6>--}}
+                                {{--<section>--}}
+                                    {{--<div class="row">--}}
+                                        {{--<div class="col-md-3">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="family_name"> 姓名 :</label>--}}
+                                                {{--<input type="text" class="form-control" name="family_name"--}}
+                                                       {{--id="family_name">--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-3">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="family_relation"> 关系 :</label>--}}
+                                                {{--<input type="text" class="form-control" name="family_relation"--}}
+                                                       {{--id="family_relation">--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-3">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="family_phone"> 电话 :</label>--}}
+                                                {{--<input type="text" class="form-control" name="family_phone"--}}
+                                                       {{--id="family_phone">--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-3">--}}
+                                            {{--<div class="form-group">--}}
+                                                {{--<label for="add_tmp_family_info"> </label>--}}
+                                                {{--<p>--}}
+                                                    {{--<button type="button" id="add_tmp_family_info"--}}
+                                                            {{--class="btn waves-effect waves-light btn-rounded btn-secondary"--}}
+                                                            {{--style="top :10px;">--}}
+                                                        {{--添加--}}
+                                                    {{--</button>--}}
+                                                {{--</p>--}}
+                                            {{--</div>--}}
+                                        {{--</div>--}}
+                                        {{--<div class="col-md-12">--}}
+                                            {{--<table class="table table-bordered table-hover toggle-circle"--}}
+                                                   {{--data-page-size="7" id="admin_family_table">--}}
+                                            {{--</table>--}}
+                                        {{--</div>--}}
+                                    {{--</div>--}}
+                                {{--</section>--}}
+                                <!-- Step 7 -->
+                                <h6>附件</h6>
+                                <section>
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label for="admininfo_pic_name"> 名称 :</label>
+                                                <input type="text" class="form-control" name="admininfo_pic_name"
+                                                       id="admininfo_pic_name">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label for="admininfo_pic_dir"> 附件 :</label>
+                                                <input type="file" class="form-control" name="admininfo_pic_dir"
+                                                       id="admininfo_pic_dir">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="add_tmp_admininfo_pic"> </label>
+                                                <p>
+                                                    <button type="button" id="add_tmp_admininfo_pic"
+                                                            class="btn waves-effect waves-light btn-rounded btn-secondary"
+                                                            style="top :10px;">
+                                                        添加
+                                                    </button>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <table class="table table-bordered table-hover toggle-circle"
+                                                   data-page-size="7" id="admininfo_pic_table">
+                                            </table>
+                                        </div>
+                                    </div>
+                                </section>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade show" id="addRoleModal" tabindex="-1" role="dialog"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -183,11 +594,14 @@
     <script src="{{ asset('admin/assets/plugins/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>
     <script src="{{ asset('admin/assets/plugins/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js') }}"></script>
     <script src="{{ asset('admin/assets/plugins/bootstrap-switch/bootstrap-switch.min.js') }}"></script>
+    <script src="{{ asset('admin/assets/plugins/moment/min/moment.min.js') }}"></script>
+    <script src="{{ asset('admin/assets/plugins/wizard/jquery.steps.min.js') }}"></script>
+    <script src="{{ asset('admin/assets/plugins/wizard/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('admin/assets/plugins/wizard/messages_zh.js') }}"></script>
     <script>
         $(function () {
-            var admin_role_id = null;
-            $('#admin_role_table').bootstrapTable({
-                url: 'getRoleList',
+            $('#admin_info_table').bootstrapTable({
+                url: 'getAdminInfoList',
                 ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
                 cache: false,
                 method: 'POST',
@@ -196,39 +610,59 @@
                 pageNumber: 1,
                 pagination: true,
                 queryParams: queryParams,
-                sidePagination: 'server',
+                search: true,
+                sidePagination: 'client',
                 pageSize: 10,//单页记录数
-                pageList: [10, 15, 20],
                 responseHandler: responseHandler,
                 columns: [{
                     field: 'SerialNumber',
                     title: '序号',
                     formatter: function (value, row, index) {
-                        var pageSize = $('#admin_role_table').bootstrapTable('getOptions').pageSize;//通过表的#id 可以得到每页多少条
-                        var pageNumber = $('#admin_role_table').bootstrapTable('getOptions').pageNumber;//通过表的#id 可以得到当前第几页
-                        return pageSize * (pageNumber - 1) + index + 1;
+                        return index + 1;
                     }
                 }, {
                     field: 'name',
-                    title: '角色标识'
+                    title: '姓名'
                 }, {
-                    field: 'display_name',
-                    title: '角色名称'
+                    field: 'sex_name',
+                    title: '性别'
                 }, {
-                    field: 'description',
-                    title: '角色描述'
+                    field: 'cardno',
+                    title: '身份证号'
+                }, {
+                    field: 'phone',
+                    title: '手机号码'
+                }, {
+                    field: 'department_name',
+                    title: '部门'
+                }, {
+                    field: 'admin_level_name',
+                    title: '行政级别'
+                }, {
+                    field: 'technical_level_name',
+                    title: '人员类别'
+                }, {
+                    field: 'level_name',
+                    title: '技术职称'
+                }, {
+                    field: 'work_status_name',
+                    title: '在职状态'
+                }, {
+                    field: 'professions',
+                    title: '负责专业',
+                    formatter: educationFormatter
                 }, {
                     field: 'id',
-                    title: '操作',
+                    title: '操作<button type="button" id="addAdminInfo" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="添加人员"><i class="ti-user" aria-hidden="true"></i></button>',
                     formatter: operateFormatter
                 }],
                 onPostBody: onPostBody
             });
+
             function queryParams(params) {
                 return {
                     page: (params.offset / params.limit) + 1,
-                    item: params.limit,
-                    search: $('#demo-input-search2').val()
+                    item: params.limit
                 }
             }
 
@@ -243,40 +677,35 @@
                 };
             }
 
+            function educationFormatter(value, row, index) {
+                var str = new Array();
+                if (value) {
+                    for (var i = 0, len = value.length; i < len; i++) {
+                        str[i] = value[i]['name'];
+                    }
+                    return str;
+                } else {
+                    return null;
+                }
+            }
+
             function operateFormatter(value, row, index) {
-                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn allotAdminPerms" data-adminroleid=' + value + ' data-toggle="tooltip" data-original-title="分配权限"><i class="ti-key" aria-hidden="true"></i></button>' +
-                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editAdminRole" data-adminroleindex=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
-                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delAdminRole" data-adminroleid=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn allotAdminRole" data-admininfo_id=' + value + ' data-toggle="tooltip" data-original-title="分配角色"><i class="ti-key" aria-hidden="true"></i></button>' +
+                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editAdminInfo" data-admininfo_id=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
+                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delAdminInfo" data-admininfo_id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
             }
 
             function refresh() {
-                $('#admin_role_table').bootstrapTable('refresh', {url: 'getRoleList'});
-            }
-
-            function refresh1() {
-                $('#admin_perms_table').bootstrapTable('refresh', {url: 'getAdminPerms'});
+                $('#admin_info_table').bootstrapTable('refresh', {url: 'getAdminInfoList'});
             }
 
             function onPostBody(res) {
                 $("[data-toggle='tooltip']").tooltip();
-                $('.editAdminRole').click(function () {
-                    var data = $('#admin_role_table').bootstrapTable('getData');
-                    var index = $(this).attr('data-adminroleindex');
-                    admin_role_id = data[index].id;
-                    $('#editRoleModal').modal('show');
-                    $('#edit-admin-role-name').val(data[index].name);
-                    $('#edit-admin-role-display-name').val(data[index].display_name);
-                    $('#edit-admin-role-description').val(data[index].description);
-                });
-                $(".delAdminRole").click(function () {
-                    admin_role_id = $(this).attr('data-adminroleid');
-                    $('#confirmDelRole').modal('show');
-                });
-                $('.allotAdminPerms').click(function () {
-                    var admin_role_id = $(this).attr('data-adminroleid');
-                    $('#PermListModal').modal('show');
-                    $('#admin_perms_table').bootstrapTable({
-                        url: 'getAdminPerms',
+
+                $('#addAdminInfo').click(function () {
+                    $('#addAdminInfoModal').modal('show');
+                    $('#admin_family_table').bootstrapTable({
+                        url: 'getAdminFamily',
                         ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
                         cache: false,
                         method: 'POST',
@@ -284,10 +713,9 @@
                         dataField: "data",
                         pageNumber: 1,
                         pagination: true,
-                        queryParams: queryParams1,
-                        search: true,
+                        search: false,
                         sidePagination: 'client',
-                        pageSize: 10,
+                        pageSize: 5,//单页记录数
                         responseHandler: responseHandler1,
                         columns: [{
                             field: 'SerialNumber',
@@ -297,317 +725,381 @@
                             }
                         }, {
                             field: 'name',
-                            title: '权限标识'
+                            title: '姓名'
                         }, {
-                            field: 'display_name',
-                            title: '权限名称'
+                            field: 'relation',
+                            title: '关系'
                         }, {
-                            field: 'description',
-                            title: '权限描述'
+                            field: 'phone',
+                            title: '电话'
                         }, {
                             field: 'id',
                             title: '操作',
-                            formatter: operateFormatter1
+                            formatter: function (value, row, index) {
+                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delFamilyInfo" data-family-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                            }
                         }],
                         onPostBody: onPostBody1
                     });
+                    $('#admin_certificate_table').bootstrapTable({
+                        url: 'getAdminCertificate',
+                        ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
+                        cache: false,
+                        method: 'POST',
+                        contentType: "application/x-www-form-urlencoded",
+                        dataField: "data",
+                        pageNumber: 1,
+                        pagination: true,
+                        search: false,
+                        sidePagination: 'client',
+                        pageSize: 5,//单页记录数
+                        responseHandler: responseHandler2,
+                        columns: [{
+                            field: 'SerialNumber',
+                            title: '序号',
+                            formatter: function (value, row, index) {
+                                return index + 1;
+                            }
+                        }, {
+                            field: 'name',
+                            title: '证书名称'
+                        }, {
+                            field: 'number',
+                            title: '编号'
+                        }, {
+                            field: 'continue_password',
+                            title: '延续注册密码'
+                        }, {
+                            field: 'study_password',
+                            title: '继续再教育密码'
+                        }, {
+                            field: 'change_password',
+                            title: '变更密码'
+                        }, {
+                            field: 'id',
+                            title: '操作',
+                            formatter: function (value, row, index) {
+                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delCertificateInfo" data-certificate-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                            }
+                        }],
+                        onPostBody: onPostBody1
+                    });
+                });
 
-                    function queryParams1(params) {
-                        return {
-                            role_id: admin_role_id
-                        }
+                function responseHandler1(result) {
+                    var errcode = result.code;
+                    if (errcode) {
+                        return;
                     }
-
-                    function responseHandler1(result) {
-                        var errcode = result.code;
-                        if (errcode) {
-                            return;
-                        }
-                        return {
-                            total: result.data.length,
-                            data: result.data
-                        };
+                    return {
+                        total: result.data.length,
+                        data: result.data
+                    };
+                }
+                function responseHandler2(result) {
+                    var errcode = result.code;
+                    if (errcode) {
+                        return;
                     }
+                    return {
+                        total: result.data.length,
+                        data: result.data
+                    };
+                }
 
-                    function operateFormatter1(value, row, index) {
-                        if (row.prem_status) {
-                            return '<input type="checkbox" checked class="allotPerms" data-perm_id=' + value + ' />';
-                        } else {
-                            return '<input type="checkbox" class="allotPerms" data-perm_id=' + value + ' />';
-                        }
-                    }
-
-                    function onPostBody1(res) {
-                        $(".allotPerms").bootstrapSwitch({
-                            onText: "是",
-                            offText: "否",
-                            onColor: "success",
-                            offColor: "info",
-                            size: "small",
-                            onSwitchChange: function (event, state) {
-                                var admin_prem_id = $(this).attr('data-perm_id');
-                                if (state == true) {
-                                    $.ajax({
-                                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                                        url: 'allotPrems',
-                                        type: 'POST',
-                                        data: {
-                                            role_id: admin_role_id,
-                                            permission_id: admin_prem_id,
-                                            perm_allot_status: 1
-                                        },
-                                        success: function (doc) {
-                                            if (doc.code) {
-                                                $.toast({
-                                                    heading: '警告',
-                                                    text: doc.data,
-                                                    position: 'top-right',
-                                                    loaderBg: '#ff6849',
-                                                    icon: 'warning',
-                                                    hideAfter: 3000,
-                                                    stack: 6
-                                                });
-                                                refresh1();
-                                            } else {
-                                                $('#editRoleModal').modal('hide');
-                                                $.toast({
-                                                    heading: '成功',
-                                                    text: doc.data,
-                                                    position: 'top-right',
-                                                    loaderBg: '#ff6849',
-                                                    icon: 'success',
-                                                    hideAfter: 3000,
-                                                    stack: 6
-                                                });
-                                            }
-                                        },
-                                        error: function (doc) {
-                                            $.toast({
-                                                heading: '错误',
-                                                text: '网络错误，请稍后重试！',
-                                                position: 'top-right',
-                                                loaderBg: '#ff6849',
-                                                icon: 'error',
-                                                hideAfter: 3000,
-                                                stack: 6
-                                            });
-                                            refresh1();
-                                        }
+                function onPostBody1(res) {
+                    $('.delFamilyInfo').click(function () {
+                        var family_id = $(this).attr('data-family-id');
+                        $.ajax({
+                            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                            url: 'delAdminFamily',
+                            type: 'POST',
+                            data: {
+                                family_id: family_id
+                            },
+                            success: function (doc) {
+                                if (doc.code) {
+                                    $.toast({
+                                        heading: '警告',
+                                        text: doc.data,
+                                        position: 'top-right',
+                                        loaderBg: '#ff6849',
+                                        icon: 'warning',
+                                        hideAfter: 3000,
+                                        stack: 6
                                     });
                                 } else {
-                                    $.ajax({
-                                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                                        url: 'allotPrems',
-                                        type: 'POST',
-                                        data: {
-                                            role_id: admin_role_id,
-                                            permission_id: admin_prem_id,
-                                            perm_allot_status: 0
-                                        },
-                                        success: function (doc) {
-                                            if (doc.code) {
-                                                $.toast({
-                                                    heading: '警告',
-                                                    text: doc.data,
-                                                    position: 'top-right',
-                                                    loaderBg: '#ff6849',
-                                                    icon: 'warning',
-                                                    hideAfter: 3000,
-                                                    stack: 6
-                                                });
-                                                refresh1();
-                                            } else {
-                                                $('#editRoleModal').modal('hide');
-                                                $.toast({
-                                                    heading: '成功',
-                                                    text: doc.data,
-                                                    position: 'top-right',
-                                                    loaderBg: '#ff6849',
-                                                    icon: 'success',
-                                                    hideAfter: 3000,
-                                                    stack: 6
-                                                });
-                                            }
-                                        },
-                                        error: function (doc) {
-                                            $.toast({
-                                                heading: '错误',
-                                                text: '网络错误，请稍后重试！',
-                                                position: 'top-right',
-                                                loaderBg: '#ff6849',
-                                                icon: 'error',
-                                                hideAfter: 3000,
-                                                stack: 6
-                                            });
-                                            refresh1();
-                                        }
+                                    $.toast({
+                                        heading: '成功',
+                                        text: doc.data,
+                                        position: 'top-right',
+                                        loaderBg: '#ff6849',
+                                        icon: 'success',
+                                        hideAfter: 3000,
+                                        stack: 6
                                     });
+                                    refresh1();
                                 }
+                            },
+                            error: function (doc) {
+                                $.toast({
+                                    heading: '错误',
+                                    text: '网络错误，请稍后重试！',
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'error',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
                             }
                         });
-                    }
+                    });
+                    $('.delCertificateInfo').click(function () {
+                        var certificate_id = $(this).attr('data-certificate-id');
+                        $.ajax({
+                            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                            url: 'delAdminCertificate',
+                            type: 'POST',
+                            data: {
+                                certificate_id: certificate_id
+                            },
+                            success: function (doc) {
+                                if (doc.code) {
+                                    $.toast({
+                                        heading: '警告',
+                                        text: doc.data,
+                                        position: 'top-right',
+                                        loaderBg: '#ff6849',
+                                        icon: 'warning',
+                                        hideAfter: 3000,
+                                        stack: 6
+                                    });
+                                } else {
+                                    $.toast({
+                                        heading: '成功',
+                                        text: doc.data,
+                                        position: 'top-right',
+                                        loaderBg: '#ff6849',
+                                        icon: 'success',
+                                        hideAfter: 3000,
+                                        stack: 6
+                                    });
+                                    refresh2();
+                                }
+                            },
+                            error: function (doc) {
+                                $.toast({
+                                    heading: '错误',
+                                    text: '网络错误，请稍后重试！',
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'error',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                            }
+                        });
+                    });
+                }
+                $('#add_tmp_family_info').click(function () {
+                    var family_name = $('#family_name').val();
+                    var family_relation = $('#family_relation').val();
+                    var family_phone = $('#family_phone').val();
+                    $.ajax({
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        url: 'addAdminFamily',
+                        type: 'POST',
+                        data: {
+                            family_name: family_name,
+                            family_relation: family_relation,
+                            family_phone: family_phone
+                        },
+                        success: function (doc) {
+                            if (doc.code) {
+                                $.toast({
+                                    heading: '警告',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'warning',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                            } else {
+                                $.toast({
+                                    heading: '成功',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'success',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                                refresh1();
+                            }
+                        },
+                        error: function (doc) {
+                            $.toast({
+                                heading: '错误',
+                                text: '网络错误，请稍后重试！',
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'error',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        }
+                    });
                 });
+                $('#add_tmp_certificate_info').click(function () {
+                    var certificate_name = $('#certificate_name').val();
+                    var certificate_number = $('#certificate_number').val();
+                    var continue_password = $('#certificate_continue_password').val();
+                    var study_password = $('#certificate_study_password').val();
+                    var change_password = $('#certificate_change_password').val();
+                    $.ajax({
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        url: 'addAdminCertificate',
+                        type: 'POST',
+                        data: {
+                            certificate_name: certificate_name,
+                            certificate_number: certificate_number,
+                            continue_password: continue_password,
+                            study_password: study_password,
+                            change_password: change_password
+                        },
+                        success: function (doc) {
+                            if (doc.code) {
+                                $.toast({
+                                    heading: '警告',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'warning',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                            } else {
+                                $.toast({
+                                    heading: '成功',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'success',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                                refresh2();
+                            }
+                        },
+                        error: function (doc) {
+                            $.toast({
+                                heading: '错误',
+                                text: '网络错误，请稍后重试！',
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'error',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        }
+                    });
+                });
+                function refresh1() {
+                    $('#admin_family_table').bootstrapTable('refresh', {url: 'getAdminFamily'});
+                }
+                function refresh2() {
+                    $('#admin_certificate_table').bootstrapTable('refresh', {url: 'getAdminCertificate'});
+                }
             }
 
-            $('#role-search').click(function () {
-                refresh();
+
+            $('#addAdminInfoModal').on('hide.bs.modal', function () {
+                $('#admin_family_table').bootstrapTable('destroy');
+                $('#admin_certificate_table').bootstrapTable('destroy');
             });
 
-            $('#add-admin-role').click(function () {
-                var admin_role_name = $('#add-admin-role-name').val();
-                var admin_role_display_name = $('#add-admin-role-display-name').val();
-                var admin_role_description = $('#add-admin-role-description').val();
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'addRole',
-                    type: 'POST',
-                    data: {
-                        role_name: admin_role_name,
-                        role_display_name: admin_role_display_name,
-                        role_description: admin_role_description
-                    },
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $('#addRoleModal').modal('hide');
-                            $('#add-admin-role-name').val('');
-                            $('#add-admin-role-display-name').val('');
-                            $('#add-admin-role-description').val('');
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            refresh()
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
-            });
+            //添加人员信息
+            var form = $(".validation-wizard").show();
 
-            $('#edit-admin-role').click(function () {
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'editRole',
-                    type: 'POST',
-                    data: {
-                        role_id: admin_role_id,
-                        role_name: $('#edit-admin-role-name').val(),
-                        role_display_name: $('#edit-admin-role-display-name').val(),
-                        role_description: $('#edit-admin-role-description').val()
-                    },
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $('#editRoleModal').modal('hide');
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            refresh()
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
-            });
+            $(".validation-wizard").steps({
+                headerTag: "h6",
+                bodyTag: "section",
+                transitionEffect: "fade",
+                titleTemplate: '<span class="step">#index#</span> #title#',
+                labels: {
+                    next: "下一步",
+                    previous: "上一步",
+                    finish: "提交"
+                },
+                onStepChanging: function (event, currentIndex, newIndex) {
+                    return currentIndex > newIndex || (currentIndex < newIndex && (form.find(".body:eq(" + newIndex + ") label.error").remove(), form.find(".body:eq(" + newIndex + ") .error").removeClass("error")), form.validate().settings.ignore = ":disabled,:hidden", form.valid())
+                },
+                onFinishing: function (event, currentIndex) {
+                    return form.validate().settings.ignore = ":disabled", form.valid()
+                },
+                onFinished: function (event, currentIndex) {
+                    var data = new Array();
+                    //input
+                    data['username'] = $('#username').val();
+                    data['realname'] = $('#realname').val();
+                    data['birthday'] = $('#birthday').val();
+                    data['cardno'] = $('#cardno').val();
+                    data['phone'] = $('#phone').val();
+                    data['address'] = $('#address').val();
+                    data['school'] = $('#school').val();
+                    data['major'] = $('#major').val();
+                    data['graduate_date'] = $('#graduate_date').val();
+                    data['work_year'] = $('#work_year').val();
+                    data['level_type'] = $('#level_type').val();
+                    data['work_start_date'] = $('#work_start_date').val();
+                    data['certificate_name'] = $('#certificate_name').val();
+                    data['certificate_number'] = $('#certificate_number').val();
+                    data['certificate_continue_password'] = $('#certificate_continue_password').val();
+                    data['certificate_study_password'] = $('#certificate_study_password').val();
+                    data['certificate_change_password'] = $('#certificate_change_password').val();
+                    data['family_name'] = $('#family_name').val();
+                    data['family_relation'] = $('#family_relation').val();
+                    data['family_phone'] = $('#family_phone').val();
+                    data['admininfo_pic_name'] = $('#admininfo_pic_name').val();
+                    data['admininfo_pic_dir'] = $('#admininfo_pic_dir').val();
+                    //textarea
+                    data['remark'] = $('#remark').val();
+                    data['work_resume'] = $('#work_resume').val();
+                    data['study_resume'] = $('#study_resume').val();
+                    data['performance'] = $('#performance').val();
+                    data['rewards'] = $('#admininfo_pic_dir').val();
+                    //select
+                    data['adminsex'] = $('#adminsex').val();
+                    data['education'] = $('#education').val();
+                    data['level_id'] = $('#level_id').val();
+                    data['department'] = $('#department').val();
+                    data['admin_level'] = $('#admin_level').val();
+                    data['technical_level'] = $('#technical_level').val();
+                    data['work_status'] = $('#work_status').val();
+                    //checkbox
+                    data['admin_profession'] = $("input[name='admin_professions_checkbox_group']:checked")
+                        .map(function (index, elem) {
+                            return $(elem).val();
+                        }).get();
 
-            $('#del-admin-role').click(function () {
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'delRole',
-                    type: 'POST',
-                    data: {
-                        role_id: admin_role_id
-                    },
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            $('#confirmDelRole').modal('hide');
-                            refresh()
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
-            });
+                    console.log(data);
 
-            $('#PermListModal').on('hide.bs.modal', function () {
-                $('#admin_perms_table').bootstrapTable('destroy');
+                }
+            }), $(".validation-wizard").validate({
+                ignore: "input[type=hidden]",
+                errorClass: "text-danger",
+                successClass: "text-success",
+                highlight: function (element, errorClass) {
+                    $(element).removeClass(errorClass)
+                },
+                unhighlight: function (element, errorClass) {
+                    $(element).removeClass(errorClass)
+                },
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element)
+                }
             })
-        });
+        })
     </script>
 @endsection

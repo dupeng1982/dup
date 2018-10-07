@@ -140,6 +140,16 @@ return [
         'sign_apply_id_arr' => '补签申请ID数组',
         'approval_note' => '审核说明',
         'sign_apply_status' => '补签申请状态',
+        'family_id' => '家庭成员ID',
+        'family_name' => '家庭成员姓名',
+        'family_relation' => '家庭成员关系',
+        'family_phone' => '家庭成员电话',
+        'certificate_id' => '执业证书ID',
+        'certificate_name' => '执业证书名称',
+        'certificate_number' => '执业证书编号',
+        'continue_password' => '延续注册密码',
+        'study_password' => '继续再教育密码',
+        'change_password' => '变更密码',
 
     ],
 

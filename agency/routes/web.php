@@ -78,8 +78,13 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->get('myinfo', 'AdminController@myinfo');
 
     $router->get('adminmanagelist', 'AdminController@adminmanagelist');
-
-    $router->get('admininfo', 'AdminController@admininfo');
+    $router->post('getAdminInfoList', 'AdminController@getAdminInfoList');
+    $router->post('addAdminFamily', 'AdminController@addAdminFamily');
+    $router->post('getAdminFamily', 'AdminController@getAdminFamily');
+    $router->post('delAdminFamily', 'AdminController@delAdminFamily');
+    $router->post('addAdminCertificate', 'AdminController@addAdminCertificate');
+    $router->post('getAdminCertificate', 'AdminController@getAdminCertificate');
+    $router->post('delAdminCertificate', 'AdminController@delAdminCertificate');
 
     //上传大文件
     Route::any('aetherupload/preprocess', '\AetherUpload\UploadHandler@preprocess');
@@ -90,7 +95,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     //下载大文件
     Route::get('aetherupload/download/{group}/{subDir}/{resourceName}/{newName}', '\AetherUpload\ResourceHandler@downloadResource');
 
-    $router->any('test', 'AdminController@getMySign');
+    $router->any('test', 'AdminController@getAdminFamily');
 });
 
 

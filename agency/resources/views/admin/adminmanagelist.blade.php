@@ -52,381 +52,404 @@
                 <div class="modal-body">
                     <div class="row" id="validation">
                         <div class="col-12 wizard-content">
-                            <form action="#" class="validation-wizard wizard-circle">
-                                {{--<!-- Step 1 -->--}}
-                                {{--<h6>基本信息</h6>--}}
-                                {{--<section>--}}
-                                    {{--<div class="row">--}}
-                                        {{--<div class="col-md-4">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="username"> 用户名 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<input type="text" class="form-control required"--}}
-                                                       {{--id="username" name="username"></div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-4">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="realname"> 姓名 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<input type="text" class="form-control required" id="realname"--}}
-                                                       {{--name="realname"></div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-4">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="adminsex"> 性别 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<select class="custom-select form-control required"--}}
-                                                        {{--id="adminsex" name="adminsex">--}}
-                                                    {{--<option value="">选择性别</option>--}}
-                                                    {{--<option value="1">男</option>--}}
-                                                    {{--<option value="2">女</option>--}}
-                                                {{--</select>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                    {{--<div class="row">--}}
-                                        {{--<div class="col-md-6">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="birthday"> 出生年月 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<input type="date" class="form-control required"--}}
-                                                       {{--id="birthday" name="birthday"--}}
-                                                       {{--style="padding-top: 6px;padding-bottom: 6px;"></div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-6">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="cardno"> 身份证号码 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<input type="text" class="form-control required"--}}
-                                                       {{--id="cardno" name="cardno"></div>--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                    {{--<div class="row">--}}
-                                        {{--<div class="col-md-4">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="phone"> 手机号码 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<input type="tel" class="form-control required" id="phone"--}}
-                                                       {{--name="phone">--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-8">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="address"> 现在住址 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<input type="text" class="form-control required"--}}
-                                                       {{--id="address" name="address"></div>--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                    {{--<div class="row">--}}
-                                        {{--<div class="col-md-4">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="education"> 学历 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<select class="custom-select form-control required"--}}
-                                                        {{--id="education" name="education">--}}
-                                                    {{--<option value="">选择学历</option>--}}
-                                                    {{--@foreach($data['education'] as $v)--}}
-                                                        {{--<option value="{{ $v->id }}">{{ $v->name }}</option>--}}
-                                                    {{--@endforeach--}}
-                                                {{--</select>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-4">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="school"> 毕业院校 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<input type="text" class="form-control required" id="school"--}}
-                                                       {{--name="school"></div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-4">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="major"> 所学专业 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<input type="text" class="form-control required" id="major"--}}
-                                                       {{--name="major"></div>--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                    {{--<div class="row">--}}
-                                        {{--<div class="col-md-4">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="graduate_date"> 毕业时间 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<input type="date" class="form-control required"--}}
-                                                       {{--id="graduate_date" name="graduate_date"></div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-2">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="work_year"> 工作年限 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<input type="text" class="form-control required" id="work_year"--}}
-                                                       {{--name="work_year"></div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-3">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="level_id"> 所获职称 :</label>--}}
-                                                {{--<select class="custom-select form-control"--}}
-                                                        {{--id="level_id" name="level_id">--}}
-                                                    {{--<option value="">选择职称</option>--}}
-                                                    {{--@foreach($data['level'] as $v)--}}
-                                                        {{--<option value="{{ $v->id }}">{{ $v->name }}</option>--}}
-                                                    {{--@endforeach--}}
-                                                {{--</select>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-3">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="level_type"> 职称类别 :</label>--}}
-                                                {{--<input type="text" class="form-control" id="level_type"--}}
-                                                       {{--name="level_type"></div>--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                {{--</section>--}}
-                                {{--<!-- Step 2 -->--}}
-                                {{--<h6>职务信息</h6>--}}
-                                {{--<section>--}}
-                                    {{--<div class="row">--}}
-                                        {{--<div class="col-md-4">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="department"> 所属部门 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<select class="custom-select form-control required"--}}
-                                                        {{--id="department" name="department">--}}
-                                                    {{--<option value="">选择部门</option>--}}
-                                                    {{--@foreach($data['department'] as $v)--}}
-                                                        {{--<option value="{{ $v->id }}">{{ $v->name }}</option>--}}
-                                                    {{--@endforeach--}}
-                                                {{--</select>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-4">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="admin_level"> 行政职务 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<select class="custom-select form-control required"--}}
-                                                        {{--id="admin_level" name="admin_level">--}}
-                                                    {{--<option value="">选择职务</option>--}}
-                                                    {{--@foreach($data['admin_level'] as $v)--}}
-                                                        {{--<option value="{{ $v->id }}">{{ $v->name }}</option>--}}
-                                                    {{--@endforeach--}}
-                                                {{--</select>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-4">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="work_start_date"> 入职时间 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<input type="date" class="form-control required"--}}
-                                                       {{--id="work_start_date" name="work_start_date">--}}
-                                                {{--</select>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                    {{--<div class="row">--}}
-                                        {{--<div class="col-md-6">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="technical_level"> 人员类别 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<select class="custom-select form-control required"--}}
-                                                        {{--id="technical_level" name="technical_level">--}}
-                                                    {{--<option value="">选择类别</option>--}}
-                                                    {{--@foreach($data['technical_level'] as $v)--}}
-                                                        {{--<option value="{{ $v->id }}">{{ $v->name }}</option>--}}
-                                                    {{--@endforeach--}}
-                                                {{--</select>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-6">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="work_status"> 在职状态 : <span--}}
-                                                            {{--class="danger">*</span> </label>--}}
-                                                {{--<select class="custom-select form-control required"--}}
-                                                        {{--id="work_status" name="work_status">--}}
-                                                    {{--<option value="">选择类别</option>--}}
-                                                    {{--@foreach($data['work_status'] as $v)--}}
-                                                        {{--<option value="{{ $v->id }}">{{ $v->name }}</option>--}}
-                                                    {{--@endforeach--}}
-                                                {{--</select>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                    {{--<div class="row">--}}
-                                        {{--<div class="col-md-12">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label> 专业类别 :</label>--}}
-                                                {{--<div class="c-inputs-stacked">--}}
-                                                    {{--<div class="row">--}}
-                                                        {{--@foreach($data['professions'] as $v)--}}
-                                                            {{--<div class="col-md-4">--}}
-                                                                {{--<label class="inline custom-control custom-checkbox block">--}}
-                                                                    {{--<input type="checkbox" class="custom-control-input"--}}
-                                                                           {{--name="admin_professions_checkbox_group"--}}
-                                                                           {{--id="admin_profession_{{ $v->id }}"--}}
-                                                                           {{--value="{{ $v->id }}"> <span--}}
-                                                                            {{--class="custom-control-indicator"></span>--}}
-                                                                    {{--<span--}}
-                                                                            {{--class="custom-control-description ml-0">{{ $v->name }}</span>--}}
-                                                                {{--</label>--}}
-                                                            {{--</div>--}}
-                                                        {{--@endforeach--}}
-                                                    {{--</div>--}}
-                                                {{--</div>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-12">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="remark"> 备注 :</label>--}}
-                                                {{--<textarea name="remark" id="remark"--}}
-                                                          {{--rows="6" class="form-control"></textarea>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                {{--</section>--}}
-                                {{--<!-- Step 3 -->--}}
-                                {{--<h6>工作及学习</h6>--}}
-                                {{--<section>--}}
-                                    {{--<div class="row">--}}
-                                        {{--<div class="col-md-12">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="work_resume"> 工作简历 :</label>--}}
-                                                {{--<textarea name="work_resume" id="work_resume"--}}
-                                                          {{--rows="6" class="form-control"></textarea>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-12">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="study_resume"> 学习简历 :</label>--}}
-                                                {{--<textarea name="study_resume" id="study_resume"--}}
-                                                          {{--rows="6" class="form-control"></textarea>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                {{--</section>--}}
-                                {{--<!-- Step 4 -->--}}
-                                {{--<h6>业绩及奖惩</h6>--}}
-                                {{--<section>--}}
-                                    {{--<div class="row">--}}
-                                        {{--<div class="col-md-12">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="performance"> 主要业绩 :</label>--}}
-                                                {{--<textarea name="performance" id="performance"--}}
-                                                          {{--rows="6" class="form-control"></textarea>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-12">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="rewards"> 奖惩情况 :</label>--}}
-                                                {{--<textarea name="rewards" id="rewards"--}}
-                                                          {{--rows="6" class="form-control"></textarea>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                {{--</section>--}}
-                                {{--<!-- Step 5 -->--}}
-                                {{--<h6>所获证书</h6>--}}
-                                {{--<section>--}}
-                                    {{--<div class="row">--}}
-                                        {{--<div class="col-md-6">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="certificate_name"> 证书名称 :</label>--}}
-                                                {{--<input type="text" class="form-control" name="certificate_name"--}}
-                                                       {{--id="certificate_name">--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-6">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="certificate_number"> 证书编号 :</label>--}}
-                                                {{--<input type="text" class="form-control" name="certificate_number"--}}
-                                                       {{--id="certificate_number">--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-3">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="certificate_continue_password"> 延续注册密码 :</label>--}}
-                                                {{--<input type="text" class="form-control"--}}
-                                                       {{--name="certificate_continue_password"--}}
-                                                       {{--id="certificate_continue_password">--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-3">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="certificate_study_password"> 继续再教育密码 :</label>--}}
-                                                {{--<input type="text" class="form-control"--}}
-                                                       {{--name="certificate_study_password"--}}
-                                                       {{--id="certificate_study_password">--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-3">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="certificate_change_password"> 变更密码 :</label>--}}
-                                                {{--<input type="text" class="form-control"--}}
-                                                       {{--name="certificate_change_password"--}}
-                                                       {{--id="certificate_change_password">--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-3">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="add_tmp_certificate_info"> </label>--}}
-                                                {{--<p>--}}
-                                                    {{--<button type="button" id="add_tmp_certificate_info"--}}
-                                                            {{--class="btn waves-effect waves-light btn-rounded btn-secondary"--}}
-                                                            {{--style="top :10px;">--}}
-                                                        {{--添加--}}
-                                                    {{--</button>--}}
-                                                {{--</p>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-12">--}}
-                                            {{--<table class="table table-bordered table-hover toggle-circle"--}}
-                                                   {{--data-page-size="7" id="admin_certificate_table">--}}
-                                            {{--</table>--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                {{--</section>--}}
-                                {{--<!-- Step 6 -->--}}
-                                {{--<h6>家庭主要成员</h6>--}}
-                                {{--<section>--}}
-                                    {{--<div class="row">--}}
-                                        {{--<div class="col-md-3">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="family_name"> 姓名 :</label>--}}
-                                                {{--<input type="text" class="form-control" name="family_name"--}}
-                                                       {{--id="family_name">--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-3">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="family_relation"> 关系 :</label>--}}
-                                                {{--<input type="text" class="form-control" name="family_relation"--}}
-                                                       {{--id="family_relation">--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-3">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="family_phone"> 电话 :</label>--}}
-                                                {{--<input type="text" class="form-control" name="family_phone"--}}
-                                                       {{--id="family_phone">--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-3">--}}
-                                            {{--<div class="form-group">--}}
-                                                {{--<label for="add_tmp_family_info"> </label>--}}
-                                                {{--<p>--}}
-                                                    {{--<button type="button" id="add_tmp_family_info"--}}
-                                                            {{--class="btn waves-effect waves-light btn-rounded btn-secondary"--}}
-                                                            {{--style="top :10px;">--}}
-                                                        {{--添加--}}
-                                                    {{--</button>--}}
-                                                {{--</p>--}}
-                                            {{--</div>--}}
-                                        {{--</div>--}}
-                                        {{--<div class="col-md-12">--}}
-                                            {{--<table class="table table-bordered table-hover toggle-circle"--}}
-                                                   {{--data-page-size="7" id="admin_family_table">--}}
-                                            {{--</table>--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                {{--</section>--}}
+                            <form action="#" class="validation-wizard wizard-circle" id="addAdminInfoForm">
+                                <!-- Step 1 -->
+                                <h6>基本信息</h6>
+                                <section>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="username"> 用户名 : <span
+                                                            class="danger">*</span> </label>
+                                                <input type="text" class="form-control required"
+                                                       id="username" name="username"></div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="realname"> 姓名 : <span
+                                                            class="danger">*</span> </label>
+                                                <input type="text" class="form-control required" id="realname"
+                                                       name="realname"></div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="adminsex"> 性别 : <span
+                                                            class="danger">*</span> </label>
+                                                <select class="custom-select form-control required"
+                                                        id="adminsex" name="adminsex">
+                                                    <option value="">选择性别</option>
+                                                    <option value="1">男</option>
+                                                    <option value="2">女</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="birthday"> 出生年月 : <span
+                                                            class="danger">*</span> </label>
+                                                <input type="date" class="form-control required"
+                                                       id="birthday" name="birthday"
+                                                       style="padding-top: 6px;padding-bottom: 6px;"></div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="cardno"> 身份证号码 : <span
+                                                            class="danger">*</span> </label>
+                                                <input type="text" class="form-control required"
+                                                       id="cardno" name="cardno"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="phone"> 手机号码 : <span
+                                                            class="danger">*</span> </label>
+                                                <input type="tel" class="form-control required" id="phone"
+                                                       name="phone">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="form-group">
+                                                <label for="address"> 现在住址 : <span
+                                                            class="danger">*</span> </label>
+                                                <input type="text" class="form-control required"
+                                                       id="address" name="address"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="education"> 学历 : <span
+                                                            class="danger">*</span> </label>
+                                                <select class="custom-select form-control required"
+                                                        id="education" name="education">
+                                                    <option value="">选择学历</option>
+                                                    @foreach($data['education'] as $v)
+                                                        <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="school"> 毕业院校 : <span
+                                                            class="danger">*</span> </label>
+                                                <input type="text" class="form-control required" id="school"
+                                                       name="school"></div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="major"> 所学专业 : <span
+                                                            class="danger">*</span> </label>
+                                                <input type="text" class="form-control required" id="major"
+                                                       name="major"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="graduate_date"> 毕业时间 : <span
+                                                            class="danger">*</span> </label>
+                                                <input type="date" class="form-control required"
+                                                       id="graduate_date" name="graduate_date"></div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="work_year"> 工作年限 : <span
+                                                            class="danger">*</span> </label>
+                                                <input type="text" class="form-control required" id="work_year"
+                                                       name="work_year"></div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="level_id"> 所获职称 :</label>
+                                                <select class="custom-select form-control"
+                                                        id="level_id" name="level_id">
+                                                    <option value="">选择职称</option>
+                                                    @foreach($data['level'] as $v)
+                                                        <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="level_type"> 职称类别 :</label>
+                                                <input type="text" class="form-control" id="level_type"
+                                                       name="level_type"></div>
+                                        </div>
+                                    </div>
+                                </section>
+                                <!-- Step 2 -->
+                                <h6>职务信息</h6>
+                                <section>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="u-img">
+                                                    <input type="file" class="dropify" id="admininfo-avatar"
+                                                           data-show-remove="false" data-height="250"
+                                                           data-max-file-size="1M"
+                                                           data-allowed-file-extensions="jpg png"
+                                                           data-default-file="{{ asset('admin/avatars/avatar.png') }}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="department"> 所属部门 : <span
+                                                                    class="danger">*</span> </label>
+                                                        <select class="custom-select form-control required"
+                                                                id="department" name="department">
+                                                            <option value="">选择部门</option>
+                                                            @foreach($data['department'] as $v)
+                                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="admin_level"> 行政职务 : <span
+                                                                    class="danger">*</span> </label>
+                                                        <select class="custom-select form-control required"
+                                                                id="admin_level" name="admin_level">
+                                                            <option value="">选择职务</option>
+                                                            @foreach($data['admin_level'] as $v)
+                                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="technical_level"> 人员类别 : <span
+                                                                    class="danger">*</span> </label>
+                                                        <select class="custom-select form-control required"
+                                                                id="technical_level" name="technical_level">
+                                                            <option value="">选择类别</option>
+                                                            @foreach($data['technical_level'] as $v)
+                                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="work_status"> 在职状态 : <span
+                                                                    class="danger">*</span> </label>
+                                                        <select class="custom-select form-control required"
+                                                                id="work_status" name="work_status">
+                                                            <option value="">选择类别</option>
+                                                            @foreach($data['work_status'] as $v)
+                                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="work_start_date"> 入职时间 : <span
+                                                                    class="danger">*</span> </label>
+                                                        <input type="date" class="form-control required"
+                                                               id="work_start_date" name="work_start_date">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label> 专业类别 :</label>
+                                                <div class="c-inputs-stacked">
+                                                    <div class="row">
+                                                        @foreach($data['professions'] as $v)
+                                                            <div class="col-md-4">
+                                                                <label class="inline custom-control custom-checkbox block">
+                                                                    <input type="checkbox" class="custom-control-input"
+                                                                           name="admin_professions_checkbox_group"
+                                                                           id="admin_profession_{{ $v->id }}"
+                                                                           value="{{ $v->id }}"> <span
+                                                                            class="custom-control-indicator"></span>
+                                                                    <span
+                                                                            class="custom-control-description ml-0">{{ $v->name }}</span>
+                                                                </label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="remark"> 备注 :</label>
+                                                <textarea name="remark" id="remark"
+                                                          rows="6" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                                <!-- Step 3 -->
+                                <h6>工作及学习</h6>
+                                <section>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="work_resume"> 工作简历 :</label>
+                                                <textarea name="work_resume" id="work_resume"
+                                                          rows="6" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="study_resume"> 学习简历 :</label>
+                                                <textarea name="study_resume" id="study_resume"
+                                                          rows="6" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                                <!-- Step 4 -->
+                                <h6>业绩及奖惩</h6>
+                                <section>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="performance"> 主要业绩 :</label>
+                                                <textarea name="performance" id="performance"
+                                                          rows="6" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="rewards"> 奖惩情况 :</label>
+                                                <textarea name="rewards" id="rewards"
+                                                          rows="6" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                                <!-- Step 5 -->
+                                <h6>所获证书</h6>
+                                <section>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="certificate_name"> 证书名称 :</label>
+                                                <input type="text" class="form-control" name="certificate_name"
+                                                       id="certificate_name">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="certificate_number"> 证书编号 :</label>
+                                                <input type="text" class="form-control" name="certificate_number"
+                                                       id="certificate_number">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="certificate_continue_password"> 延续注册密码 :</label>
+                                                <input type="text" class="form-control"
+                                                       name="certificate_continue_password"
+                                                       id="certificate_continue_password">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="certificate_study_password"> 继续再教育密码 :</label>
+                                                <input type="text" class="form-control"
+                                                       name="certificate_study_password"
+                                                       id="certificate_study_password">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="certificate_change_password"> 变更密码 :</label>
+                                                <input type="text" class="form-control"
+                                                       name="certificate_change_password"
+                                                       id="certificate_change_password">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="add_tmp_certificate_info"> </label>
+                                                <p>
+                                                    <button type="button" id="add_tmp_certificate_info"
+                                                            class="btn waves-effect waves-light btn-rounded btn-secondary"
+                                                            style="top :10px;">
+                                                        添加
+                                                    </button>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <table class="table table-bordered table-hover toggle-circle"
+                                                   data-page-size="7" id="admin_certificate_table">
+                                            </table>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <hr>
+                                        </div>
+                                    </div>
+                                </section>
+                                <!-- Step 6 -->
+                                <h6>家庭主要成员</h6>
+                                <section>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="family_name"> 姓名 :</label>
+                                                <input type="text" class="form-control" name="family_name"
+                                                       id="family_name">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="family_relation"> 关系 :</label>
+                                                <input type="text" class="form-control" name="family_relation"
+                                                       id="family_relation">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="family_phone"> 电话 :</label>
+                                                <input type="text" class="form-control" name="family_phone"
+                                                       id="family_phone">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="add_tmp_family_info"> </label>
+                                                <p>
+                                                    <button type="button" id="add_tmp_family_info"
+                                                            class="btn waves-effect waves-light btn-rounded btn-secondary"
+                                                            style="top :10px;">
+                                                        添加
+                                                    </button>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <table class="table table-bordered table-hover toggle-circle"
+                                                   data-page-size="7" id="admin_family_table">
+                                            </table>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <hr>
+                                        </div>
+                                    </div>
+                                </section>
                                 <!-- Step 7 -->
                                 <h6>附件</h6>
                                 <section>
@@ -441,8 +464,8 @@
                                         <div class="col-md-5">
                                             <div class="form-group">
                                                 <label for="admininfo_pic_dir"> 附件 :</label>
-                                                <input type="file" class="form-control" name="admininfo_pic_dir"
-                                                       id="admininfo_pic_dir">
+                                                <input type="file" class="form-control" id="admininfo_pic_dir"
+                                                       multiple="multiple">
                                             </div>
                                         </div>
                                         <div class="col-md-2">
@@ -461,6 +484,9 @@
                                             <table class="table table-bordered table-hover toggle-circle"
                                                    data-page-size="7" id="admininfo_pic_table">
                                             </table>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <hr>
                                         </div>
                                     </div>
                                 </section>
@@ -784,6 +810,42 @@
                         }],
                         onPostBody: onPostBody1
                     });
+                    $('#admininfo_pic_table').bootstrapTable({
+                        url: 'getAdmininfoPic',
+                        ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
+                        cache: false,
+                        method: 'POST',
+                        contentType: "application/x-www-form-urlencoded",
+                        dataField: "data",
+                        pageNumber: 1,
+                        pagination: true,
+                        search: false,
+                        sidePagination: 'client',
+                        pageSize: 6,//单页记录数
+                        responseHandler: responseHandler3,
+                        columns: [{
+                            field: 'SerialNumber',
+                            title: '序号',
+                            formatter: function (value, row, index) {
+                                return index + 1;
+                            }
+                        }, {
+                            field: 'name',
+                            title: '文件名称'
+                        }, {
+                            field: 'mimetype',
+                            title: '文件类型'
+                        }, {
+                            field: 'id',
+                            title: '操作',
+                            formatter: function (value, row, index) {
+                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn showAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="查看"><i class="ti-eye" aria-hidden="true"></i></button>' +
+                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn downLoadAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="下载"><i class="ti-save" aria-hidden="true"></i></button>' +
+                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                            }
+                        }],
+                        onPostBody: onPostBody1
+                    });
                 });
 
                 function responseHandler1(result) {
@@ -796,6 +858,7 @@
                         data: result.data
                     };
                 }
+
                 function responseHandler2(result) {
                     var errcode = result.code;
                     if (errcode) {
@@ -807,7 +870,19 @@
                     };
                 }
 
+                function responseHandler3(result) {
+                    var errcode = result.code;
+                    if (errcode) {
+                        return;
+                    }
+                    return {
+                        total: result.data.length,
+                        data: result.data
+                    };
+                }
+
                 function onPostBody1(res) {
+                    $("[data-toggle='tooltip']").tooltip();
                     $('.delFamilyInfo').click(function () {
                         var family_id = $(this).attr('data-family-id');
                         $.ajax({
@@ -900,7 +975,63 @@
                             }
                         });
                     });
+                    $('.delAdminInfoPic').click(function () {
+                        var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
+                        $.ajax({
+                            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                            url: 'delAdmininfoPic',
+                            type: 'POST',
+                            data: {
+                                admininfo_pic_id: admininfo_pic_id
+                            },
+                            success: function (doc) {
+                                if (doc.code) {
+                                    $.toast({
+                                        heading: '警告',
+                                        text: doc.data,
+                                        position: 'top-right',
+                                        loaderBg: '#ff6849',
+                                        icon: 'warning',
+                                        hideAfter: 3000,
+                                        stack: 6
+                                    });
+                                } else {
+                                    $.toast({
+                                        heading: '成功',
+                                        text: doc.data,
+                                        position: 'top-right',
+                                        loaderBg: '#ff6849',
+                                        icon: 'success',
+                                        hideAfter: 3000,
+                                        stack: 6
+                                    });
+                                    refresh3();
+                                }
+                            },
+                            error: function (doc) {
+                                $.toast({
+                                    heading: '错误',
+                                    text: '网络错误，请稍后重试！',
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'error',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                            }
+                        });
+                    });
+
+                    $('.showAdminInfoPic').click(function () {
+                        var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
+                        window.open('showAdmininfoPic?admininfo_pic_id=' + admininfo_pic_id);
+                    });
+                    $('.downLoadAdminInfoPic').click(function () {
+                        var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
+                        window.open('downLoadAdmininfoPic?admininfo_pic_id=' + admininfo_pic_id);
+                    });
                 }
+
                 $('#add_tmp_family_info').click(function () {
                     var family_name = $('#family_name').val();
                     var family_relation = $('#family_relation').val();
@@ -936,6 +1067,9 @@
                                     stack: 6
                                 });
                                 refresh1();
+                                $('#family_name').val('');
+                                $('#family_relation').val('');
+                                $('#family_phone').val('');
                             }
                         },
                         error: function (doc) {
@@ -990,6 +1124,68 @@
                                     stack: 6
                                 });
                                 refresh2();
+                                $('#certificate_name').val('');
+                                $('#certificate_number').val('');
+                                $('#certificate_continue_password').val('');
+                                $('#certificate_study_password').val('');
+                                $('#certificate_change_password').val('');
+                            }
+                        },
+                        error: function (doc) {
+                            $.toast({
+                                heading: '错误',
+                                text: '网络错误，请稍后重试！',
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'error',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        }
+                    });
+                });
+                $('#add_tmp_admininfo_pic').click(function () {
+                    var admininfo_pic_name = $('#admininfo_pic_name').val();
+                    //初始化FormData对象
+                    var formData = new FormData();
+                    var file = $("#admininfo_pic_dir").prop("files");
+                    var n = file.length;
+                    for (var i = 0; i < n; i++) {
+                        formData.append("files[]", file[i]);
+                    }
+                    formData.append("admininfo_pic_name", admininfo_pic_name);
+                    $.ajax({
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        url: 'addAdmininfoPic',
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (doc) {
+                            if (doc.code) {
+                                $.toast({
+                                    heading: '警告',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'warning',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                            } else {
+                                $.toast({
+                                    heading: '成功',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'success',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                                console.log(doc.data);
+                                refresh3();
+                                $('#admininfo_pic_name').val('');
+                                $("#admininfo_pic_dir").val('')
                             }
                         },
                         error: function (doc) {
@@ -1008,8 +1204,13 @@
                 function refresh1() {
                     $('#admin_family_table').bootstrapTable('refresh', {url: 'getAdminFamily'});
                 }
+
                 function refresh2() {
                     $('#admin_certificate_table').bootstrapTable('refresh', {url: 'getAdminCertificate'});
+                }
+
+                function refresh3() {
+                    $('#admininfo_pic_table').bootstrapTable('refresh', {url: 'getAdmininfoPic'});
                 }
             }
 
@@ -1017,7 +1218,15 @@
             $('#addAdminInfoModal').on('hide.bs.modal', function () {
                 $('#admin_family_table').bootstrapTable('destroy');
                 $('#admin_certificate_table').bootstrapTable('destroy');
+                $('#admininfo_pic_table').bootstrapTable('destroy');
             });
+
+            function clearModalInput() {
+                $("#addAdminInfoForm")[0].reset();
+                $('#admininfo-avatar').siblings('.dropify-preview')
+                    .children('.dropify-render').children('img')
+                    .attr('src', "{{ asset('admin/avatars/avatar.png') }}");
+            }
 
             //添加人员信息
             var form = $(".validation-wizard").show();
@@ -1053,16 +1262,6 @@
                     data['work_year'] = $('#work_year').val();
                     data['level_type'] = $('#level_type').val();
                     data['work_start_date'] = $('#work_start_date').val();
-                    data['certificate_name'] = $('#certificate_name').val();
-                    data['certificate_number'] = $('#certificate_number').val();
-                    data['certificate_continue_password'] = $('#certificate_continue_password').val();
-                    data['certificate_study_password'] = $('#certificate_study_password').val();
-                    data['certificate_change_password'] = $('#certificate_change_password').val();
-                    data['family_name'] = $('#family_name').val();
-                    data['family_relation'] = $('#family_relation').val();
-                    data['family_phone'] = $('#family_phone').val();
-                    data['admininfo_pic_name'] = $('#admininfo_pic_name').val();
-                    data['admininfo_pic_dir'] = $('#admininfo_pic_dir').val();
                     //textarea
                     data['remark'] = $('#remark').val();
                     data['work_resume'] = $('#work_resume').val();
@@ -1071,35 +1270,79 @@
                     data['rewards'] = $('#admininfo_pic_dir').val();
                     //select
                     data['adminsex'] = $('#adminsex').val();
-                    data['education'] = $('#education').val();
+                    data['education_id'] = $('#education').val();
                     data['level_id'] = $('#level_id').val();
-                    data['department'] = $('#department').val();
-                    data['admin_level'] = $('#admin_level').val();
-                    data['technical_level'] = $('#technical_level').val();
+                    data['department_id'] = $('#department').val();
+                    data['admin_level_id'] = $('#admin_level').val();
+                    data['technical_level_id'] = $('#technical_level').val();
                     data['work_status'] = $('#work_status').val();
                     //checkbox
                     data['admin_profession'] = $("input[name='admin_professions_checkbox_group']:checked")
                         .map(function (index, elem) {
                             return $(elem).val();
                         }).get();
-
+                    data['avatar'] = $('#admininfo-avatar').siblings('.dropify-preview')
+                        .children('.dropify-render').children('img')
+                        .attr('src');
                     console.log(data);
-
+                    clearModalInput();
+//                    $.ajax({
+//                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+//                        url: '',
+//                        type: 'POST',
+//                        data: data,
+//                        success: function (doc) {
+//                            if (doc.code) {
+//                                $.toast({
+//                                    heading: '警告',
+//                                    text: doc.data,
+//                                    position: 'top-right',
+//                                    loaderBg: '#ff6849',
+//                                    icon: 'warning',
+//                                    hideAfter: 3000,
+//                                    stack: 6
+//                                });
+//                            } else {
+//                                $.toast({
+//                                    heading: '成功',
+//                                    text: doc.data,
+//                                    position: 'top-right',
+//                                    loaderBg: '#ff6849',
+//                                    icon: 'success',
+//                                    hideAfter: 3000,
+//                                    stack: 6
+//                                });
+//                                refresh3();
+//                            }
+//                        },
+//                        error: function (doc) {
+//                            $.toast({
+//                                heading: '错误',
+//                                text: '网络错误，请稍后重试！',
+//                                position: 'top-right',
+//                                loaderBg: '#ff6849',
+//                                icon: 'error',
+//                                hideAfter: 3000,
+//                                stack: 6
+//                            });
+//                        }
+//                    });
                 }
-            }), $(".validation-wizard").validate({
-                ignore: "input[type=hidden]",
-                errorClass: "text-danger",
-                successClass: "text-success",
-                highlight: function (element, errorClass) {
-                    $(element).removeClass(errorClass)
-                },
-                unhighlight: function (element, errorClass) {
-                    $(element).removeClass(errorClass)
-                },
-                errorPlacement: function (error, element) {
-                    error.insertAfter(element)
-                }
-            })
+            }),
+                $(".validation-wizard").validate({
+                    ignore: "input[type=hidden]",
+                    errorClass: "text-danger",
+                    successClass: "text-success",
+                    highlight: function (element, errorClass) {
+                        $(element).removeClass(errorClass)
+                    },
+                    unhighlight: function (element, errorClass) {
+                        $(element).removeClass(errorClass)
+                    },
+                    errorPlacement: function (error, element) {
+                        error.insertAfter(element)
+                    }
+                })
         })
     </script>
 @endsection

@@ -85,17 +85,21 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('addAdminCertificate', 'AdminController@addAdminCertificate');
     $router->post('getAdminCertificate', 'AdminController@getAdminCertificate');
     $router->post('delAdminCertificate', 'AdminController@delAdminCertificate');
+    $router->post('addAdmininfoPic', 'AdminController@addAdmininfoPic');
+    $router->post('getAdmininfoPic', 'AdminController@getAdmininfoPic');
+    $router->get('showAdmininfoPic', 'AdminController@showAdmininfoPic');
+    $router->get('downLoadAdmininfoPic', 'AdminController@downLoadAdmininfoPic');
+    $router->post('delAdmininfoPic', 'AdminController@delAdmininfoPic');
 
     //上传大文件
     Route::any('aetherupload/preprocess', '\AetherUpload\UploadHandler@preprocess');
     Route::post('aetherupload/uploading', '\AetherUpload\UploadHandler@saveChunk');
-
     //预览大文件
     Route::get('aetherupload/display/{group}/{subDir}/{resourceName}', '\AetherUpload\ResourceHandler@displayResource');
     //下载大文件
     Route::get('aetherupload/download/{group}/{subDir}/{resourceName}/{newName}', '\AetherUpload\ResourceHandler@downloadResource');
 
-    $router->any('test', 'AdminController@getAdminFamily');
+    $router->any('test', 'AdminController@delAdmininfoPic');
 });
 
 

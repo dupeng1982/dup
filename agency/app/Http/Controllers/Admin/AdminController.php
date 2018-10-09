@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\ExportController;
 use App\Models\Admin;
 use App\Models\Admininfo;
+use App\Models\AdmininfoPic;
 use App\Models\AdminLeave;
 use App\Models\AdminLeaveType;
 use App\Models\AdminLevel;
@@ -1454,48 +1455,176 @@ class AdminController extends Controller
         return $this->resp(0, '删除成功');
     }
 
+    //添加小文件
+    private function _uploadFile($file, $dir, $disk = 'admininfo')
+    {
+        $path = Storage::disk($disk)->put($dir, $file);
+        return $path;
+    }
+
+    //删除小文件
+    private function _delFile($file, $disk = 'admininfo')
+    {
+        return Storage::disk($disk)->delete($file);
+    }
+
+    //获取小文件
+    private function _getFile($file, $disk = 'admininfo')
+    {
+        $exists = Storage::disk($disk)->exists($file);
+        if ($exists) {
+            return Storage::disk($disk)->get($file);
+        }
+        return null;
+    }
+
+    //下载小文件
+    private function _downLoadFile($file, $disk = 'admininfo')
+    {
+        return Storage::disk($disk)->download($file);
+    }
+
     //添加人员信息附件
     public function addAdmininfoPic(Request $request)
     {
         $rule = [
-            'certificate_name' => 'required|max:20',
-            'certificate_number' => 'max:50',
-            'continue_password' => 'max:20',
-            'study_password' => 'max:20',
-            'change_password' => 'max:20',
+            'admininfo_pic_name' => 'required|max:20',
+            'files' => 'required|array'
         ];
         $validator = Validator::make($request->all(), $rule);
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
         $operator_id = Auth::guard('admin')->user()->id;
-        Certificate::create(['admininfo_id' => 0, 'name' => $request->certificate_name,
-            'number' => $request->certificate_number, 'continue_password' => $request->continue_password,
-            'study_password' => $request->study_password, 'change_password' => $request->change_password,
-            'operator_id' => $operator_id]);
-        return $this->resp(0, '添加成功');
+        $files = $request->file('files');
+        $date = Date::now()->format('Y-m-d');
+        $data = Array();
+        $i = 0;
+        foreach ($files as $file) {
+            $dir = $this->_uploadFile($file, $date);
+            $data[$i]['admininfo_id'] = 0;
+            $data[$i]['name'] = $request->admininfo_pic_name;
+            $data[$i]['dir'] = $dir;
+            $data[$i]['operator_id'] = $operator_id;
+            $data[$i]['mimetype'] = $file->getMimeType();
+            $i = $i + 1;
+        }
+        return DB::transaction(function () use ($data) {
+            DB::table('admininfo_pic')->insert($data);
+            return $this->resp(0, '添加成功');
+        });
     }
 
-    //获取人员信息附件
+    //获取人员信息附件列表
     public function getAdmininfoPic(Request $request)
     {
         $operator_id = Auth::guard('admin')->user()->id;
-        $rs = Certificate::where('operator_id', $operator_id)->where('admininfo_id', 0)->get();
+        $rs = AdmininfoPic::where('operator_id', $operator_id)->where('admininfo_id', 0)->get();
         return $this->resp(0, $rs);
+    }
+
+    //显示人员信息附件
+    public function showAdmininfoPic(Request $request)
+    {
+        $rule = [
+            'admininfo_pic_id' => 'required|integer|exists:admininfo_pic,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $rs = AdmininfoPic::find($request->admininfo_pic_id);
+        header('Content-type: ' . $rs->mimetype);
+        echo $this->_getFile($rs->dir);
+        exit;
+    }
+
+    //下载人员信息附件
+    public function downLoadAdmininfoPic(Request $request)
+    {
+        $rule = [
+            'admininfo_pic_id' => 'required|integer|exists:admininfo_pic,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $rs = AdmininfoPic::find($request->admininfo_pic_id);
+        return $this->_downLoadFile($rs->dir);
     }
 
     //删除人员信息附件
     public function delAdmininfoPic(Request $request)
     {
         $rule = [
-            'certificate_id' => 'required|integer|exists:certificate,id'
+            'admininfo_pic_id' => 'required|integer|exists:admininfo_pic,id'
         ];
         $validator = Validator::make($request->all(), $rule);
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        Certificate::where('id', $request->certificate_id)->delete();
+        $file = AdmininfoPic::find($request->admininfo_pic_id);
+        $file->delete();
+        $this->_delFile($file->dir);
         return $this->resp(0, '删除成功');
     }
 
+    //添加人员信息
+    public function addAdminInfo(Request $request)
+    {
+        $rule = [
+            'username' => 'required|max:20|unique:admins,name',
+            'realname' => 'required|max:10',
+            'birthday' => 'required|date_format:Y-m-d',
+            'cardno' => 'required|max:20',
+            'phone' => 'required|max:20',
+            'address' => 'required|max:100',
+            'school' => 'required|max:20',
+            'major' => 'required|max:20',
+            'graduate_date' => 'required|date_format:Y-m-d',
+            'work_year' => 'required|integer|between:0,99',
+            'level_id' => 'integer|exists:level,id',
+            'level_type' => 'max:20',
+            'work_start_date' => 'required|date_format:Y-m-d',
+            'adminsex' => 'required|integer|between:1,2',
+            'education_id' => 'required|integer|exists:education,id',
+            'department_id' => 'required|integer|exists:department,id',
+            'admin_level_id' => 'required|integer|exists:admin_level,id',
+            'technical_level_id' => 'required|integer|exists:technical_level,id',
+            'work_status' => 'required|integer|exists:work_status,id',
+            'admin_profession' => 'required|array'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        return DB::transaction(function () use($request){
+            //添加帐号获得admin_id
+            $admin = Admin::create(['name' => $request->username, 'password' => bcrypt('123456')]);
+            $operator_id = Auth::guard('admin')->user()->id;
+            //添加信息获得admininfo_id
+
+            //添加近照
+
+            //关联证书信息
+
+            //关联家庭信息
+
+            //关联附件
+
+            //分配默认角色
+
+            return $this->resp(0,'添加人员成功');
+        });
+    }
+
+    //编辑人员信息
+    public function editAdminInfo(Request $request)
+    {
+    }
+
+    //删除人员
+    public function delAdmin(Request $request)
+    {
+    }
 }

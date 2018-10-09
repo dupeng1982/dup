@@ -83,7 +83,8 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <img src="{{ Auth::guard('admin')->user()->avatar }}" alt="user" class="profile-pic"/></a>
+                            <img src="@if(Auth::guard('admin')->user()->avatar){{ Auth::guard('admin')->user()->avatar }}@else{{ asset('admin/avatars/avatar.png') }}@endif"
+                                 alt="user" class="profile-pic"/></a>
                         <div class="dropdown-menu dropdown-menu-right scale-up">
                             <ul class="dropdown-user">
                                 <li>
@@ -92,7 +93,7 @@
                                             <input type="file" class="dropify" id="admin-avatar"
                                                    data-show-remove="false" data-height="70" data-max-file-size="1M"
                                                    data-allowed-file-extensions="jpg png"
-                                                   data-default-file="{{ Auth::guard('admin')->user()->avatar }}"/>
+                                                   data-default-file="@if(Auth::guard('admin')->user()->avatar){{ Auth::guard('admin')->user()->avatar }}@else{{ asset('admin/avatars/avatar.png') }}@endif"/>
                                         </div>
                                         <div class="u-text">
                                             <h4>{{ Auth::guard('admin')->user()->name }}</h4>
@@ -103,7 +104,9 @@
                                                     无角色
                                                 @endif
                                             </p>
-                                            <button id="save-admin-avatar" class="btn btn-rounded btn-danger btn-sm">上传头像</button>
+                                            <button id="save-admin-avatar" class="btn btn-rounded btn-danger btn-sm">
+                                                上传头像
+                                            </button>
                                         </div>
                                     </div>
                                 </li>
@@ -126,7 +129,7 @@
         <div class="scroll-sidebar">
             <div class="user-profile"
                  style="background: url({{ asset('admin/assets/images/background/user-info.jpg') }}) no-repeat;">
-                <div class="profile-img"><img src="{{ Auth::guard('admin')->user()->avatar }}" alt="user"/>
+                <div class="profile-img"><img src="@if(Auth::guard('admin')->user()->avatar){{ Auth::guard('admin')->user()->avatar }}@else{{ asset('admin/avatars/avatar.png') }}@endif" alt="user"/>
                 </div>
                 <div class="profile-text"><a href="javascript:void(0)" role="button">
                         @if(Auth::guard('admin')->user()->admininfo)
@@ -446,8 +449,8 @@
             messages: {
                 'default': '',
                 'replace': '',
-                'remove':  '',
-                'error':   'error'
+                'remove': '',
+                'error': 'error'
             },
             error: {
                 'fileSize': 'error',
@@ -459,7 +462,7 @@
             }
         });
 
-        $('#save-admin-avatar').click(function(){
+        $('#save-admin-avatar').click(function () {
             var file = $('#admin-avatar').siblings('.dropify-preview')
                 .children('.dropify-render').children('img')
                 .attr('src');

@@ -67,6 +67,12 @@ return [
             'url' => '/admininfo',
         ],
 
+        'adminavatar' => [
+            'driver' => 'local',
+            'root' => storage_path('adminavatar'),
+            'url' => '/adminavatar',
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

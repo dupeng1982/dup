@@ -90,6 +90,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->get('showAdmininfoPic', 'AdminController@showAdmininfoPic');
     $router->get('downLoadAdmininfoPic', 'AdminController@downLoadAdmininfoPic');
     $router->post('delAdmininfoPic', 'AdminController@delAdmininfoPic');
+    $router->post('addAdminInfo', 'AdminController@addAdminInfo');
+    $router->get('getAdminAvatar/{dir?}/{img?}', 'AdminController@getAdminAvatar');
 
     //上传大文件
     Route::any('aetherupload/preprocess', '\AetherUpload\UploadHandler@preprocess');
@@ -99,7 +101,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     //下载大文件
     Route::get('aetherupload/download/{group}/{subDir}/{resourceName}/{newName}', '\AetherUpload\ResourceHandler@downloadResource');
 
-    $router->any('test', 'AdminController@delAdmininfoPic');
+    $router->any('test/{dir}/{img}', 'AdminController@getAdminAvatar');
 });
 
 

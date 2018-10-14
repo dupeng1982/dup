@@ -623,11 +623,14 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        $rs = AdminRole::where('id', $request->role_id)->delete();
-        if ($rs) {
-            return $this->resp(0, '删除成功');
-        }
-        return $this->resp(10000, '删除失败');
+        return DB::transaction(function () use ($request) {
+            $rs = AdminRole::where('id', $request->role_id)->delete();
+            AdminLevel::where('role_id', $request->role_id)->delete();
+            if ($rs) {
+                return $this->resp(0, '删除成功');
+            }
+            return $this->resp(10000, '删除失败');
+        });
     }
 
     //添加角色
@@ -642,12 +645,15 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        $rs = AdminRole::create(['name' => $request->role_name, 'display_name' => $request->role_display_name,
-            'description' => $request->role_description]);
-        if ($rs) {
-            return $this->resp(0, '添加成功');
-        }
-        return $this->resp(10000, '添加失败');
+        return DB::transaction(function () use ($request) {
+            $rs = AdminRole::create(['name' => $request->role_name, 'display_name' => $request->role_display_name,
+                'description' => $request->role_description]);
+            AdminLevel::create(['name' => $request->role_display_name, 'role_id' => $rs->id]);
+            if ($rs) {
+                return $this->resp(0, '添加成功');
+            }
+            return $this->resp(10000, '添加失败');
+        });
     }
 
     //编辑角色
@@ -663,13 +669,16 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        $rs = AdminRole::where('id', $request->role_id)
-            ->update(['name' => $request->role_name, 'display_name' => $request->role_display_name,
-                'description' => $request->role_description]);
-        if ($rs) {
-            return $this->resp(0, '修改成功');
-        }
-        return $this->resp(10000, '修改失败');
+        return DB::transaction(function () use ($request) {
+            $rs = AdminRole::where('id', $request->role_id)
+                ->update(['name' => $request->role_name, 'display_name' => $request->role_display_name,
+                    'description' => $request->role_description]);
+            AdminLevel::where('role_id', $request->role_id)->update(['name' => $request->role_display_name]);
+            if ($rs) {
+                return $this->resp(0, '修改成功');
+            }
+            return $this->resp(10000, '修改失败');
+        });
     }
 
     //获取角色的权限
@@ -1351,22 +1360,18 @@ class AdminController extends Controller
     }
 
     //获取人员列表
-    public function getAdminInfoList(Request $request)
+    public function getAdminInfoList()
     {
-        $rule = [
-            'page' => 'integer',
-            'item' => 'integer',
-        ];
-        $validator = Validator::make($request->all(), $rule);
-        if ($validator->fails()) {
-            return $this->resp(10000, $validator->messages()->first());
-        }
         $data = Admininfo::with('professions')
             ->select('admininfo.id', 'admininfo.admin_id', 'admininfo.name', 'admininfo.sex', 'admininfo.cardno',
                 'admininfo.phone', 'admininfo.work_status', 'admininfo.department_id', 'admininfo.technical_level_id',
-                'admininfo.admin_level_id', 'admininfo.level_id', 'admininfo.education_id', 'admininfo.major')
+                'admininfo.admin_level_id', 'admininfo.level_id', 'admininfo.education_id', 'admininfo.major',
+                'admins.name as username', 'admininfo.birthday', 'admininfo.address', 'admininfo.school',
+                'admininfo.school', 'admininfo.graduate_date', 'admininfo.work_year', 'admininfo.level_type',
+                'admininfo.work_start_date', 'admininfo.remark', 'admininfo.work_resume', 'admininfo.study_resume',
+                'admininfo.performance', 'admininfo.rewards', 'admininfo.rewards', 'admininfo.avatar')
             ->rightjoin('admins', 'admins.id', '=', 'admininfo.admin_id')
-            ->paginate($request->item);
+            ->get();
         return $this->resp(0, $data);
     }
 
@@ -1598,23 +1603,51 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        return DB::transaction(function () use($request){
+        return DB::transaction(function () use ($request) {
             //添加帐号获得admin_id
             $admin = Admin::create(['name' => $request->username, 'password' => bcrypt('123456')]);
             $operator_id = Auth::guard('admin')->user()->id;
-            //添加信息获得admininfo_id
-
             //添加近照
-
+            $avatar = $request->avatar;
+            $img_url = null;
+            if ($avatar && $this->_checkPicbase64($avatar)) {
+                $base64 = explode(',', $avatar);
+                $img = base64_decode($base64[1]);
+                $disk = Storage::disk('adminavatar');
+                $img_name = 'avatar-' . date('Y-m-d-H-i-s-') . $operator_id . '.png';
+                $filename = $disk->put($img_name, $img);
+                if ($filename) {
+                    $img_url = $disk->url($img_name);
+                }
+            }
+            //添加信息获得admininfo_id
+            $admininfo = Admininfo::create(['admin_id' => $admin->id, 'name' => $request->realname,
+                'sex' => $request->adminsex, 'birthday' => $request->birthday,
+                'work_status' => $request->work_status, 'work_year' => $request->work_year,
+                'work_start_date' => $request->work_start_date, 'department_id' => $request->department_id,
+                'technical_level_id' => $request->technical_level_id, 'admin_level_id' => $request->admin_level_id,
+                'phone' => $request->phone, 'level_id' => $request->level_id, 'level_type' => $request->level_type,
+                'cardno' => $request->cardno, 'address' => $request->address, 'education_id' => $request->education_id,
+                'school' => $request->school, 'major' => $request->major, 'graduate_date' => $request->graduate_date,
+                'work_resume' => $request->work_resume, 'study_resume' => $request->study_resume,
+                'performance' => $request->performance, 'rewards' => $request->rewards,
+                'expertise' => $request->expertise, 'remark' => $request->remark, 'avatar' => $img_url,
+                'operator_id' => $operator_id]);
             //关联证书信息
-
+            Certificate::where('admininfo_id', 0)->where('operator_id', $operator_id)
+                ->update(['admininfo_id' => $admininfo->id]);
             //关联家庭信息
-
+            Family::where('admininfo_id', 0)->where('operator_id', $operator_id)
+                ->update(['admininfo_id' => $admininfo->id]);
             //关联附件
-
+            AdmininfoPic::where('admininfo_id', 0)->where('operator_id', $operator_id)
+                ->update(['admininfo_id' => $admininfo->id]);
             //分配默认角色
-
-            return $this->resp(0,'添加人员成功');
+            $role_id = AdminLevel::find($request->admin_level_id)->role_id;
+            $admin->attachRole($role_id);
+            //分配专业
+            $admininfo->professions()->attach($request->admin_profession);
+            return $this->resp(0, '添加人员成功');
         });
     }
 
@@ -1626,5 +1659,16 @@ class AdminController extends Controller
     //删除人员
     public function delAdmin(Request $request)
     {
+    }
+
+    //获取非公开头像
+    public function getAdminAvatar($dir, $img)
+    {
+        if ($dir && $img) {
+            $path = storage_path($dir) . '/' . $img;
+        } else {
+            $path = public_path('admin/avatars') . '/avatar.png';
+        }
+        return response()->file($path);
     }
 }

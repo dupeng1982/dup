@@ -956,99 +956,7 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade show" id="addRoleModal" tabindex="-1" role="dialog"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">添加角色</h4>
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label>角色标识</label>
-                            <input type="text" class="form-control"
-                                   id="add-admin-role-name"></div>
-                        <div class="form-group">
-                            <label>角色名称</label>
-                            <input type="text" class="form-control"
-                                   id="add-admin-role-display-name"></div>
-                        <div class="form-group">
-                            <label>角色描述</label>
-                            <input type="text" class="form-control"
-                                   id="add-admin-role-description"></div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
-                            data-dismiss="modal">关闭
-                    </button>
-                    <button type="button" id="add-admin-role"
-                            class="btn btn-success">添加
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade show" id="editRoleModal" tabindex="-1" role="dialog"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">编辑角色</h4>
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label>角色标识</label>
-                            <input type="text" class="form-control" value=""
-                                   id="edit-admin-role-name"></div>
-                        <div class="form-group">
-                            <label>角色名称</label>
-                            <input type="text" class="form-control" value=""
-                                   id="edit-admin-role-display-name"></div>
-                        <div class="form-group">
-                            <label>角色描述</label>
-                            <input type="text" class="form-control" value=""
-                                   id="edit-admin-role-description"></div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
-                            data-dismiss="modal">关闭
-                    </button>
-                    <button type="button" id="edit-admin-role"
-                            class="btn btn-success">修改
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal bs-example-modal-lg fade show" id="PermListModal" tabindex="-1" role="dialog"
-         aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">权限分配</h4>
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <table class="table table-bordered table-hover toggle-circle"
-                           data-page-size="12" id="admin_perms_table"></table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade show" id="confirmDelRole" tabindex="-1" role="dialog"
+    <div class="modal fade show" id="confirmDelAdmin" tabindex="-1" role="dialog"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -1066,7 +974,7 @@
                     <button type="button" class="btn btn-secondary"
                             data-dismiss="modal">关闭
                     </button>
-                    <button type="button" id="del-admin-role"
+                    <button type="button" id="del-admin-info"
                             class="btn btn-success">确定
                     </button>
                 </div>
@@ -1085,6 +993,7 @@
     <script src="{{ asset('admin/assets/plugins/wizard/messages_zh.js') }}"></script>
     <script>
         $(function () {
+            var del_admin_id;
             $('#admin_info_table').bootstrapTable({
                 url: 'getAdminInfoList',
                 ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
@@ -1097,7 +1006,16 @@
                 search: true,
                 sidePagination: 'client',
                 pageSize: 10,//单页记录数
-                responseHandler: responseHandler,
+                responseHandler: function (result) {
+                    var errcode = result.code;
+                    if (errcode) {
+                        return;
+                    }
+                    return {
+                        total: result.data.length,
+                        data: result.data
+                    };
+                },
                 columns: [{
                     field: 'SerialNumber',
                     title: '序号',
@@ -1143,17 +1061,6 @@
                 onPostBody: onPostBody
             });
 
-            function responseHandler(result) {
-                var errcode = result.code;//在此做了错误代码的判断
-                if (errcode) {
-                    return;
-                }
-                return {
-                    total: result.data.length,
-                    data: result.data
-                };
-            }
-
             function educationFormatter(value, row, index) {
                 var str = new Array();
                 if (value) {
@@ -1168,11 +1075,35 @@
 
             function operateFormatter(value, row, index) {
                 return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editAdminInfo" data-admininfo_id=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
-                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delAdminInfo" data-admininfo_id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delAdminInfo" data-admininfo_id=' + index + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
             }
 
             function refresh() {
                 $('#admin_info_table').bootstrapTable('refresh', {url: 'getAdminInfoList'});
+            }
+
+            function refresh1() {
+                $('#admin_family_table').bootstrapTable('refresh', {url: 'getAdminFamily'});
+            }
+
+            function refresh11() {
+                $('#edit-admin_family_table').bootstrapTable('refresh', {url: 'getAdminFamilyInfo'});
+            }
+
+            function refresh2() {
+                $('#admin_certificate_table').bootstrapTable('refresh', {url: 'getAdminCertificate'});
+            }
+
+            function refresh22() {
+                $('#edit-admin_certificate_table').bootstrapTable('refresh', {url: 'getAdminCertificateInfo'});
+            }
+
+            function refresh3() {
+                $('#admininfo_pic_table').bootstrapTable('refresh', {url: 'getAdmininfoPic'});
+            }
+
+            function refresh33() {
+                $('#edit-admininfo_pic_table').bootstrapTable('refresh', {url: 'getAdmininfoPicInfo'});
             }
 
             function onPostBody(res) {
@@ -1192,7 +1123,16 @@
                         search: false,
                         sidePagination: 'client',
                         pageSize: 5,//单页记录数
-                        responseHandler: responseHandler1,
+                        responseHandler: function (result) {
+                            var errcode = result.code;
+                            if (errcode) {
+                                return;
+                            }
+                            return {
+                                total: result.data.length,
+                                data: result.data
+                            };
+                        },
                         columns: [{
                             field: 'SerialNumber',
                             title: '序号',
@@ -1215,7 +1155,54 @@
                                 return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delFamilyInfo" data-family-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
                             }
                         }],
-                        onPostBody: onPostBody1
+                        onPostBody: function (res) {
+                            $('.delFamilyInfo').click(function () {
+                                var family_id = $(this).attr('data-family-id');
+                                $.ajax({
+                                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                                    url: 'delAdminFamily',
+                                    type: 'POST',
+                                    data: {
+                                        family_id: family_id
+                                    },
+                                    success: function (doc) {
+                                        if (doc.code) {
+                                            $.toast({
+                                                heading: '警告',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'warning',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                        } else {
+                                            $.toast({
+                                                heading: '成功',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'success',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                            refresh1();
+                                        }
+                                    },
+                                    error: function (doc) {
+                                        $.toast({
+                                            heading: '错误',
+                                            text: '网络错误，请稍后重试！',
+                                            position: 'top-right',
+                                            loaderBg: '#ff6849',
+                                            icon: 'error',
+                                            hideAfter: 3000,
+                                            stack: 6
+                                        });
+                                    }
+                                });
+                            });
+                        }
                     });
                     $('#admin_certificate_table').bootstrapTable({
                         url: 'getAdminCertificate',
@@ -1229,7 +1216,16 @@
                         search: false,
                         sidePagination: 'client',
                         pageSize: 5,//单页记录数
-                        responseHandler: responseHandler2,
+                        responseHandler: function (result) {
+                            var errcode = result.code;
+                            if (errcode) {
+                                return;
+                            }
+                            return {
+                                total: result.data.length,
+                                data: result.data
+                            };
+                        },
                         columns: [{
                             field: 'SerialNumber',
                             title: '序号',
@@ -1258,7 +1254,54 @@
                                 return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delCertificateInfo" data-certificate-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
                             }
                         }],
-                        onPostBody: onPostBody1
+                        onPostBody: function (res) {
+                            $('.delCertificateInfo').click(function () {
+                                var certificate_id = $(this).attr('data-certificate-id');
+                                $.ajax({
+                                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                                    url: 'delAdminCertificate',
+                                    type: 'POST',
+                                    data: {
+                                        certificate_id: certificate_id
+                                    },
+                                    success: function (doc) {
+                                        if (doc.code) {
+                                            $.toast({
+                                                heading: '警告',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'warning',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                        } else {
+                                            $.toast({
+                                                heading: '成功',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'success',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                            refresh2();
+                                        }
+                                    },
+                                    error: function (doc) {
+                                        $.toast({
+                                            heading: '错误',
+                                            text: '网络错误，请稍后重试！',
+                                            position: 'top-right',
+                                            loaderBg: '#ff6849',
+                                            icon: 'error',
+                                            hideAfter: 3000,
+                                            stack: 6
+                                        });
+                                    }
+                                });
+                            });
+                        }
                     });
                     $('#admininfo_pic_table').bootstrapTable({
                         url: 'getAdmininfoPic',
@@ -1272,7 +1315,16 @@
                         search: false,
                         sidePagination: 'client',
                         pageSize: 6,//单页记录数
-                        responseHandler: responseHandler3,
+                        responseHandler: function (result) {
+                            var errcode = result.code;
+                            if (errcode) {
+                                return;
+                            }
+                            return {
+                                total: result.data.length,
+                                data: result.data
+                            };
+                        },
                         columns: [{
                             field: 'SerialNumber',
                             title: '序号',
@@ -1294,193 +1346,64 @@
                                     '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
                             }
                         }],
-                        onPostBody: onPostBody1
+                        onPostBody: function (res) {
+                            $('.delAdminInfoPic').click(function () {
+                                var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
+                                $.ajax({
+                                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                                    url: 'delAdmininfoPic',
+                                    type: 'POST',
+                                    data: {
+                                        admininfo_pic_id: admininfo_pic_id
+                                    },
+                                    success: function (doc) {
+                                        if (doc.code) {
+                                            $.toast({
+                                                heading: '警告',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'warning',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                        } else {
+                                            $.toast({
+                                                heading: '成功',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'success',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                            refresh3();
+                                        }
+                                    },
+                                    error: function (doc) {
+                                        $.toast({
+                                            heading: '错误',
+                                            text: '网络错误，请稍后重试！',
+                                            position: 'top-right',
+                                            loaderBg: '#ff6849',
+                                            icon: 'error',
+                                            hideAfter: 3000,
+                                            stack: 6
+                                        });
+                                    }
+                                });
+                            });
+                            $('.showAdminInfoPic').click(function () {
+                                var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
+                                window.open('showAdmininfoPic?admininfo_pic_id=' + admininfo_pic_id);
+                            });
+                            $('.downLoadAdminInfoPic').click(function () {
+                                var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
+                                window.open('downLoadAdmininfoPic?admininfo_pic_id=' + admininfo_pic_id);
+                            });
+                        }
                     });
                 });
-
-                function responseHandler1(result) {
-                    var errcode = result.code;
-                    if (errcode) {
-                        return;
-                    }
-                    return {
-                        total: result.data.length,
-                        data: result.data
-                    };
-                }
-
-                function responseHandler2(result) {
-                    var errcode = result.code;
-                    if (errcode) {
-                        return;
-                    }
-                    return {
-                        total: result.data.length,
-                        data: result.data
-                    };
-                }
-
-                function responseHandler3(result) {
-                    var errcode = result.code;
-                    if (errcode) {
-                        return;
-                    }
-                    return {
-                        total: result.data.length,
-                        data: result.data
-                    };
-                }
-
-                function onPostBody1(res) {
-                    $("[data-toggle='tooltip']").tooltip();
-                    $('.delFamilyInfo').click(function () {
-                        var family_id = $(this).attr('data-family-id');
-                        $.ajax({
-                            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                            url: 'delAdminFamily',
-                            type: 'POST',
-                            data: {
-                                family_id: family_id
-                            },
-                            success: function (doc) {
-                                if (doc.code) {
-                                    $.toast({
-                                        heading: '警告',
-                                        text: doc.data,
-                                        position: 'top-right',
-                                        loaderBg: '#ff6849',
-                                        icon: 'warning',
-                                        hideAfter: 3000,
-                                        stack: 6
-                                    });
-                                } else {
-                                    $.toast({
-                                        heading: '成功',
-                                        text: doc.data,
-                                        position: 'top-right',
-                                        loaderBg: '#ff6849',
-                                        icon: 'success',
-                                        hideAfter: 3000,
-                                        stack: 6
-                                    });
-                                    refresh1();
-                                }
-                            },
-                            error: function (doc) {
-                                $.toast({
-                                    heading: '错误',
-                                    text: '网络错误，请稍后重试！',
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'error',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                            }
-                        });
-                    });
-                    $('.delCertificateInfo').click(function () {
-                        var certificate_id = $(this).attr('data-certificate-id');
-                        $.ajax({
-                            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                            url: 'delAdminCertificate',
-                            type: 'POST',
-                            data: {
-                                certificate_id: certificate_id
-                            },
-                            success: function (doc) {
-                                if (doc.code) {
-                                    $.toast({
-                                        heading: '警告',
-                                        text: doc.data,
-                                        position: 'top-right',
-                                        loaderBg: '#ff6849',
-                                        icon: 'warning',
-                                        hideAfter: 3000,
-                                        stack: 6
-                                    });
-                                } else {
-                                    $.toast({
-                                        heading: '成功',
-                                        text: doc.data,
-                                        position: 'top-right',
-                                        loaderBg: '#ff6849',
-                                        icon: 'success',
-                                        hideAfter: 3000,
-                                        stack: 6
-                                    });
-                                    refresh2();
-                                }
-                            },
-                            error: function (doc) {
-                                $.toast({
-                                    heading: '错误',
-                                    text: '网络错误，请稍后重试！',
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'error',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                            }
-                        });
-                    });
-                    $('.delAdminInfoPic').click(function () {
-                        var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
-                        $.ajax({
-                            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                            url: 'delAdmininfoPic',
-                            type: 'POST',
-                            data: {
-                                admininfo_pic_id: admininfo_pic_id
-                            },
-                            success: function (doc) {
-                                if (doc.code) {
-                                    $.toast({
-                                        heading: '警告',
-                                        text: doc.data,
-                                        position: 'top-right',
-                                        loaderBg: '#ff6849',
-                                        icon: 'warning',
-                                        hideAfter: 3000,
-                                        stack: 6
-                                    });
-                                } else {
-                                    $.toast({
-                                        heading: '成功',
-                                        text: doc.data,
-                                        position: 'top-right',
-                                        loaderBg: '#ff6849',
-                                        icon: 'success',
-                                        hideAfter: 3000,
-                                        stack: 6
-                                    });
-                                    refresh3();
-                                }
-                            },
-                            error: function (doc) {
-                                $.toast({
-                                    heading: '错误',
-                                    text: '网络错误，请稍后重试！',
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'error',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                            }
-                        });
-                    });
-
-                    $('.showAdminInfoPic').click(function () {
-                        var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
-                        window.open('showAdmininfoPic?admininfo_pic_id=' + admininfo_pic_id);
-                    });
-                    $('.downLoadAdminInfoPic').click(function () {
-                        var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
-                        window.open('downLoadAdmininfoPic?admininfo_pic_id=' + admininfo_pic_id);
-                    });
-                }
 
                 $('#add_tmp_family_info').click(function () {
                     var family_name = $('#family_name').val();
@@ -1520,6 +1443,60 @@
                                 $('#family_name').val('');
                                 $('#family_relation').val('');
                                 $('#family_phone').val('');
+                            }
+                        },
+                        error: function (doc) {
+                            $.toast({
+                                heading: '错误',
+                                text: '网络错误，请稍后重试！',
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'error',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        }
+                    });
+                });
+                $('#edit-add_tmp_family_info').click(function () {
+                    var family_name = $('#edit-family_name').val();
+                    var family_relation = $('#edit-family_relation').val();
+                    var family_phone = $('#edit-family_phone').val();
+                    $.ajax({
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        url: 'addAdminFamilyInfo',
+                        type: 'POST',
+                        data: {
+                            admininfo_id: $('#edit-admininfo_id').val(),
+                            family_name: family_name,
+                            family_relation: family_relation,
+                            family_phone: family_phone
+                        },
+                        success: function (doc) {
+                            if (doc.code) {
+                                $.toast({
+                                    heading: '警告',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'warning',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                            } else {
+                                $.toast({
+                                    heading: '成功',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'success',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                                refresh11();
+                                $('#edit-family_name').val('');
+                                $('#edit-family_relation').val('');
+                                $('#edit-family_phone').val('');
                             }
                         },
                         error: function (doc) {
@@ -1594,6 +1571,66 @@
                         }
                     });
                 });
+                $('#edit-add_tmp_certificate_info').click(function () {
+                    var certificate_name = $('#edit-certificate_name').val();
+                    var certificate_number = $('#edit-certificate_number').val();
+                    var continue_password = $('#edit-certificate_continue_password').val();
+                    var study_password = $('#edit-certificate_study_password').val();
+                    var change_password = $('#edit-certificate_change_password').val();
+                    $.ajax({
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        url: 'addAdminCertificateInfo',
+                        type: 'POST',
+                        data: {
+                            admininfo_id: $('#edit-admininfo_id').val(),
+                            certificate_name: certificate_name,
+                            certificate_number: certificate_number,
+                            continue_password: continue_password,
+                            study_password: study_password,
+                            change_password: change_password
+                        },
+                        success: function (doc) {
+                            if (doc.code) {
+                                $.toast({
+                                    heading: '警告',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'warning',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                            } else {
+                                $.toast({
+                                    heading: '成功',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'success',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                                refresh22();
+                                $('#edit-certificate_name').val('');
+                                $('#edit-certificate_number').val('');
+                                $('#edit-certificate_continue_password').val('');
+                                $('#edit-certificate_study_password').val('');
+                                $('#edit-certificate_change_password').val('');
+                            }
+                        },
+                        error: function (doc) {
+                            $.toast({
+                                heading: '错误',
+                                text: '网络错误，请稍后重试！',
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'error',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        }
+                    });
+                });
                 $('#add_tmp_admininfo_pic').click(function () {
                     var admininfo_pic_name = $('#admininfo_pic_name').val();
                     //初始化FormData对象
@@ -1632,7 +1669,6 @@
                                     hideAfter: 3000,
                                     stack: 6
                                 });
-                                console.log(doc.data);
                                 refresh3();
                                 $('#admininfo_pic_name').val('');
                                 $("#admininfo_pic_dir").val('')
@@ -1651,25 +1687,71 @@
                         }
                     });
                 });
-                function refresh1() {
-                    $('#admin_family_table').bootstrapTable('refresh', {url: 'getAdminFamily'});
-                }
+                $('#edit-add_tmp_admininfo_pic').click(function () {
+                    var admininfo_pic_name = $('#edit-admininfo_pic_name').val();
+                    //初始化FormData对象
+                    var formData = new FormData();
+                    var file = $("#edit-admininfo_pic_dir").prop("files");
+                    var n = file.length;
+                    for (var i = 0; i < n; i++) {
+                        formData.append("files[]", file[i]);
+                    }
+                    formData.append("admininfo_pic_name", admininfo_pic_name);
+                    formData.append("admininfo_id", $('#edit-admininfo_id').val());
+                    $.ajax({
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        url: 'addAdmininfoPicInfo',
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (doc) {
+                            if (doc.code) {
+                                $.toast({
+                                    heading: '警告',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'warning',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                            } else {
+                                $.toast({
+                                    heading: '成功',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'success',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                                refresh33();
+                                $('#edit-admininfo_pic_name').val('');
+                                $("#edit-admininfo_pic_dir").val('')
+                            }
+                        },
+                        error: function (doc) {
+                            $.toast({
+                                heading: '错误',
+                                text: '网络错误，请稍后重试！',
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'error',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        }
+                    });
+                });
 
-                function refresh2() {
-                    $('#admin_certificate_table').bootstrapTable('refresh', {url: 'getAdminCertificate'});
-                }
-
-                function refresh3() {
-                    $('#admininfo_pic_table').bootstrapTable('refresh', {url: 'getAdmininfoPic'});
-                }
-
-                //编辑
                 $('.editAdminInfo').click(function () {
                     $('#editAdminInfoModal').modal('show');
 
                     var data = $('#admin_info_table').bootstrapTable('getData');
                     var index = $(this).attr('data-admininfo_id');
-                    $('#edit-admininfo_id').val(data[index].id);
+                    var admininfo_id = data[index].id;
+                    $('#edit-admininfo_id').val(admininfo_id);
                     $('#edit-username').val(data[index].username);
                     $('#edit-realname').val(data[index].name);
                     $('#edit-birthday').val(data[index].birthday);
@@ -1711,7 +1793,7 @@
                         .attr('src', admininfo_avatar);
 
                     $('#edit-admin_family_table').bootstrapTable({
-                        url: 'getAdminFamily',
+                        url: 'getAdminFamilyInfo',
                         ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
                         cache: false,
                         method: 'POST',
@@ -1722,7 +1804,21 @@
                         search: false,
                         sidePagination: 'client',
                         pageSize: 5,//单页记录数
-                        responseHandler: responseHandler1,
+                        queryParams: function (params) {
+                            return {
+                                admininfo_id: $('#edit-admininfo_id').val()
+                            }
+                        },
+                        responseHandler: function (result) {
+                            var errcode = result.code;
+                            if (errcode) {
+                                return;
+                            }
+                            return {
+                                total: result.data.length,
+                                data: result.data
+                            };
+                        },
                         columns: [{
                             field: 'SerialNumber',
                             title: '序号',
@@ -1742,13 +1838,61 @@
                             field: 'id',
                             title: '操作',
                             formatter: function (value, row, index) {
-                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delFamilyInfo" data-family-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delEditFamilyInfo" data-family-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
                             }
                         }],
-                        onPostBody: onPostBody1
+                        onPostBody: function (res) {
+                            $('.delEditFamilyInfo').click(function () {
+                                var family_id = $(this).attr('data-family-id');
+                                $.ajax({
+                                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                                    url: 'delAdminFamily',
+                                    type: 'POST',
+                                    data: {
+                                        family_id: family_id
+                                    },
+                                    success: function (doc) {
+                                        if (doc.code) {
+                                            $.toast({
+                                                heading: '警告',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'warning',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                        } else {
+                                            $.toast({
+                                                heading: '成功',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'success',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                            refresh11();
+                                        }
+                                    },
+                                    error: function (doc) {
+                                        $.toast({
+                                            heading: '错误',
+                                            text: '网络错误，请稍后重试！',
+                                            position: 'top-right',
+                                            loaderBg: '#ff6849',
+                                            icon: 'error',
+                                            hideAfter: 3000,
+                                            stack: 6
+                                        });
+                                    }
+                                });
+                            });
+                        }
                     });
+
                     $('#edit-admin_certificate_table').bootstrapTable({
-                        url: 'getAdminCertificate',
+                        url: 'getAdminCertificateInfo',
                         ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
                         cache: false,
                         method: 'POST',
@@ -1759,7 +1903,21 @@
                         search: false,
                         sidePagination: 'client',
                         pageSize: 5,//单页记录数
-                        responseHandler: responseHandler2,
+                        queryParams: function (params) {
+                            return {
+                                admininfo_id: $('#edit-admininfo_id').val()
+                            }
+                        },
+                        responseHandler: function (result) {
+                            var errcode = result.code;
+                            if (errcode) {
+                                return;
+                            }
+                            return {
+                                total: result.data.length,
+                                data: result.data
+                            };
+                        },
                         columns: [{
                             field: 'SerialNumber',
                             title: '序号',
@@ -1785,13 +1943,61 @@
                             field: 'id',
                             title: '操作',
                             formatter: function (value, row, index) {
-                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delCertificateInfo" data-certificate-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delEditCertificateInfo" data-certificate-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
                             }
                         }],
-                        onPostBody: onPostBody1
+                        onPostBody: function (res) {
+                            $('.delEditCertificateInfo').click(function () {
+                                var certificate_id = $(this).attr('data-certificate-id');
+                                $.ajax({
+                                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                                    url: 'delAdminCertificate',
+                                    type: 'POST',
+                                    data: {
+                                        certificate_id: certificate_id
+                                    },
+                                    success: function (doc) {
+                                        if (doc.code) {
+                                            $.toast({
+                                                heading: '警告',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'warning',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                        } else {
+                                            $.toast({
+                                                heading: '成功',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'success',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                            refresh22();
+                                        }
+                                    },
+                                    error: function (doc) {
+                                        $.toast({
+                                            heading: '错误',
+                                            text: '网络错误，请稍后重试！',
+                                            position: 'top-right',
+                                            loaderBg: '#ff6849',
+                                            icon: 'error',
+                                            hideAfter: 3000,
+                                            stack: 6
+                                        });
+                                    }
+                                });
+                            });
+                        }
                     });
+
                     $('#edit-admininfo_pic_table').bootstrapTable({
-                        url: 'getAdmininfoPic',
+                        url: 'getAdmininfoPicInfo',
                         ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
                         cache: false,
                         method: 'POST',
@@ -1802,7 +2008,21 @@
                         search: false,
                         sidePagination: 'client',
                         pageSize: 6,//单页记录数
-                        responseHandler: responseHandler3,
+                        queryParams: function (params) {
+                            return {
+                                admininfo_id: $('#edit-admininfo_id').val()
+                            }
+                        },
+                        responseHandler: function (result) {
+                            var errcode = result.code;
+                            if (errcode) {
+                                return;
+                            }
+                            return {
+                                total: result.data.length,
+                                data: result.data
+                            };
+                        },
                         columns: [{
                             field: 'SerialNumber',
                             title: '序号',
@@ -1819,16 +2039,126 @@
                             field: 'id',
                             title: '操作',
                             formatter: function (value, row, index) {
-                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn showAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="查看"><i class="ti-eye" aria-hidden="true"></i></button>' +
-                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn downLoadAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="下载"><i class="ti-save" aria-hidden="true"></i></button>' +
-                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn showEditAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="查看"><i class="ti-eye" aria-hidden="true"></i></button>' +
+                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn downLoadEditAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="下载"><i class="ti-save" aria-hidden="true"></i></button>' +
+                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delEditAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
                             }
                         }],
-                        onPostBody: onPostBody1
+                        onPostBody: function (res) {
+                            $('.delEditAdminInfoPic').click(function () {
+                                var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
+                                $.ajax({
+                                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                                    url: 'delAdmininfoPic',
+                                    type: 'POST',
+                                    data: {
+                                        admininfo_pic_id: admininfo_pic_id
+                                    },
+                                    success: function (doc) {
+                                        if (doc.code) {
+                                            $.toast({
+                                                heading: '警告',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'warning',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                        } else {
+                                            $.toast({
+                                                heading: '成功',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'success',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                            refresh33();
+                                        }
+                                    },
+                                    error: function (doc) {
+                                        $.toast({
+                                            heading: '错误',
+                                            text: '网络错误，请稍后重试！',
+                                            position: 'top-right',
+                                            loaderBg: '#ff6849',
+                                            icon: 'error',
+                                            hideAfter: 3000,
+                                            stack: 6
+                                        });
+                                    }
+                                });
+                            });
+
+                            $('.showEditAdminInfoPic').click(function () {
+                                var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
+                                window.open('showAdmininfoPic?admininfo_pic_id=' + admininfo_pic_id);
+                            });
+                            $('.downLoadEditAdminInfoPic').click(function () {
+                                var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
+                                window.open('downLoadAdmininfoPic?admininfo_pic_id=' + admininfo_pic_id);
+                            });
+                        }
                     });
                 });
 
+                $('.delAdminInfo').click(function () {
+                    $('#confirmDelAdmin').modal('show');
+
+                    var data = $('#admin_info_table').bootstrapTable('getData');
+                    var index = $(this).attr('data-admininfo_id');
+                    del_admin_id = data[index].admin_id;
+                });
             }
+
+            $('#del-admin-info').click(function(){
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: 'delAdmin',
+                    type: 'POST',
+                    data: {
+                        admin_id: del_admin_id
+                    },
+                    success: function (doc) {
+                        if (doc.code) {
+                            $.toast({
+                                heading: '警告',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'warning',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        } else {
+                            $.toast({
+                                heading: '成功',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'success',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                            $('#confirmDelAdmin').modal('hide');
+                            refresh();
+                        }
+                    },
+                    error: function (doc) {
+                        $.toast({
+                            heading: '错误',
+                            text: '网络错误，请稍后重试！',
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'error',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                });
+            });
 
             $('#addAdminInfoModal').on('hide.bs.modal', function () {
                 $('#admin_family_table').bootstrapTable('destroy');
@@ -1841,6 +2171,9 @@
                     .map(function (index, elem) {
                         $(elem).removeAttr('checked');
                     });
+                $('#edit-admin_family_table').bootstrapTable('destroy');
+                $('#edit-admin_certificate_table').bootstrapTable('destroy');
+                $('#edit-admininfo_pic_table').bootstrapTable('destroy');
             });
 
             function clearModalInput() {
@@ -1987,42 +2320,43 @@
                 onFinished: function (event, currentIndex) {
                     $.ajax({
                         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        url: 'addAdminInfo',
+                        url: 'editAdminInfo',
                         type: 'POST',
                         data: {
+                            admininfo_id: $('#edit-admininfo_id').val(),
                             //input
-                            username: $('#username').val(),
-                            realname: $('#realname').val(),
-                            birthday: $('#birthday').val(),
-                            cardno: $('#cardno').val(),
-                            phone: $('#phone').val(),
-                            address: $('#address').val(),
-                            school: $('#school').val(),
-                            major: $('#major').val(),
-                            graduate_date: $('#graduate_date').val(),
-                            work_year: $('#work_year').val(),
-                            level_type: $('#level_type').val(),
-                            work_start_date: $('#work_start_date').val(),
+                            username: $('#edit-username').val(),
+                            realname: $('#edit-realname').val(),
+                            birthday: $('#edit-birthday').val(),
+                            cardno: $('#edit-cardno').val(),
+                            phone: $('#edit-phone').val(),
+                            address: $('#edit-address').val(),
+                            school: $('#edit-school').val(),
+                            major: $('#edit-major').val(),
+                            graduate_date: $('#edit-graduate_date').val(),
+                            work_year: $('#edit-work_year').val(),
+                            level_type: $('#edit-level_type').val(),
+                            work_start_date: $('#edit-work_start_date').val(),
                             //textarea
-                            remark: $('#remark').val(),
-                            work_resume: $('#work_resume').val(),
-                            study_resume: $('#study_resume').val(),
-                            performance: $('#performance').val(),
-                            rewards: $('#rewards').val(),
+                            remark: $('#edit-remark').val(),
+                            work_resume: $('#edit-work_resume').val(),
+                            study_resume: $('#edit-study_resume').val(),
+                            performance: $('#edit-performance').val(),
+                            rewards: $('#edit-rewards').val(),
                             //select
-                            adminsex: $('#adminsex').val(),
-                            education_id: $('#education').val(),
-                            level_id: $('#level_id').val(),
-                            department_id: $('#department').val(),
-                            admin_level_id: $('#admin_level').val(),
-                            technical_level_id: $('#technical_level').val(),
-                            work_status: $('#work_status').val(),
+                            adminsex: $('#edit-adminsex').val(),
+                            education_id: $('#edit-education').val(),
+                            level_id: $('#edit-level_id').val(),
+                            department_id: $('#edit-department').val(),
+                            admin_level_id: $('#edit-admin_level').val(),
+                            technical_level_id: $('#edit-technical_level').val(),
+                            work_status: $('#edit-work_status').val(),
                             //checkbox
-                            admin_profession: $("input[name='admin_professions_checkbox_group']:checked")
+                            admin_profession: $("input[name='edit-admin_professions_checkbox_group']:checked")
                                 .map(function (index, elem) {
                                     return $(elem).val();
                                 }).get(),
-                            avatar: $('#admininfo-avatar').siblings('.dropify-preview')
+                            avatar: $('#edit-admininfo-avatar').siblings('.dropify-preview')
                                 .children('.dropify-render').children('img')
                                 .attr('src')
                         },
@@ -2047,8 +2381,7 @@
                                     hideAfter: 3000,
                                     stack: 6
                                 });
-                                clearModalInput();
-                                $('#addAdminInfoModal').modal('hide');
+                                $('#editAdminInfoModal').modal('hide');
                                 refresh();
                             }
                         },

@@ -81,16 +81,24 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('getAdminInfoList', 'AdminController@getAdminInfoList');
     $router->post('addAdminFamily', 'AdminController@addAdminFamily');
     $router->post('getAdminFamily', 'AdminController@getAdminFamily');
+    $router->post('getAdminFamilyInfo', 'AdminController@getAdminFamilyInfo');
+    $router->post('addAdminFamilyInfo', 'AdminController@addAdminFamilyInfo');
     $router->post('delAdminFamily', 'AdminController@delAdminFamily');
     $router->post('addAdminCertificate', 'AdminController@addAdminCertificate');
     $router->post('getAdminCertificate', 'AdminController@getAdminCertificate');
+    $router->post('addAdminCertificateInfo', 'AdminController@addAdminCertificateInfo');
+    $router->post('getAdminCertificateInfo', 'AdminController@getAdminCertificateInfo');
     $router->post('delAdminCertificate', 'AdminController@delAdminCertificate');
     $router->post('addAdmininfoPic', 'AdminController@addAdmininfoPic');
+    $router->post('addAdmininfoPicInfo', 'AdminController@addAdmininfoPicInfo');
     $router->post('getAdmininfoPic', 'AdminController@getAdmininfoPic');
+    $router->post('getAdmininfoPicInfo', 'AdminController@getAdmininfoPicInfo');
     $router->get('showAdmininfoPic', 'AdminController@showAdmininfoPic');
     $router->get('downLoadAdmininfoPic', 'AdminController@downLoadAdmininfoPic');
     $router->post('delAdmininfoPic', 'AdminController@delAdmininfoPic');
     $router->post('addAdminInfo', 'AdminController@addAdminInfo');
+    $router->post('editAdminInfo', 'AdminController@editAdminInfo');
+    $router->post('delAdmin', 'AdminController@delAdmin');
     $router->get('getAdminAvatar/{dir?}/{img?}', 'AdminController@getAdminAvatar');
 
     //上传大文件

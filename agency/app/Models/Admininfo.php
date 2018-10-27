@@ -87,6 +87,21 @@ class Admininfo extends Model
         return $this->belongsToMany('App\Models\Profession', 'profession_admin', 'admininfo_id', 'profession_id');
     }
 
+    public function family()
+    {
+        return $this->hasMany('App\Models\Family', 'admininfo_id', 'id');
+    }
+
+    public function certificate()
+    {
+        return $this->hasMany('App\Models\Certificate', 'admininfo_id', 'id');
+    }
+
+    public function attachment()
+    {
+        return $this->hasMany('App\Models\AdmininfoPic', 'admininfo_id', 'id');
+    }
+
     public function getSexNameAttribute()
     {
         if ($this->sex == 1) {

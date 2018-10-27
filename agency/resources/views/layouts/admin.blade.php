@@ -145,21 +145,23 @@
                                     class="mdi mdi-gauge"></i><span class="hide-menu">首页 </span></a>
                     </li>
                     <li>
-                        <a class="has-arrow waves-effect waves-dark" href="{{ url('admin/aaa') }}"
+                        <a class="has-arrow waves-effect waves-dark" href="{{ url('admin/contractmanage') }}"
                            aria-expanded="false"><i
                                     class="mdi mdi-store"></i><span class="hide-menu">项目管理</span></a>
                         <ul aria-expanded="false" class="collapse">
-                            <li><a href="{{ url('admin/aaa') }}">合同管理</a></li>
-                            <li><a href="{{ url('admin/bbb') }}">项目管理</a></li>
-                            <li><a href="{{ url('admin/bbb') }}">单位管理</a></li>
+                            <li><a href="{{ url('admin/contractmanage') }}">合同管理</a></li>
+                            <li><a href="{{ url('admin/costprojectmanage') }}">造价项目管理</a></li>
+                            <li><a href="{{ url('admin/costprojectcheck') }}">造价项目审核</a></li>
+                            <li><a href="{{ url('admin/projectunitmanage') }}">项目单位管理</a></li>
                         </ul>
                     </li>
                     <li>
-                        <a class="has-arrow waves-effect waves-dark" href="{{ url('admin/ccc') }}"
+                        <a class="has-arrow waves-effect waves-dark" href="{{ url('admin/myextract') }}"
                            aria-expanded="false"><i
                                     class="mdi mdi-coin"></i><span class="hide-menu">财务管理</span></a>
                         <ul aria-expanded="false" class="collapse">
-                            <li><a href="{{ url('admin/ccc') }}">财务设置</a></li>
+                            <li><a href="{{ url('admin/myextract') }}">我的提成</a></li>
+                            <li><a href="{{ url('admin/financemanage') }}">财务管理</a></li>
                         </ul>
                     </li>
                     <li>

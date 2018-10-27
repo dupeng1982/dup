@@ -1343,7 +1343,91 @@ class AdminController extends Controller
     /*******我的信息视图*******/
     public function myinfo()
     {
-        return view('admin/myinfo');
+        $admin_id = Auth::guard('admin')->user()->id;
+        $data = Admininfo::with('professions')->where('admin_id', $admin_id)->first();
+        return view('admin/myinfo', ['data' => $data]);
+    }
+
+    //获取我的头像
+    public function getMyAvatar()
+    {
+        $admin_id = Auth::guard('admin')->user()->id;
+        $dir = Admininfo::where('admin_id', $admin_id)->pluck('avatar')->first();
+        if ($dir) {
+            $path = storage_path($dir);
+        } else {
+            $path = public_path('admin/avatars') . '/avatar.png';
+        }
+        return response()->file($path);
+    }
+
+    //获取我的家庭关系
+    public function getMyFamilyInfo()
+    {
+        $admin_id = Auth::guard('admin')->user()->id;
+        $admininfo_id = Admininfo::where('admin_id', $admin_id)->pluck('id')->first();
+        $rs = Family::where('admininfo_id', $admininfo_id)->get();
+        return $this->resp(0, $rs);
+    }
+
+    //获取我的证书信息
+    public function getMyCertificateInfo()
+    {
+        $admin_id = Auth::guard('admin')->user()->id;
+        $admininfo_id = Admininfo::where('admin_id', $admin_id)->pluck('id')->first();
+        $rs = Certificate::where('admininfo_id', $admininfo_id)->get();
+        return $this->resp(0, $rs);
+    }
+
+    //获取我的附件
+    public function getMyAttachmentInfo()
+    {
+        $admin_id = Auth::guard('admin')->user()->id;
+        $admininfo_id = Admininfo::where('admin_id', $admin_id)->pluck('id')->first();
+        $rs = AdmininfoPic::where('admininfo_id', $admininfo_id)->get();
+        return $this->resp(0, $rs);
+    }
+
+    //显示我的信息附件
+    public function showMyPic(Request $request)
+    {
+        $rule = [
+            'admininfo_pic_id' => 'required|integer|exists:admininfo_pic,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $admin_id = Auth::guard('admin')->user()->id;
+        $admininfo_id = Admininfo::where('admin_id', $admin_id)->pluck('id')->first();
+        $rs = AdmininfoPic::find($request->admininfo_pic_id);
+        if ($admininfo_id == $rs->admininfo_id) {
+            header('Content-type: ' . $rs->mimetype);
+            echo $this->_getFile($rs->dir);
+            exit;
+        } else {
+            return $this->resp(10000, '您查看的附件不存在');
+        }
+    }
+
+    //下载我的信息附件
+    public function downLoadMyPic(Request $request)
+    {
+        $rule = [
+            'admininfo_pic_id' => 'required|integer|exists:admininfo_pic,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $admin_id = Auth::guard('admin')->user()->id;
+        $admininfo_id = Admininfo::where('admin_id', $admin_id)->pluck('id')->first();
+        $rs = AdmininfoPic::find($request->admininfo_pic_id);
+        if ($admininfo_id == $rs->admininfo_id) {
+            return $this->_downLoadFile($rs->dir);
+        } else {
+            return $this->resp(10000, '您下载的附件不存在');
+        }
     }
 
     /*******人员管理列表视图*******/
@@ -1714,16 +1798,16 @@ class AdminController extends Controller
             //修改信息
             Admininfo::where('id', $request->admininfo_id)
                 ->update(['name' => $request->realname,
-                'sex' => $request->adminsex, 'birthday' => $request->birthday,
-                'work_status' => $request->work_status, 'work_year' => $request->work_year,
-                'work_start_date' => $request->work_start_date, 'department_id' => $request->department_id,
-                'technical_level_id' => $request->technical_level_id, 'admin_level_id' => $request->admin_level_id,
-                'phone' => $request->phone, 'level_id' => $request->level_id, 'level_type' => $request->level_type,
-                'cardno' => $request->cardno, 'address' => $request->address, 'education_id' => $request->education_id,
-                'school' => $request->school, 'major' => $request->major, 'graduate_date' => $request->graduate_date,
-                'work_resume' => $request->work_resume, 'study_resume' => $request->study_resume,
-                'performance' => $request->performance, 'rewards' => $request->rewards,
-                'expertise' => $request->expertise, 'remark' => $request->remark, 'operator_id' => $operator_id]);
+                    'sex' => $request->adminsex, 'birthday' => $request->birthday,
+                    'work_status' => $request->work_status, 'work_year' => $request->work_year,
+                    'work_start_date' => $request->work_start_date, 'department_id' => $request->department_id,
+                    'technical_level_id' => $request->technical_level_id, 'admin_level_id' => $request->admin_level_id,
+                    'phone' => $request->phone, 'level_id' => $request->level_id, 'level_type' => $request->level_type,
+                    'cardno' => $request->cardno, 'address' => $request->address, 'education_id' => $request->education_id,
+                    'school' => $request->school, 'major' => $request->major, 'graduate_date' => $request->graduate_date,
+                    'work_resume' => $request->work_resume, 'study_resume' => $request->study_resume,
+                    'performance' => $request->performance, 'rewards' => $request->rewards,
+                    'expertise' => $request->expertise, 'remark' => $request->remark, 'operator_id' => $operator_id]);
             //修改角色
             $role_id = AdminLevel::find($request->admin_level_id)->role_id;
             $admin->roles()->sync([$role_id]);
@@ -1743,8 +1827,8 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        Admin::where('id',$request->admin_id)->delete();
-        return $this->resp(0,'删除成功');
+        Admin::where('id', $request->admin_id)->delete();
+        return $this->resp(0, '删除成功');
     }
 
     //获取非公开头像
@@ -1873,6 +1957,84 @@ class AdminController extends Controller
         }
         $rs = Family::where('admininfo_id', $request->admininfo_id)->get();
         return $this->resp(0, $rs);
+    }
+
+    /*******合同管理视图*******/
+    public function contractmanage()
+    {
+        $data['education'] = Education::get();
+        $data['level'] = Level::get();
+        $data['department'] = Department::get();
+        $data['admin_level'] = AdminLevel::get();
+        $data['technical_level'] = TechnicalLevel::get();
+        $data['work_status'] = WorkStatus::get();
+        $data['professions'] = Profession::get();
+        return view('admin/contractmanage', ['data' => $data]);
+    }
+
+    /*******造价项目管理视图*******/
+    public function costprojectmanage()
+    {
+        $data['education'] = Education::get();
+        $data['level'] = Level::get();
+        $data['department'] = Department::get();
+        $data['admin_level'] = AdminLevel::get();
+        $data['technical_level'] = TechnicalLevel::get();
+        $data['work_status'] = WorkStatus::get();
+        $data['professions'] = Profession::get();
+        return view('admin/costprojectmanage', ['data' => $data]);
+    }
+
+    /*******造价项目审核视图*******/
+    public function costprojectcheck()
+    {
+        $data['education'] = Education::get();
+        $data['level'] = Level::get();
+        $data['department'] = Department::get();
+        $data['admin_level'] = AdminLevel::get();
+        $data['technical_level'] = TechnicalLevel::get();
+        $data['work_status'] = WorkStatus::get();
+        $data['professions'] = Profession::get();
+        return view('admin/costprojectcheck', ['data' => $data]);
+    }
+
+    /*******工程单位管理视图*******/
+    public function projectunitmanage()
+    {
+        $data['education'] = Education::get();
+        $data['level'] = Level::get();
+        $data['department'] = Department::get();
+        $data['admin_level'] = AdminLevel::get();
+        $data['technical_level'] = TechnicalLevel::get();
+        $data['work_status'] = WorkStatus::get();
+        $data['professions'] = Profession::get();
+        return view('admin/projectunitmanage', ['data' => $data]);
+    }
+
+    /*******我的提成视图*******/
+    public function myextract()
+    {
+        $data['education'] = Education::get();
+        $data['level'] = Level::get();
+        $data['department'] = Department::get();
+        $data['admin_level'] = AdminLevel::get();
+        $data['technical_level'] = TechnicalLevel::get();
+        $data['work_status'] = WorkStatus::get();
+        $data['professions'] = Profession::get();
+        return view('admin/myextract', ['data' => $data]);
+    }
+
+    /*******财务管理视图*******/
+    public function financemanage()
+    {
+        $data['education'] = Education::get();
+        $data['level'] = Level::get();
+        $data['department'] = Department::get();
+        $data['admin_level'] = AdminLevel::get();
+        $data['technical_level'] = TechnicalLevel::get();
+        $data['work_status'] = WorkStatus::get();
+        $data['professions'] = Profession::get();
+        return view('admin/financemanage', ['data' => $data]);
     }
 
 }

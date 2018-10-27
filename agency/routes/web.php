@@ -107,6 +107,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('editAdminInfo', 'AdminController@editAdminInfo');
     $router->post('delAdmin', 'AdminController@delAdmin');
     $router->get('getAdminAvatar/{dir?}/{img?}', 'AdminController@getAdminAvatar');
+    $router->post('resetAdminPassword', 'AdminController@resetAdminPassword');
     //合同管理
     $router->get('contractmanage', 'AdminController@contractmanage');
     //造价项目管理
@@ -129,7 +130,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     Route::get('aetherupload/download/{group}/{subDir}/{resourceName}/{newName}', '\AetherUpload\ResourceHandler@downloadResource');
 
     //测试
-    $router->any('test', 'AdminController@myinfo');
+    $router->any('test', 'AdminController@resetAdminPassword');
 });
 
 

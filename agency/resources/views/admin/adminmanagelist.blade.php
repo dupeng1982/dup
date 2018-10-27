@@ -957,7 +957,7 @@
         </div>
     </div>
     <div class="modal fade show" id="confirmDelAdmin" tabindex="-1" role="dialog"
-         aria-hidden="true">
+               aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -981,6 +981,31 @@
             </div>
         </div>
     </div>
+    <div class="modal fade show" id="confirmresetAdminPassword" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">操作提示</h4>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <h2 class="center-block" style="margin:0px auto;display:table;">是否重置该用户密码？</h2>
+                    <p class="center-block" style="margin:0px auto;display:table;">确定后用户密码重置为123456!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" id="reset-admin-password"
+                            class="btn btn-success">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('admin-js')
@@ -994,6 +1019,7 @@
     <script>
         $(function () {
             var del_admin_id;
+            var reset_admin_id;
             $('#admin_info_table').bootstrapTable({
                 url: 'getAdminInfoList',
                 ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
@@ -1028,9 +1054,6 @@
                 }, {
                     field: 'sex_name',
                     title: '性别'
-                }, {
-                    field: 'cardno',
-                    title: '身份证号'
                 }, {
                     field: 'phone',
                     title: '手机号码'
@@ -1074,7 +1097,8 @@
             }
 
             function operateFormatter(value, row, index) {
-                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editAdminInfo" data-admininfo_id=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
+                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn resetAdminPassword" data-admin-id=' + row.admin_id + ' data-toggle="tooltip" data-original-title="重置密码"><i class="ti-key" aria-hidden="true"></i></button>' +
+                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editAdminInfo" data-admininfo_id=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
                     '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delAdminInfo" data-admininfo_id=' + index + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
             }
 
@@ -2111,9 +2135,60 @@
                     var index = $(this).attr('data-admininfo_id');
                     del_admin_id = data[index].admin_id;
                 });
+
+                $('.resetAdminPassword').click(function () {
+                    $('#confirmresetAdminPassword').modal('show');
+                    reset_admin_id = $(this).attr('data-admin-id');
+                });
             }
 
-            $('#del-admin-info').click(function(){
+            $('#reset-admin-password').click(function(){
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: 'resetAdminPassword',
+                    type: 'POST',
+                    data: {
+                        admin_id: reset_admin_id
+                    },
+                    success: function (doc) {
+                        if (doc.code) {
+                            $.toast({
+                                heading: '警告',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'warning',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        } else {
+                            $.toast({
+                                heading: '成功',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'success',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                            $('#confirmresetAdminPassword').modal('hide');
+                        }
+                    },
+                    error: function (doc) {
+                        $.toast({
+                            heading: '错误',
+                            text: '网络错误，请稍后重试！',
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'error',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                });
+            });
+
+            $('#del-admin-info').click(function () {
                 $.ajax({
                     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                     url: 'delAdmin',

@@ -1959,6 +1959,22 @@ class AdminController extends Controller
         return $this->resp(0, $rs);
     }
 
+    //重置Admin密码
+    public function resetAdminPassword(Request $request)
+    {
+        $rule = [
+            'admin_id' => 'required|integer|exists:admins,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $admin = Admin::find($request->admin_id);
+        $admin->password = bcrypt('123456');
+        $admin->save();
+        return $this->resp(0, '密码重置成功');
+    }
+
     /*******合同管理视图*******/
     public function contractmanage()
     {

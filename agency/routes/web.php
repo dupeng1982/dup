@@ -116,6 +116,10 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->get('costprojectcheck', 'AdminController@costprojectcheck');
     //工程单位管理
     $router->get('projectunitmanage', 'AdminController@projectunitmanage');
+    $router->post('addProjectUnit', 'AdminController@addProjectUnit');
+    $router->post('editProjectUnit', 'AdminController@editProjectUnit');
+    $router->post('delProjectUnit', 'AdminController@delProjectUnit');
+    $router->post('getProjectUnitList', 'AdminController@getProjectUnitList');
     //我的提成
     $router->get('myextract', 'AdminController@myextract');
     //财务管理
@@ -130,7 +134,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     Route::get('aetherupload/download/{group}/{subDir}/{resourceName}/{newName}', '\AetherUpload\ResourceHandler@downloadResource');
 
     //测试
-    $router->any('test', 'AdminController@resetAdminPassword');
+    $router->any('test', 'AdminController@getProjectUnitList');
 });
 
 

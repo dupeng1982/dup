@@ -17,6 +17,8 @@ use App\Models\AdminSignApply;
 use App\Models\AdminSignStatistic;
 use App\Models\AdminSignSummary;
 use App\Models\Certificate;
+use App\Models\Company;
+use App\Models\CompanyType;
 use App\Models\DateSet;
 use App\Models\Department;
 use App\Models\Education;
@@ -2017,14 +2019,78 @@ class AdminController extends Controller
     /*******工程单位管理视图*******/
     public function projectunitmanage()
     {
-        $data['education'] = Education::get();
-        $data['level'] = Level::get();
-        $data['department'] = Department::get();
-        $data['admin_level'] = AdminLevel::get();
-        $data['technical_level'] = TechnicalLevel::get();
-        $data['work_status'] = WorkStatus::get();
-        $data['professions'] = Profession::get();
+        $data['company_type'] = CompanyType::get();
         return view('admin/projectunitmanage', ['data' => $data]);
+    }
+
+    //添加项目单位
+    public function addProjectUnit(Request $request)
+    {
+        $rule = [
+            'company_name' => 'required|max:50',
+            'company_type' => 'required|integer|between:1,3',
+            'company_bankname' => 'required|max:50',
+            'company_taxnumber' => 'required|max:50',
+            'company_cardno' => 'required|max:30',
+            'company_orgcode' => 'required|max:20',
+            'company_contact' => 'required|max:10',
+            'company_phone' => 'required|max:20'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        Company::create(['name' => $request->company_name, 'type' => $request->company_type,
+            'bankname' => $request->company_bankname, 'taxnumber' => $request->company_taxnumber,
+            'cardno' => $request->company_cardno, 'orgcode' => $request->company_orgcode,
+            'contact' => $request->company_contact, 'phone' => $request->company_phone]);
+        return $this->resp(0, '添加成功');
+    }
+
+    //编辑项目单位
+    public function editProjectUnit(Request $request)
+    {
+        $rule = [
+            'company_id' => 'required|integer|exists:company,id',
+            'company_name' => 'required|max:50',
+            'company_type' => 'required|integer|between:1,3',
+            'company_bankname' => 'required|max:50',
+            'company_taxnumber' => 'required|max:50',
+            'company_cardno' => 'required|max:30',
+            'company_orgcode' => 'required|max:20',
+            'company_contact' => 'required|max:10',
+            'company_phone' => 'required|max:20'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        Company::where('id', $request->company_id)
+            ->update(['name' => $request->company_name, 'type' => $request->company_type,
+                'bankname' => $request->company_bankname, 'taxnumber' => $request->company_taxnumber,
+                'cardno' => $request->company_cardno, 'orgcode' => $request->company_orgcode,
+                'contact' => $request->company_contact, 'phone' => $request->company_phone]);
+        return $this->resp(0, '修改成功');
+    }
+
+    //删除项目单位
+    public function delProjectUnit(Request $request)
+    {
+        $rule = [
+            'company_id' => 'required|integer|exists:company,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        Company::where('id', $request->company_id)->delete();
+        return $this->resp(0, '删除成功');
+    }
+
+    //获取项目单位列表
+    public function getProjectUnitList()
+    {
+        return $this->resp(0, Company::get());
     }
 
     /*******我的提成视图*******/

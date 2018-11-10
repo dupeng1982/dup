@@ -179,6 +179,15 @@ return [
         'work_status' => '工作状态ID',
         'admin_profession' => '负责专业类型',
 
+        'company_name' => '公司名称',
+        'company_type' => '公司类型',
+        'company_bankname' => '公司开户行',
+        'company_taxnumber' => '公司税号',
+        'company_cardno' => '公司开户行卡号',
+        'company_orgcode' => '公司组织机构代码',
+        'company_contact' => '公司联系人',
+        'company_phone' => '公司联系人手机号码',
+
     ],
 
     //自定义验证规则

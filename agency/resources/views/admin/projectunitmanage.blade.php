@@ -48,69 +48,71 @@
                                 aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
-                    <form id="addProjectUnitForm">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <label>单位名称</label>
-                                    <input type="text" class="form-control"
-                                           id="add-project-unit-name"></div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>单位类型</label>
-                                    <select class="custom-select form-control" id="add-project-unit-type">
-                                        <option value="">选择类型</option>
-                                        @foreach($data['company_type'] as $v)
-                                            <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                        @endforeach
-                                    </select>
+                    <div class="card-body">
+                        <form id="addProjectUnitForm">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>单位名称</label>
+                                        <input type="text" class="form-control"
+                                               id="add-project-unit-name"></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>单位类型</label>
+                                        <select class="custom-select form-control" id="add-project-unit-type">
+                                            <option value="">选择类型</option>
+                                            @foreach($data['company_type'] as $v)
+                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>开户行</label>
-                                    <input type="text" class="form-control"
-                                           id="add-project-unit-bankname"></div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>开户行</label>
+                                        <input type="text" class="form-control"
+                                               id="add-project-unit-bankname"></div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>开户行帐号</label>
+                                        <input type="text" class="form-control"
+                                               id="add-project-unit-cardno"></div>
+                                </div>
                             </div>
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <label>开户行帐号</label>
-                                    <input type="text" class="form-control"
-                                           id="add-project-unit-cardno"></div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>联系人</label>
+                                        <input type="text" class="form-control"
+                                               id="add-project-unit-contact"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>手机</label>
+                                        <input type="text" class="form-control"
+                                               id="add-project-unit-phone"></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>联系人</label>
-                                    <input type="text" class="form-control"
-                                           id="add-project-unit-contact"></div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>组织机构代码</label>
+                                        <input type="text" class="form-control"
+                                               id="add-project-unit-orgcode"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>税号</label>
+                                        <input type="text" class="form-control"
+                                               id="add-project-unit-taxnumber"></div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>手机</label>
-                                    <input type="text" class="form-control"
-                                           id="add-project-unit-phone"></div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>组织机构代码</label>
-                                    <input type="text" class="form-control"
-                                           id="add-project-unit-orgcode"></div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>税号</label>
-                                    <input type="text" class="form-control"
-                                           id="add-project-unit-taxnumber"></div>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary"
@@ -128,75 +130,77 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">编辑人员信息</h4>
+                    <h4 class="modal-title">编辑单位信息</h4>
                     <button type="button" class="close" data-dismiss="modal"
                             aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
-                    <form>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <label>单位名称</label>
-                                    <input type="text" class="form-control"
-                                           id="edit-project-unit-name"></div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>单位类型</label>
-                                    <select class="custom-select form-control" id="edit-project-unit-type">
-                                        <option value="">选择类型</option>
-                                        @foreach($data['company_type'] as $v)
-                                            <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                        @endforeach
-                                    </select>
+                    <div class="card-body">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>单位名称</label>
+                                        <input type="text" class="form-control"
+                                               id="edit-project-unit-name"></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>单位类型</label>
+                                        <select class="custom-select form-control" id="edit-project-unit-type">
+                                            <option value="">选择类型</option>
+                                            @foreach($data['company_type'] as $v)
+                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>开户行</label>
-                                    <input type="text" class="form-control"
-                                           id="edit-project-unit-bankname"></div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>开户行</label>
+                                        <input type="text" class="form-control"
+                                               id="edit-project-unit-bankname"></div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>开户行帐号</label>
+                                        <input type="text" class="form-control"
+                                               id="edit-project-unit-cardno"></div>
+                                </div>
                             </div>
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <label>开户行帐号</label>
-                                    <input type="text" class="form-control"
-                                           id="edit-project-unit-cardno"></div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>联系人</label>
+                                        <input type="text" class="form-control"
+                                               id="edit-project-unit-contact"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>手机</label>
+                                        <input type="text" class="form-control"
+                                               id="edit-project-unit-phone"></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>联系人</label>
-                                    <input type="text" class="form-control"
-                                           id="edit-project-unit-contact"></div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>组织机构代码</label>
+                                        <input type="text" class="form-control"
+                                               id="edit-project-unit-orgcode"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>税号</label>
+                                        <input type="text" class="form-control"
+                                               id="edit-project-unit-taxnumber"></div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>手机</label>
-                                    <input type="text" class="form-control"
-                                           id="edit-project-unit-phone"></div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>组织机构代码</label>
-                                    <input type="text" class="form-control"
-                                           id="edit-project-unit-orgcode"></div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>税号</label>
-                                    <input type="text" class="form-control"
-                                           id="edit-project-unit-taxnumber"></div>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary"

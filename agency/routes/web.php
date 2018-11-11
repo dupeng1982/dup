@@ -110,6 +110,18 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('resetAdminPassword', 'AdminController@resetAdminPassword');
     //合同管理
     $router->get('contractmanage', 'AdminController@contractmanage');
+    $router->post('addContract', 'AdminController@addContract');
+    $router->post('editContract', 'AdminController@editContract');
+    $router->post('delContract', 'AdminController@delContract');
+    $router->post('getContractList', 'AdminController@getContractList');
+
+    $router->post('addCattachment', 'AdminController@addCattachment');
+    $router->post('getCattachmentList', 'AdminController@getCattachmentList');
+    $router->post('addCattachmentTemp', 'AdminController@addCattachmentTemp');
+    $router->post('getCattachmentTempList', 'AdminController@getCattachmentTempList');
+    $router->get('showCattachment', 'AdminController@showCattachment');
+    $router->get('downCattachment', 'AdminController@downCattachment');
+    $router->post('delCattachment', 'AdminController@delCattachment');
     //造价项目管理
     $router->get('costprojectmanage', 'AdminController@costprojectmanage');
     //造价项目审核
@@ -134,7 +146,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     Route::get('aetherupload/download/{group}/{subDir}/{resourceName}/{newName}', '\AetherUpload\ResourceHandler@downloadResource');
 
     //测试
-    $router->any('test', 'AdminController@getProjectUnitList');
+    $router->any('test', 'AdminController@getContractList');
 });
 
 

@@ -73,6 +73,12 @@ return [
             'url' => '/adminavatar',
         ],
 
+        'cattachment' => [
+            'driver' => 'local',
+            'root' => storage_path('cattachment'),
+            'url' => '/cattachment',
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

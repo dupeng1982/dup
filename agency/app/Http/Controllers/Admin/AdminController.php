@@ -16,9 +16,12 @@ use App\Models\AdminSign;
 use App\Models\AdminSignApply;
 use App\Models\AdminSignStatistic;
 use App\Models\AdminSignSummary;
+use App\Models\Cattachment;
 use App\Models\Certificate;
 use App\Models\Company;
 use App\Models\CompanyType;
+use App\Models\Contract;
+use App\Models\ContractType;
 use App\Models\DateSet;
 use App\Models\Department;
 use App\Models\Education;
@@ -1980,14 +1983,240 @@ class AdminController extends Controller
     /*******合同管理视图*******/
     public function contractmanage()
     {
-        $data['education'] = Education::get();
-        $data['level'] = Level::get();
-        $data['department'] = Department::get();
-        $data['admin_level'] = AdminLevel::get();
-        $data['technical_level'] = TechnicalLevel::get();
-        $data['work_status'] = WorkStatus::get();
-        $data['professions'] = Profession::get();
+        $data['contract_type'] = ContractType::get();
+        $data['company'] = Company::get();
         return view('admin/contractmanage', ['data' => $data]);
+    }
+
+    //添加合同
+    public function addContract(Request $request)
+    {
+        $rule = [
+            'contract_name' => 'required|max:50',
+            'contract_type' => 'required|integer|between:1,4',
+            'contract_number' => 'required|max:50',
+            'address' => 'required|max:100',
+            'sign_date' => 'required|date_format:Y-m-d',
+            'start_date' => 'required|date_format:Y-m-d',
+            'end_date' => 'required|date_format:Y-m-d',
+            'construction_id' => 'required|integer|exists:company,id',
+            'agency_id' => 'required|integer|exists:company,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        Contract::create(['name' => $request->contract_name, 'type' => $request->contract_type,
+            'number' => $request->contract_number, 'address' => $request->address,
+            'start_date' => $request->start_date, 'end_date' => $request->end_date,
+            'construction_id' => $request->construction_id, 'agency_id' => $request->agency_id,
+            'content' => $request->contract_content, 'remark' => $request->contract_remark,
+            'sign_date' => $request->sign_date]);
+        return $this->resp(0, '添加成功');
+    }
+
+    //编辑合同
+    public function editContract(Request $request)
+    {
+        $rule = [
+            'contract_id' => 'required|integer|exists:contract,id',
+            'contract_name' => 'required|max:50',
+            'contract_type' => 'required|integer|between:1,4',
+            'contract_number' => 'required|max:50',
+            'address' => 'required|max:100',
+            'sign_date' => 'required|date_format:Y-m-d',
+            'start_date' => 'required|date_format:Y-m-d',
+            'end_date' => 'required|date_format:Y-m-d',
+            'construction_id' => 'required|integer|exists:company,id',
+            'agency_id' => 'required|integer|exists:company,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        Contract::where('id', $request->contract_id)
+            ->update(['name' => $request->contract_name, 'type' => $request->contract_type,
+                'number' => $request->contract_number, 'address' => $request->address,
+                'start_date' => $request->start_date, 'end_date' => $request->end_date,
+                'construction_id' => $request->construction_id, 'agency_id' => $request->agency_id,
+                'content' => $request->contract_content, 'remark' => $request->contract_remark,
+                'sign_date' => $request->sign_date]);
+        return $this->resp(0, '修改成功');
+    }
+
+    //删除合同
+    public function delContract(Request $request)
+    {
+        $rule = [
+            'contract_id' => 'required|integer|exists:contract,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        Contract::where('id', $request->company_id)->delete();
+        return $this->resp(0, '删除成功');
+    }
+
+    //获取合同列表
+    public function getContractList(Request $request)
+    {
+        $rule = [
+            'page' => 'integer',
+            'item' => 'integer'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $arr = array();
+        $request->contract_type && array_push($arr, ['contract.type', '=', $request->contract_type]);
+        $search = $request->search;
+        $data = Contract::select('contract.*', 'construction.name as construction_name',
+            'agency.name as agency_name')
+            ->leftjoin('company as construction', 'construction.id', '=', 'contract.construction_id')
+            ->leftjoin('company as agency', 'agency.id', '=', 'contract.agency_id')
+            ->where($arr)
+            ->where(function ($q) use ($search) {
+                $search &&
+                $q->orWhere('construction.name', 'like', '%' . $search . '%')
+                    ->orWhere('agency.name', 'like', '%' . $search . '%')
+                    ->orWhere('contract.name', 'like', '%' . $search . '%')
+                    ->orWhere('contract.number', 'like', '%' . $search . '%');
+            })
+            ->paginate($request->item);
+        return $this->resp(0, $data);
+    }
+
+    //添加合同附件
+    public function addCattachment(Request $request)
+    {
+        $rule = [
+            'contract_id' => 'required|integer|exists:contract,id',
+            'cattachment_name' => 'required|max:20',
+            'files' => 'required|array'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $operator_id = Auth::guard('admin')->user()->id;
+        $files = $request->file('files');
+        $date = Date::now()->format('Y-m-d');
+        $data = Array();
+        $i = 0;
+        foreach ($files as $file) {
+            $dir = $this->_uploadFile($file, $date, 'cattachment');
+            $data[$i]['contract_id'] = $request->contract_id;
+            $data[$i]['name'] = $request->cattachment_name;
+            $data[$i]['dir'] = $dir;
+            $data[$i]['operator_id'] = $operator_id;
+            $data[$i]['mimetype'] = $file->getMimeType();
+            $i = $i + 1;
+        }
+        return DB::transaction(function () use ($data) {
+            DB::table('cattachment')->insert($data);
+            return $this->resp(0, '添加成功');
+        });
+    }
+
+    //获取合同附件列表
+    public function getCattachmentList(Request $request)
+    {
+        $rule = [
+            'contract_id' => 'required|integer|exists:contract,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $rs = Cattachment::where('contract_id', $request->contract_id)->get();
+        return $this->resp(0, $rs);
+    }
+
+    //添加合同临时附件
+    public function addCattachmentTemp(Request $request)
+    {
+        $rule = [
+            'cattachment_name' => 'required|max:20',
+            'files' => 'required|array'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $operator_id = Auth::guard('admin')->user()->id;
+        $files = $request->file('files');
+        $date = Date::now()->format('Y-m-d');
+        $data = Array();
+        $i = 0;
+        foreach ($files as $file) {
+            $dir = $this->_uploadFile($file, $date, 'cattachment');
+            $data[$i]['contract_id'] = 0;
+            $data[$i]['name'] = $request->cattachment_name;
+            $data[$i]['dir'] = $dir;
+            $data[$i]['operator_id'] = $operator_id;
+            $data[$i]['mimetype'] = $file->getMimeType();
+            $i = $i + 1;
+        }
+        return DB::transaction(function () use ($data) {
+            DB::table('cattachment')->insert($data);
+            return $this->resp(0, '添加成功');
+        });
+    }
+
+    //获取合同临时附件列表
+    public function getCattachmentTempList(Request $request)
+    {
+        $operator_id = Auth::guard('admin')->user()->id;
+        $rs = Cattachment::where('operator_id', $operator_id)->where('contract_id', 0)->get();
+        return $this->resp(0, $rs);
+    }
+
+    //显示合同附件
+    public function showCattachment(Request $request)
+    {
+        $rule = [
+            'cattachment_id' => 'required|integer|exists:cattachment,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $rs = Cattachment::find($request->cattachment_id);
+        header('Content-type: ' . $rs->mimetype);
+        echo $this->_getFile($rs->dir, 'cattachment');
+        exit;
+    }
+
+    //下载合同附件
+    public function downCattachment(Request $request)
+    {
+        $rule = [
+            'cattachment_id' => 'required|integer|exists:cattachment,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $rs = Cattachment::find($request->cattachment_id);
+        return $this->_downLoadFile($rs->dir, 'cattachment');
+    }
+
+    //删除合同附件
+    public function delCattachment(Request $request)
+    {
+        $rule = [
+            'cattachment_id' => 'required|integer|exists:cattachment,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $file = Cattachment::find($request->cattachment_id);
+        $file->delete();
+        $this->_delFile($file->dir, 'cattachment');
+        return $this->resp(0, '删除成功');
     }
 
     /*******造价项目管理视图*******/

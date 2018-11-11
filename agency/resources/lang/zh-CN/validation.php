@@ -178,7 +178,7 @@ return [
         'technical_level_id' => '技术职务ID',
         'work_status' => '工作状态ID',
         'admin_profession' => '负责专业类型',
-
+        'company_id' => '公司ID',
         'company_name' => '公司名称',
         'company_type' => '公司类型',
         'company_bankname' => '公司开户行',
@@ -187,6 +187,16 @@ return [
         'company_orgcode' => '公司组织机构代码',
         'company_contact' => '公司联系人',
         'company_phone' => '公司联系人手机号码',
+        'contract_id' => '合同ID',
+        'contract_name' => '合同名称',
+        'contract_type' => '合同类型',
+        'contract_number' => '合同编号',
+        'construction_id' => '建设单位ID',
+        'agency_id' => '委托单位ID',
+        'contract_content' => '合同内容',
+        'contract_remark' => '合同备注',
+        'sign_date' => '签订时间',
+        'cattachment_name' => '合同附件名称',
 
     ],
 

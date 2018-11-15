@@ -646,6 +646,15 @@
                             title: '项目编号'
                         }]
                     });
+                },
+                icons: {
+                    paginationSwitchDown: 'glyphicon-collapse-down icon-chevron-down',
+                    paginationSwitchUp: 'glyphicon-collapse-up icon-chevron-up',
+                    refresh: 'glyphicon-refresh icon-refresh',
+                    toggle: 'glyphicon-list-alt icon-list-alt',
+                    columns: 'glyphicon-th icon-th',
+                    detailOpen: 'mdi mdi-arrow-right-drop-circle-outline',
+                    detailClose: 'mdi mdi-arrow-down-drop-circle-outline'
                 }
             });
 

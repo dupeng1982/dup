@@ -124,6 +124,10 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('delCattachment', 'AdminController@delCattachment');
     //造价项目管理
     $router->get('costprojectmanage', 'AdminController@costprojectmanage');
+    $router->post('getCostProjectList', 'AdminController@getCostProjectList');
+
+
+
     //造价项目审核
     $router->get('costprojectcheck', 'AdminController@costprojectcheck');
     //工程单位管理
@@ -146,7 +150,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     Route::get('aetherupload/download/{group}/{subDir}/{resourceName}/{newName}', '\AetherUpload\ResourceHandler@downloadResource');
 
     //测试
-    $router->any('test', 'AdminController@getContractList');
+    $router->any('test', 'AdminController@getCostProjectList');
 });
 
 

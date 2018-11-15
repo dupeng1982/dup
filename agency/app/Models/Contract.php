@@ -9,15 +9,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Date;
 
 class Contract extends Model
 {
     protected $table = 'contract';
     public $timestamps = true;
-    protected $fillable = ['name', 'type', 'number', 'address', 'start_date', 'end_date',
+    protected $fillable = ['name', 'type', 'address', 'start_date', 'end_date',
         'construction_id', 'agency_id', 'content', 'remark', 'sign_date'];
 
-    protected $appends = ['contract_type_name'];
+    protected $appends = ['contract_type_name', 'number', 'number_name'];
 
     public function getContractTypeNameAttribute()
     {
@@ -27,5 +28,16 @@ class Contract extends Model
         } else {
             return '其他';
         }
+    }
+
+    public function getNumberAttribute()
+    {
+        return Date::parse($this->sign_date)->format('Y') . '-' . $this->id;
+    }
+
+    public function getNumberNameAttribute()
+    {
+        $contract_type = ContractType::find($this->type);
+        return $contract_type->short . '[' . Date::parse($this->sign_date)->format('Y') . ']第' . $this->id . '号';
     }
 }

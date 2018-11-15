@@ -10,9 +10,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ContractType extends Model
+class Service extends Model
 {
-    protected $table = 'contract_type';
+    protected $table = 'service';
     public $timestamps = false;
-    protected $fillable = ['name', 'short'];
+    protected $fillable = ['name'];
 }

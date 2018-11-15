@@ -22,12 +22,14 @@ use App\Models\Company;
 use App\Models\CompanyType;
 use App\Models\Contract;
 use App\Models\ContractType;
+use App\Models\CostProject;
 use App\Models\DateSet;
 use App\Models\Department;
 use App\Models\Education;
 use App\Models\Family;
 use App\Models\Level;
 use App\Models\Profession;
+use App\Models\Service;
 use App\Models\TechnicalLevel;
 use App\Models\TimeSet;
 use App\Models\WorkStatus;
@@ -1994,11 +1996,10 @@ class AdminController extends Controller
         $rule = [
             'contract_name' => 'required|max:50',
             'contract_type' => 'required|integer|between:1,4',
-            'contract_number' => 'required|max:50',
             'address' => 'required|max:100',
             'sign_date' => 'required|date_format:Y-m-d',
             'start_date' => 'required|date_format:Y-m-d',
-            'end_date' => 'required|date_format:Y-m-d',
+            'end_date' => 'required|date_format:Y-m-d|after:start_date',
             'construction_id' => 'required|integer|exists:company,id',
             'agency_id' => 'required|integer|exists:company,id'
         ];
@@ -2006,13 +2007,19 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        Contract::create(['name' => $request->contract_name, 'type' => $request->contract_type,
-            'number' => $request->contract_number, 'address' => $request->address,
-            'start_date' => $request->start_date, 'end_date' => $request->end_date,
-            'construction_id' => $request->construction_id, 'agency_id' => $request->agency_id,
-            'content' => $request->contract_content, 'remark' => $request->contract_remark,
-            'sign_date' => $request->sign_date]);
-        return $this->resp(0, '添加成功');
+        return DB::transaction(function () use ($request) {
+            //添加合同
+            $contract = Contract::create(['name' => $request->contract_name, 'type' => $request->contract_type,
+                'address' => $request->address, 'sign_date' => $request->sign_date,
+                'start_date' => $request->start_date, 'end_date' => $request->end_date,
+                'construction_id' => $request->construction_id, 'agency_id' => $request->agency_id,
+                'content' => $request->contract_content, 'remark' => $request->contract_remark]);
+            //关联附件
+            $operator_id = Auth::guard('admin')->user()->id;
+            Cattachment::where('contract_id', 0)->where('operator_id', $operator_id)
+                ->update(['contract_id' => $contract->id]);
+            return $this->resp(0, '添加成功');
+        });
     }
 
     //编辑合同
@@ -2022,11 +2029,10 @@ class AdminController extends Controller
             'contract_id' => 'required|integer|exists:contract,id',
             'contract_name' => 'required|max:50',
             'contract_type' => 'required|integer|between:1,4',
-            'contract_number' => 'required|max:50',
             'address' => 'required|max:100',
             'sign_date' => 'required|date_format:Y-m-d',
             'start_date' => 'required|date_format:Y-m-d',
-            'end_date' => 'required|date_format:Y-m-d',
+            'end_date' => 'required|date_format:Y-m-d|after:start_date',
             'construction_id' => 'required|integer|exists:company,id',
             'agency_id' => 'required|integer|exists:company,id'
         ];
@@ -2036,11 +2042,10 @@ class AdminController extends Controller
         }
         Contract::where('id', $request->contract_id)
             ->update(['name' => $request->contract_name, 'type' => $request->contract_type,
-                'number' => $request->contract_number, 'address' => $request->address,
+                'address' => $request->address, 'sign_date' => $request->sign_date,
                 'start_date' => $request->start_date, 'end_date' => $request->end_date,
                 'construction_id' => $request->construction_id, 'agency_id' => $request->agency_id,
-                'content' => $request->contract_content, 'remark' => $request->contract_remark,
-                'sign_date' => $request->sign_date]);
+                'content' => $request->contract_content, 'remark' => $request->contract_remark]);
         return $this->resp(0, '修改成功');
     }
 
@@ -2054,7 +2059,7 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        Contract::where('id', $request->company_id)->delete();
+        Contract::where('id', $request->contract_id)->delete();
         return $this->resp(0, '删除成功');
     }
 
@@ -2073,7 +2078,9 @@ class AdminController extends Controller
         $request->contract_type && array_push($arr, ['contract.type', '=', $request->contract_type]);
         $search = $request->search;
         $data = Contract::select('contract.*', 'construction.name as construction_name',
-            'agency.name as agency_name')
+            'agency.name as agency_name', 'construction.contact as construction_contact',
+            'construction.phone as construction_phone', 'agency.contact as agency_contact',
+            'agency.phone as agency_phone')
             ->leftjoin('company as construction', 'construction.id', '=', 'contract.construction_id')
             ->leftjoin('company as agency', 'agency.id', '=', 'contract.agency_id')
             ->where($arr)
@@ -2081,8 +2088,7 @@ class AdminController extends Controller
                 $search &&
                 $q->orWhere('construction.name', 'like', '%' . $search . '%')
                     ->orWhere('agency.name', 'like', '%' . $search . '%')
-                    ->orWhere('contract.name', 'like', '%' . $search . '%')
-                    ->orWhere('contract.number', 'like', '%' . $search . '%');
+                    ->orWhere('contract.name', 'like', '%' . $search . '%');
             })
             ->paginate($request->item);
         return $this->resp(0, $data);
@@ -2222,14 +2228,46 @@ class AdminController extends Controller
     /*******造价项目管理视图*******/
     public function costprojectmanage()
     {
-        $data['education'] = Education::get();
-        $data['level'] = Level::get();
-        $data['department'] = Department::get();
-        $data['admin_level'] = AdminLevel::get();
-        $data['technical_level'] = TechnicalLevel::get();
-        $data['work_status'] = WorkStatus::get();
-        $data['professions'] = Profession::get();
+        $data['contract_type'] = ContractType::get();
+        $data['company'] = Company::get();
+        $data['project_type'] = Service::get();
         return view('admin/costprojectmanage', ['data' => $data]);
+    }
+
+    //获取项目列表
+    public function getCostProjectList(Request $request)
+    {
+        $rule = [
+            'page' => 'integer',
+            'item' => 'integer'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $arr = array();
+        $request->service_id && array_push($arr, ['cost_project.service_id', '=', $request->service_id]);
+        $search = $request->search;
+        $data = CostProject::with('profession', 'sonproject')
+            ->select('cost_project.*', 'construction.name as construction_name', 'service.name as service_name',
+                'agency.name as agency_name', 'construction.contact as construction_contact',
+                'construction.phone as construction_phone', 'agency.contact as agency_contact',
+                'agency.phone as agency_phone', 'implement.name as implement_name',
+                'implement.phone as implement_phone', 'implement.contact as implement_contact')
+            ->leftjoin('company as construction', 'construction.id', '=', 'cost_project.construction_id')
+            ->leftjoin('company as agency', 'agency.id', '=', 'cost_project.agency_id')
+            ->leftjoin('company as implement', 'implement.id', '=', 'cost_project.implement_id')
+            ->leftjoin('service', 'service.id', '=', 'cost_project.service_id')
+            ->where($arr)
+            ->where(function ($q) use ($search) {
+                $search &&
+                $q->orWhere('construction.name', 'like', '%' . $search . '%')
+                    ->orWhere('agency.name', 'like', '%' . $search . '%')
+                    ->orWhere('implement.name', 'like', '%' . $search . '%')
+                    ->orWhere('contract.name', 'like', '%' . $search . '%');
+            })
+            ->paginate($request->item);
+        return $this->resp(0, $data);
     }
 
     /*******造价项目审核视图*******/

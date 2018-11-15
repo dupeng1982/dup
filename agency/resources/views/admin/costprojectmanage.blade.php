@@ -627,7 +627,7 @@
                 onPostBody: onPostBody,
                 detailView: true,
                 onExpandRow: function(index, row, $detail) {
-                    var son_table = $detail.html('<table></table>').find('table');
+                    var son_table = $detail.html('<table class="table table-bordered table-hover toggle-circle" data-page-size="6"></table>').find('table');
                     $(son_table).bootstrapTable({
                         data: row.sonproject,
                         pagination: false,

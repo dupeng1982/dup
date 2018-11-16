@@ -23,6 +23,7 @@ use App\Models\CompanyType;
 use App\Models\Contract;
 use App\Models\ContractType;
 use App\Models\CostProject;
+use App\Models\CostSonProject;
 use App\Models\DateSet;
 use App\Models\Department;
 use App\Models\Education;
@@ -2264,10 +2265,55 @@ class AdminController extends Controller
                 $q->orWhere('construction.name', 'like', '%' . $search . '%')
                     ->orWhere('agency.name', 'like', '%' . $search . '%')
                     ->orWhere('implement.name', 'like', '%' . $search . '%')
-                    ->orWhere('contract.name', 'like', '%' . $search . '%');
+                    ->orWhere('cost_project.name', 'like', '%' . $search . '%');
             })
             ->paginate($request->item);
         return $this->resp(0, $data);
+    }
+
+    //获取单个主项目子项目列表
+    public function getCostSonProjectList(Request $request)
+    {
+        $rule = [
+            'project_id' => 'required|integer|exists:cost_project,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $data = CostSonProject::where('project_id', $request->project_id)->get();
+        return $this->resp(0, $data);
+    }
+
+    //删除项目
+    public function delCostProject(Request $request)
+    {
+        $rule = [
+            'project_id' => 'required|integer|exists:cost_project,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        return DB::transaction(function () use ($request) {
+            CostProject::where('id', $request->project_id)->delete();
+            CostSonProject::where('project_id', $request->project_id)->delete();
+            return $this->resp(0, '删除成功');
+        });
+    }
+
+    //删除子项目
+    public function delCostSonProject(Request $request)
+    {
+        $rule = [
+            'sonproject_id' => 'required|integer|exists:cost_sonproject,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        //CostSonProject::where('id', $request->sonproject_id)->delete();
+        return $this->resp(0, '删除成功');
     }
 
     /*******造价项目审核视图*******/

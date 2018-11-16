@@ -197,6 +197,7 @@ return [
         'contract_remark' => '合同备注',
         'sign_date' => '签订时间',
         'cattachment_name' => '合同附件名称',
+        'sonproject_id' => '子项目ID'
 
     ],
 

@@ -14,13 +14,14 @@ class CostSonProject extends Model
 {
     protected $table = 'cost_sonproject';
     public $timestamps = true;
-    protected $fillable = ['project_id', 'profession_id', 'name', 'number', 'cost_rate', 'remark'];
+    protected $fillable = ['project_id', 'profession_id', 'name', 'number', 'cost', 'check_cost', 'remark'];
 
     protected $appends = ['profession_name'];
 
     public function getProfessionNameAttribute()
     {
-        return '45678975';
+        $profession = Profession::find($this->profession_id);
+        return $profession->name;
     }
 //
 //    public function profession()

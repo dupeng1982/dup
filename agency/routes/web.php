@@ -125,6 +125,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     //造价项目管理
     $router->get('costprojectmanage', 'AdminController@costprojectmanage');
     $router->post('getCostProjectList', 'AdminController@getCostProjectList');
+    $router->post('getCostSonProjectList', 'AdminController@getCostSonProjectList');
+    $router->post('delCostProject', 'AdminController@delCostProject');
+    $router->post('delCostSonProject', 'AdminController@delCostSonProject');
 
 
 

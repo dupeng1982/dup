@@ -443,7 +443,32 @@
                     <button type="button" class="btn btn-secondary"
                             data-dismiss="modal">关闭
                     </button>
-                    <button type="button" id="del-contract-submit"
+                    <button type="button" id="del-project-submit"
+                            class="btn btn-success">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade show" id="confirmDelSonProjectModal" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">操作提示</h4>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <h2 class="center-block" style="margin:0px auto;display:table;">是否删除？</h2>
+                    <p class="center-block" style="margin:0px auto;display:table;">删除后不能恢复!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" id="del-sonproject-submit"
                             class="btn btn-success">确定
                     </button>
                 </div>
@@ -459,7 +484,8 @@
     <script src="{{ asset('admin/assets/plugins/moment/min/moment.min.js') }}"></script>
     <script>
         $(function () {
-            var contract_id;
+            var public_project_id;
+            var public_sonproject_id;
 
             $('#add-contract-construction-select').comboSelect();
             $('#add-contract-construction-select').change(function () {
@@ -582,14 +608,14 @@
                         return pageSize * (pageNumber - 1) + index + 1;
                     }
                 }, {
+                    field: 'number',
+                    title: '项目编号'
+                }, {
                     field: 'name',
                     title: '项目名称'
                 }, {
                     field: 'service_name',
                     title: '项目类型'
-                }, {
-                    field: 'number',
-                    title: '项目编号'
                 }, {
                     field: 'receive_date',
                     title: '收到时间'
@@ -608,6 +634,9 @@
                         }
                     }
                 }, {
+                    field: 'cost',
+                    title: '送审造价'
+                }, {
                     field: 'construction_name',
                     title: '建设单位'
                 }, {
@@ -618,20 +647,44 @@
                     title: '委托单位'
                 }, {
                     field: 'id',
-                    title: '操作<button type="button" id="addContract" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="添加合同"><i class="ti-user" aria-hidden="true"></i></button>',
+                    title: '操作<button type="button" id="addProject" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="添加项目"><i class="ti-user" aria-hidden="true"></i></button>',
                     formatter: function (value, row, index) {
-                        return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editContract" data-contract-index=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
-                            '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delContract" data-contract-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                        return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn addSonProject" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="添加子项目"><i class="ti-file" aria-hidden="true"></i></button>' +
+                            '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editProject" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
+                            '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delProject" data-project-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
                     }
                 }],
                 onPostBody: onPostBody,
                 detailView: true,
-                onExpandRow: function(index, row, $detail) {
-                    var son_table = $detail.html('<table class="table table-bordered table-hover toggle-circle" data-page-size="6"></table>').find('table');
+                onExpandRow: function (index, row, $detail) {
+                    var son_table = $detail.html('<table id="sonproject-table-' + row.id + '" class="table table-bordered table-hover toggle-circle" data-page-size="6"></table>').find('table');
                     $(son_table).bootstrapTable({
-                        data: row.sonproject,
+                        url: 'getCostSonProjectList',
+                        ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
+                        cache: false,
+                        method: 'POST',
+                        contentType: "application/x-www-form-urlencoded",
+                        dataField: "data",
+                        pageNumber: 1,
                         pagination: false,
                         search: false,
+                        sidePagination: 'client',
+                        pageSize: 5,//单页记录数
+                        responseHandler: function (result) {
+                            var errcode = result.code;
+                            if (errcode) {
+                                return;
+                            }
+                            return {
+                                total: result.data.length,
+                                data: result.data
+                            };
+                        },
+                        queryParams: function (params) {
+                            return {
+                                project_id: row.id
+                            }
+                        },
                         columns: [{
                             field: 'SerialNumber',
                             title: '序号',
@@ -639,12 +692,29 @@
                                 return index + 1;
                             }
                         }, {
-                            field: 'name',
-                            title: '项目名称'
-                        }, {
                             field: 'number',
-                            title: '项目编号'
-                        }]
+                            title: '子项目编号'
+                        }, {
+                            field: 'name',
+                            title: '子项目名称'
+                        }, {
+                            field: 'profession_name',
+                            title: '专业类型'
+                        }, {
+                            field: 'cost',
+                            title: '送审造价'
+                        }, {
+                            field: 'check_cost',
+                            title: '核定造价'
+                        }, {
+                            field: 'id',
+                            title: '操作',
+                            formatter: function (value, row, index) {
+                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editSonProject" data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
+                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delSonProject" data-sonproject-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                            }
+                        }],
+                        onPostBody: onPostBodySon
                     });
                 },
                 icons: {
@@ -659,7 +729,11 @@
             });
 
             function refresh() {
-                $('#contract_table').bootstrapTable('refresh', {url: 'getContractList'});
+                $('#project_table').bootstrapTable('refresh', {url: 'getCostProjectList'});
+            }
+
+            function sonrefresh(project_id) {
+                $('#sonproject-table-' + project_id).bootstrapTable('refresh', {url: 'getCostSonProjectList'});
             }
 
             function onPostBody(res) {
@@ -799,11 +873,114 @@
                     });
                 });
 
-                $('.delContract').click(function () {
-                    $('#confirmDelContractModal').modal('show');
-                    contract_id = $(this).attr('data-contract-id');
+                $('.delProject').click(function () {
+                    $('#confirmDelProjectModal').modal('show');
+                    public_project_id = $(this).attr('data-project-id');
                 });
             }
+
+            function onPostBodySon(res) {
+                $("[data-toggle='tooltip']").tooltip();
+
+                $('.delSonProject').click(function () {
+                    $('#confirmDelSonProjectModal').modal('show');
+                    public_sonproject_id = $(this).attr('data-sonproject-id');
+                });
+            }
+
+            $('#del-project-submit').click(function () {
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: 'delCostProject',
+                    type: 'POST',
+                    data: {
+                        project_id: public_project_id
+                    },
+                    success: function (doc) {
+                        if (doc.code) {
+                            $.toast({
+                                heading: '警告',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'warning',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        } else {
+                            $.toast({
+                                heading: '成功',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'success',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                            $('#confirmDelProjectModal').modal('hide');
+                            refresh();
+                        }
+                    },
+                    error: function (doc) {
+                        $.toast({
+                            heading: '错误',
+                            text: '网络错误，请稍后重试！',
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'error',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                });
+            });
+
+            $('#del-sonproject-submit').click(function () {
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: 'delCostSonProject',
+                    type: 'POST',
+                    data: {
+                        sonproject_id: public_sonproject_id
+                    },
+                    success: function (doc) {
+                        if (doc.code) {
+                            $.toast({
+                                heading: '警告',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'warning',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        } else {
+                            $.toast({
+                                heading: '成功',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'success',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                            $('#confirmDelSonProjectModal').modal('hide');
+                            sonrefresh();
+                        }
+                    },
+                    error: function (doc) {
+                        $.toast({
+                            heading: '错误',
+                            text: '网络错误，请稍后重试！',
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'error',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                });
+            });
 
             $('#add-contract-submit').click(function () {
                 $.ajax({
@@ -918,53 +1095,6 @@
                 });
             });
 
-            $('#del-contract-submit').click(function () {
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'delContract',
-                    type: 'POST',
-                    data: {
-                        contract_id: contract_id
-                    },
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            $('#confirmDelContractModal').modal('hide');
-                            refresh();
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
-            });
-
             $('#addContractModal').on('hide.bs.modal', function () {
                 clearModalInput();
             });
@@ -977,235 +1107,13 @@
                 $("#addContractForm")[0].reset();
             }
 
-            $('#contract-type-select').change(function () {
+            $('#project-type-select').change(function () {
                 refresh();
             });
 
-            $('#contract-search').click(function () {
+            $('#project-search-button').click(function () {
                 refresh();
             });
-            //临时附件列表
-            $('#add-contract-cattachment-table').bootstrapTable({
-                url: 'getCattachmentTempList',
-                ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
-                cache: false,
-                method: 'POST',
-                contentType: "application/x-www-form-urlencoded",
-                dataField: "data",
-                pageNumber: 1,
-                pagination: false,
-                search: false,
-                sidePagination: 'client',
-                pageSize: 5,//单页记录数
-                responseHandler: function (result) {
-                    var errcode = result.code;
-                    if (errcode) {
-                        return;
-                    }
-                    return {
-                        total: result.data.length,
-                        data: result.data
-                    };
-                },
-                columns: [{
-                    field: 'SerialNumber',
-                    title: '序号',
-                    formatter: function (value, row, index) {
-                        return index + 1;
-                    }
-                }, {
-                    field: 'name',
-                    title: '文件名称'
-                }, {
-                    field: 'mimetype',
-                    title: '文件类型'
-                }, {
-                    field: 'id',
-                    title: '操作',
-                    formatter: function (value, row, index) {
-                        return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn showCattachmentTemp" data-cattachment-id=' + value + ' data-toggle="tooltip" data-original-title="查看"><i class="ti-eye" aria-hidden="true"></i></button>' +
-                            '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn downLoadCattachmentTemp" data-cattachment-id=' + value + ' data-toggle="tooltip" data-original-title="下载"><i class="ti-save" aria-hidden="true"></i></button>' +
-                            '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delCattachmentTemp" data-cattachment-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
-                    }
-                }],
-                onPostBody: function (res) {
-                    $('.delCattachmentTemp').click(function () {
-                        var cattachment_id = $(this).attr('data-cattachment-id');
-                        $.ajax({
-                            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                            url: 'delCattachment',
-                            type: 'POST',
-                            data: {
-                                cattachment_id: cattachment_id
-                            },
-                            success: function (doc) {
-                                if (doc.code) {
-                                    $.toast({
-                                        heading: '警告',
-                                        text: doc.data,
-                                        position: 'top-right',
-                                        loaderBg: '#ff6849',
-                                        icon: 'warning',
-                                        hideAfter: 3000,
-                                        stack: 6
-                                    });
-                                } else {
-                                    $.toast({
-                                        heading: '成功',
-                                        text: doc.data,
-                                        position: 'top-right',
-                                        loaderBg: '#ff6849',
-                                        icon: 'success',
-                                        hideAfter: 3000,
-                                        stack: 6
-                                    });
-                                    refresh2();
-                                }
-                            },
-                            error: function (doc) {
-                                $.toast({
-                                    heading: '错误',
-                                    text: '网络错误，请稍后重试！',
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'error',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                            }
-                        });
-                    });
-                    $('.showCattachmentTemp').click(function () {
-                        var cattachment_id = $(this).attr('data-cattachment-id');
-                        window.open('showCattachment?cattachment_id=' + cattachment_id);
-                    });
-                    $('.downLoadCattachmentTemp').click(function () {
-                        var cattachment_id = $(this).attr('data-cattachment-id');
-                        window.open('downCattachment?cattachment_id=' + cattachment_id);
-                    });
-                }
-            });
-            $('#add-contract-cattachment-button').click(function () {
-                var add_contract_cattachment_name = $('#add-contract-cattachment-name').val();
-                //初始化FormData对象
-                var formData = new FormData();
-                var file = $("#add-contract-cattachment-file").prop("files");
-                var n = file.length;
-                for (var i = 0; i < n; i++) {
-                    formData.append("files[]", file[i]);
-                }
-                formData.append("cattachment_name", add_contract_cattachment_name);
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'addCattachmentTemp',
-                    type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            refresh2();
-                            $('#add-contract-cattachment-name').val('');
-                            $("#add-contract-cattachment-file").val('')
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
-            });
-            function refresh2() {
-                $('#add-contract-cattachment-table').bootstrapTable('refresh', {url: 'getCattachmentTempList'});
-            }
-
-            //附件列表
-            $('#edit-contract-cattachment-button').click(function () {
-                var edit_contract_cattachment_name = $('#edit-contract-cattachment-name').val();
-                //初始化FormData对象
-                var formData = new FormData();
-                var file = $("#edit-contract-cattachment-file").prop("files");
-                var n = file.length;
-                for (var i = 0; i < n; i++) {
-                    formData.append("files[]", file[i]);
-                }
-                formData.append("cattachment_name", edit_contract_cattachment_name);
-                formData.append("contract_id", contract_id);
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'addCattachment',
-                    type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            refresh3();
-                            $('#edit-contract-cattachment-name').val('');
-                            $("#edit-contract-cattachment-file").val('')
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
-            });
-            function refresh3() {
-                $('#edit-contract-cattachment-table').bootstrapTable('refresh', {url: 'getCattachmentList'});
-            }
         })
     </script>
 @endsection

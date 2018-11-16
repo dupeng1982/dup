@@ -2312,7 +2312,7 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        //CostSonProject::where('id', $request->sonproject_id)->delete();
+        CostSonProject::where('id', $request->sonproject_id)->delete();
         return $this->resp(0, '删除成功');
     }
 

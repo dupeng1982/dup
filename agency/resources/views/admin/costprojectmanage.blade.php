@@ -486,6 +486,7 @@
         $(function () {
             var public_project_id;
             var public_sonproject_id;
+            var public_sontable_index;
 
             $('#add-contract-construction-select').comboSelect();
             $('#add-contract-construction-select').change(function () {
@@ -710,8 +711,8 @@
                             field: 'id',
                             title: '操作',
                             formatter: function (value, row, index) {
-                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editSonProject" data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
-                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delSonProject" data-sonproject-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
+                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
                             }
                         }],
                         onPostBody: onPostBodySon
@@ -884,7 +885,10 @@
 
                 $('.delSonProject').click(function () {
                     $('#confirmDelSonProjectModal').modal('show');
-                    public_sonproject_id = $(this).attr('data-sonproject-id');
+                    var index = $(this).attr('data-sonproject-index');
+                    public_sontable_index = $(this).attr('data-project-id');
+                    var data = $('#sonproject-table-' + public_sontable_index).bootstrapTable('getData');
+                    public_sonproject_id = data[index].id;
                 });
             }
 
@@ -965,7 +969,7 @@
                                 stack: 6
                             });
                             $('#confirmDelSonProjectModal').modal('hide');
-                            sonrefresh();
+                            sonrefresh(public_sontable_index);
                         }
                     },
                     error: function (doc) {

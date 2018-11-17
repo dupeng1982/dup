@@ -425,6 +425,188 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade show" id="editSonProjectModal" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">编辑项目</h4>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>合同名称</label>
+                                        <input type="text" class="form-control"
+                                               id="edit-contract-name"></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>合同类型</label>
+                                        <select class="custom-select form-control" id="edit-contract-type">
+                                            <option value="">选择类型</option>
+                                            @foreach($data['contract_type'] as $v)
+                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>签订时间</label>
+                                        <input type="date" class="form-control"
+                                               id="edit-contract-sign-date"></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>开始时间</label>
+                                        <input type="date" class="form-control"
+                                               id="edit-contract-start-date"></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>结束时间</label>
+                                        <input type="date" class="form-control"
+                                               id="edit-contract-end-date"></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>合同项目地址</label>
+                                        <input type="text" class="form-control"
+                                               id="edit-contract-address"></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <div class="form-group">
+                                        <label>建设单位</label>
+                                        <select class="custom-select form-control"
+                                                id="edit-contract-construction-select">
+                                            <option value="">选择建设单位</option>
+                                            @foreach($data['company'] as $v)
+                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>联系人</label>
+                                        <input type="text" class="form-control" disabled="disabled"
+                                               id="edit-contract-construction-contact">
+                                        <input type="hidden" id="edit-contract-construction-id">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>联系电话</label>
+                                        <input type="text" class="form-control" disabled="disabled"
+                                               id="edit-contract-construction-phone">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <div class="form-group">
+                                        <label>委托单位</label>
+                                        <select class="custom-select form-control"
+                                                id="edit-contract-agency-select">
+                                            <option value="">选择委托单位</option>
+                                            @foreach($data['company'] as $v)
+                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>联系人</label>
+                                        <input type="text" class="form-control" disabled="disabled"
+                                               id="edit-contract-agency-contact">
+                                        <input type="hidden" id="edit-contract-agency-id">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>联系电话</label>
+                                        <input type="text" class="form-control" disabled="disabled"
+                                               id="edit-contract-agency-phone"></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>主要内容</label>
+                                        <textarea name="remark" id="edit-contract-content"
+                                                  rows="6" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>备注</label>
+                                        <textarea name="remark" id="edit-contract-remark"
+                                                  rows="6" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label>附件名称</label>
+                                        <input type="text" class="form-control" id="edit-contract-cattachment-name">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label>添加附件</label>
+                                        <input type="file" class="form-control" id="edit-contract-cattachment-file"
+                                               multiple="multiple">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label></label>
+                                        <p>
+                                            <button type="button" id="edit-contract-cattachment-button"
+                                                    class="btn waves-effect waves-light btn-rounded btn-secondary"
+                                                    style="top :10px;">
+                                                添加
+                                            </button>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <table class="table table-bordered table-hover toggle-circle"
+                                           data-page-size="7" id="edit-contract-cattachment-table">
+                                    </table>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" id="edit-contract-submit"
+                            class="btn btn-success">提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="modal fade show" id="confirmDelProjectModal" tabindex="-1" role="dialog"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -885,6 +1067,14 @@
 
                 $('.delSonProject').click(function () {
                     $('#confirmDelSonProjectModal').modal('show');
+                    var index = $(this).attr('data-sonproject-index');
+                    public_sontable_index = $(this).attr('data-project-id');
+                    var data = $('#sonproject-table-' + public_sontable_index).bootstrapTable('getData');
+                    public_sonproject_id = data[index].id;
+                });
+
+                $('.editSonProject').click(function () {
+                    $('#editSonProjectModal').modal('show');
                     var index = $(this).attr('data-sonproject-index');
                     public_sontable_index = $(this).attr('data-project-id');
                     var data = $('#sonproject-table-' + public_sontable_index).bootstrapTable('getData');

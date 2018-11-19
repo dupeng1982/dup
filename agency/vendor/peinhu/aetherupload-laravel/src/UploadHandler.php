@@ -126,9 +126,8 @@ class UploadHandler extends \Illuminate\Routing\Controller
             RedisHandler::setOneHash(pathinfo($this->receiver->savedPath, PATHINFO_FILENAME), $this->receiver->savedPath);
             # 触发上传完成事件
             if (!empty($uploadCompleteEvent = ConfigMapper::get('EVENT_UPLOAD_COMPLETE'))) {
-                event(new $uploadCompleteEvent($this->receiver));
+                event(new $uploadCompleteEvent($this->receiver, request()));
             }
-
         }
 
         return Responser::returnResult($result);

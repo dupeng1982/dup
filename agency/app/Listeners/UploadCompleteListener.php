@@ -29,11 +29,18 @@ class UploadCompleteListener
      */
     public function handle(UploadCompleteEvent $event)
     {
-        $operator_id = Auth::guard('admin')->user();
-//        dd($operator_id);
+        $operator_id = $event->request->operator_id;
         $project_id = $event->request->project_id;
-//        Cpattachment::create(['mimetype' => $event->receiver->file->getMimeType(),
-//            'name' => $event->request->max_file_name]);
+        $filename = $event->request->max_file_name;
+        $filetype = $event->request->max_file_type;
+        $mimetype = $event->receiver->file->getMimeType();
+        $dir = $event->receiver->savedPath;
+        if ($filetype == 1) {
+            $this->_uploadProjectFile($project_id, $filename, $dir, $operator_id, $mimetype);
+        } else {
+            $check_status = $event->request->check_status;
+            $this->_uploadSonProjectFile($project_id, $filename, $dir, $operator_id, $mimetype, $check_status);
+        }
     }
 
     //上传项目文件

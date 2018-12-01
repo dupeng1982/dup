@@ -431,7 +431,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">编辑项目</h4>
+                    <h4 class="modal-title">编辑子项目</h4>
                     <button type="button" class="close" data-dismiss="modal"
                             aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
@@ -442,113 +442,16 @@
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="form-group">
-                                        <label>合同名称</label>
+                                        <label>子项目名称</label>
                                         <input type="text" class="form-control"
-                                               id="edit-contract-name"></div>
+                                               id="edit-son-project-name"></div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>合同类型</label>
-                                        <select class="custom-select form-control" id="edit-contract-type">
-                                            <option value="">选择类型</option>
-                                            @foreach($data['contract_type'] as $v)
-                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                            @endforeach
+                                        <label>专业类型</label>
+                                        <select class="custom-select form-control" id="edit-son-project-profession">
+                                            <option value="">选择专业类型</option>
                                         </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>签订时间</label>
-                                        <input type="date" class="form-control"
-                                               id="edit-contract-sign-date"></div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>开始时间</label>
-                                        <input type="date" class="form-control"
-                                               id="edit-contract-start-date"></div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>结束时间</label>
-                                        <input type="date" class="form-control"
-                                               id="edit-contract-end-date"></div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>合同项目地址</label>
-                                        <input type="text" class="form-control"
-                                               id="edit-contract-address"></div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-7">
-                                    <div class="form-group">
-                                        <label>建设单位</label>
-                                        <select class="custom-select form-control"
-                                                id="edit-contract-construction-select">
-                                            <option value="">选择建设单位</option>
-                                            @foreach($data['company'] as $v)
-                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label>联系人</label>
-                                        <input type="text" class="form-control" disabled="disabled"
-                                               id="edit-contract-construction-contact">
-                                        <input type="hidden" id="edit-contract-construction-id">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>联系电话</label>
-                                        <input type="text" class="form-control" disabled="disabled"
-                                               id="edit-contract-construction-phone">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-7">
-                                    <div class="form-group">
-                                        <label>委托单位</label>
-                                        <select class="custom-select form-control"
-                                                id="edit-contract-agency-select">
-                                            <option value="">选择委托单位</option>
-                                            @foreach($data['company'] as $v)
-                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label>联系人</label>
-                                        <input type="text" class="form-control" disabled="disabled"
-                                               id="edit-contract-agency-contact">
-                                        <input type="hidden" id="edit-contract-agency-id">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>联系电话</label>
-                                        <input type="text" class="form-control" disabled="disabled"
-                                               id="edit-contract-agency-phone"></div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>主要内容</label>
-                                        <textarea name="remark" id="edit-contract-content"
-                                                  rows="6" class="form-control"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -556,7 +459,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>备注</label>
-                                        <textarea name="remark" id="edit-contract-remark"
+                                        <textarea name="remark" id="edit-son-project-remark"
                                                   rows="6" class="form-control"></textarea>
                                     </div>
                                 </div>
@@ -565,13 +468,13 @@
                                 <div class="col-md-5">
                                     <div class="form-group">
                                         <label>附件名称</label>
-                                        <input type="text" class="form-control" id="edit-contract-cattachment-name">
+                                        <input type="text" class="form-control" id="edit-cspattachment-name">
                                     </div>
                                 </div>
                                 <div class="col-md-5">
                                     <div class="form-group">
                                         <label>添加附件</label>
-                                        <input type="file" class="form-control" id="edit-contract-cattachment-file"
+                                        <input type="file" class="form-control" id="edit-cspattachment-file"
                                                multiple="multiple">
                                     </div>
                                 </div>
@@ -579,7 +482,7 @@
                                     <div class="form-group">
                                         <label></label>
                                         <p>
-                                            <button type="button" id="edit-contract-cattachment-button"
+                                            <button type="button" id="edit-cspattachment-button"
                                                     class="btn waves-effect waves-light btn-rounded btn-secondary"
                                                     style="top :10px;">
                                                 添加
@@ -589,7 +492,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <table class="table table-bordered table-hover toggle-circle"
-                                           data-page-size="7" id="edit-contract-cattachment-table">
+                                           data-page-size="7" id="edit-cspattachment-table">
                                     </table>
                                 </div>
                             </div>
@@ -600,7 +503,7 @@
                     <button type="button" class="btn btn-secondary"
                             data-dismiss="modal">关闭
                     </button>
-                    <button type="button" id="edit-contract-submit"
+                    <button type="button" id="edit-son-project-submit"
                             class="btn btn-success">提交
                     </button>
                 </div>
@@ -918,6 +821,10 @@
             function sonrefresh(project_id) {
                 $('#sonproject-table-' + project_id).bootstrapTable('refresh', {url: 'getCostSonProjectList'});
             }
+            
+            function sonattachment() {
+                $('#edit-cspattachment-table').bootstrapTable('refresh', {url: 'getCspattachment'});
+            }
 
             function onPostBody(res) {
                 $("[data-toggle='tooltip']").tooltip();
@@ -1079,7 +986,128 @@
                     public_sontable_index = $(this).attr('data-project-id');
                     var data = $('#sonproject-table-' + public_sontable_index).bootstrapTable('getData');
                     public_sonproject_id = data[index].id;
+                    $('#edit-son-project-name').val(data[index].name);
+                    addSonProfession('#edit-son-project-profession', data[index].profession, data[index].profession_id)
+                    $('#edit-son-project-remark').val(data[index].remark);
+                    $('#edit-cspattachment-table').bootstrapTable({
+                        url: 'getCspattachment',
+                        ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
+                        cache: false,
+                        method: 'POST',
+                        contentType: "application/x-www-form-urlencoded",
+                        dataField: "data",
+                        pageNumber: 1,
+                        pagination: true,
+                        search: false,
+                        sidePagination: 'client',
+                        pageSize: 6,//单页记录数
+                        queryParams: function (params) {
+                            return {
+                                sonproject_id: data[index].id
+                            }
+                        },
+                        responseHandler: function (result) {
+                            var errcode = result.code;
+                            if (errcode) {
+                                return;
+                            }
+                            return {
+                                total: result.data.length,
+                                data: result.data
+                            };
+                        },
+                        columns: [{
+                            field: 'SerialNumber',
+                            title: '序号',
+                            formatter: function (value, row, index) {
+                                return index + 1;
+                            }
+                        }, {
+                            field: 'name',
+                            title: '文件名称'
+                        }, {
+                            field: 'mimetype',
+                            title: '文件类型'
+                        }, {
+                            field: 'id',
+                            title: '操作',
+                            formatter: function (value, row, index) {
+                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn showCspattachment" data-cspattachment-dir=' + row.dir + ' data-toggle="tooltip" data-original-title="查看"><i class="ti-eye" aria-hidden="true"></i></button>' +
+                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn downLoadCspattachment" data-cspattachment-dir=' + row.dir + ' data-toggle="tooltip" data-original-title="下载"><i class="ti-save" aria-hidden="true"></i></button>' +
+                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delCspattachment" data-cspattachment-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                            }
+                        }],
+                        onPostBody: function (res) {
+                            $('.delCspattachment').click(function () {
+                                var cspattachment_id = $(this).attr('data-cspattachment-id');
+                                $.ajax({
+                                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                                    url: 'delCspattachment',
+                                    type: 'POST',
+                                    data: {
+                                        cspattachment_id: cspattachment_id
+                                    },
+                                    success: function (doc) {
+                                        if (doc.code) {
+                                            $.toast({
+                                                heading: '警告',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'warning',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                        } else {
+                                            $.toast({
+                                                heading: '成功',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'success',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                            sonattachment();
+                                        }
+                                    },
+                                    error: function (doc) {
+                                        $.toast({
+                                            heading: '错误',
+                                            text: '网络错误，请稍后重试！',
+                                            position: 'top-right',
+                                            loaderBg: '#ff6849',
+                                            icon: 'error',
+                                            hideAfter: 3000,
+                                            stack: 6
+                                        });
+                                    }
+                                });
+                            });
+                            $('.showCspattachment').click(function () {
+                                var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
+                                window.open('showAdmininfoPic?admininfo_pic_id=' + admininfo_pic_id);
+                            });
+                            $('.downLoadCspattachment').click(function () {
+                                var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
+                                window.open('downLoadAdmininfoPic?admininfo_pic_id=' + admininfo_pic_id);
+                            });
+                        }
+                    });
+
                 });
+            }
+
+            function addSonProfession(id, data, select) {
+                $(id).empty();
+                $(id).append('<option value="">请选择楼幢</option>');
+                var count = data.length;
+                var b = "";
+                for (var i = 0; i < count; i++) {
+                    b += "<option value='" + data[i].id + "'>" + data[i].name + "</option>";
+                }
+                $(id).append(b);
+                $(id).val(select);
             }
 
             $('#del-project-submit').click(function () {
@@ -1293,8 +1321,8 @@
                 clearModalInput();
             });
 
-            $('#editContractModal').on('hide.bs.modal', function () {
-                $('#edit-contract-cattachment-table').bootstrapTable('destroy');
+            $('#editSonProjectModal').on('hide.bs.modal', function () {
+                $('#edit-cspattachment-table').bootstrapTable('destroy');
             });
 
             function clearModalInput() {

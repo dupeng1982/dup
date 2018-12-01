@@ -128,6 +128,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('getCostSonProjectList', 'AdminController@getCostSonProjectList');
     $router->post('delCostProject', 'AdminController@delCostProject');
     $router->post('delCostSonProject', 'AdminController@delCostSonProject');
+    $router->post('getCspattachment', 'AdminController@getCspattachment');
+    $router->post('delCspattachment', 'AdminController@delCspattachment');
 
 
 
@@ -145,17 +147,15 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->get('financemanage', 'AdminController@financemanage');
 
     //上传大文件
-    Route::any('aetherupload/preprocess', ['middleware' => ['auth.admin:admin'],
-        'uses' => '\AetherUpload\UploadHandler@preprocess']);
-    Route::post('aetherupload/uploading', ['middleware' => ['auth.admin:admin'],
-        'uses' => '\AetherUpload\UploadHandler@saveChunk']);
+    Route::any('aetherupload/preprocess', '\AetherUpload\UploadHandler@preprocess');
+    Route::post('aetherupload/uploading', '\AetherUpload\UploadHandler@saveChunk');
     //预览大文件
     Route::get('aetherupload/display/{group}/{subDir}/{resourceName}', '\AetherUpload\ResourceHandler@displayResource');
     //下载大文件
     Route::get('aetherupload/download/{group}/{subDir}/{resourceName}/{newName}', '\AetherUpload\ResourceHandler@downloadResource');
 
     //测试
-    $router->any('test', 'AdminController@getCostProjectList');
+    $router->any('test', 'AdminController@getCspattachment');
 });
 
 

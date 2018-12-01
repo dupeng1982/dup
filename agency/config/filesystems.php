@@ -55,6 +55,11 @@ return [
             'visibility' => 'public',
         ],
 
+        'aetherupload' => [
+            'driver' => 'local',
+            'root' => storage_path('app/aetherupload'),
+        ],
+
         'avatar' => [
             'driver' => 'local',
             'root' => public_path('admin/avatars'),

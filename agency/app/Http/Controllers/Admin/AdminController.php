@@ -24,6 +24,7 @@ use App\Models\Contract;
 use App\Models\ContractType;
 use App\Models\CostProject;
 use App\Models\CostSonProject;
+use App\Models\Cspattachment;
 use App\Models\DateSet;
 use App\Models\Department;
 use App\Models\Education;
@@ -2313,6 +2314,36 @@ class AdminController extends Controller
             return $this->resp(10000, $validator->messages()->first());
         }
         CostSonProject::where('id', $request->sonproject_id)->delete();
+        return $this->resp(0, '删除成功');
+    }
+
+    //获取子项目附件
+    public function getCspattachment(Request $request)
+    {
+        $rule = [
+            'sonproject_id' => 'required|integer|exists:cost_sonproject,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $rs = Cspattachment::where('project_id', $request->sonproject_id)->get();
+        return $this->resp(0, $rs);
+    }
+
+    //删除子项目附件
+    public function delCspattachment(Request $request)
+    {
+        $rule = [
+            'cspattachment_id' => 'required|integer|exists:cspattachment,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $file = Cspattachment::find($request->cspattachment_id);
+        $file->delete();
+        $this->_delFile($file->dir, 'aetherupload');
         return $this->resp(0, '删除成功');
     }
 

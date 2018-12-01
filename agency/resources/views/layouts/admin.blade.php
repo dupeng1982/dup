@@ -150,8 +150,12 @@
                                     class="mdi mdi-store"></i><span class="hide-menu">项目管理</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="{{ url('admin/contractmanage') }}">合同管理</a></li>
-                            <li><a href="{{ url('admin/costprojectmanage') }}">造价项目管理</a></li>
-                            <li><a href="{{ url('admin/costprojectcheck') }}">造价项目审核</a></li>
+                            <li> <a class="has-arrow" href="#" aria-expanded="false">造价项目管理</a>
+                                <ul aria-expanded="false" class="collapse">
+                                    <li><a href="{{ url('admin/costprojectmanage') }}">项目列表</a></li>
+                                    <li><a href="{{ url('admin/costprojectcheck') }}">项目审核</a></li>
+                                </ul>
+                            </li>
                             <li><a href="{{ url('admin/projectunitmanage') }}">项目单位管理</a></li>
                         </ul>
                     </li>

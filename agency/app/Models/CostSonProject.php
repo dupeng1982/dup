@@ -16,12 +16,18 @@ class CostSonProject extends Model
     public $timestamps = true;
     protected $fillable = ['project_id', 'profession_id', 'name', 'number', 'cost', 'check_cost', 'remark'];
 
-    protected $appends = ['profession_name'];
+    protected $appends = ['profession_name', 'profession'];
 
     public function getProfessionNameAttribute()
     {
         $profession = Profession::find($this->profession_id);
         return $profession->name;
+    }
+
+    public function getProfessionAttribute()
+    {
+        $project = CostProject::find($this->project_id);
+        return $project->profession;
     }
 //
 //    public function profession()

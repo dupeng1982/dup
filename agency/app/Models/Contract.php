@@ -40,4 +40,14 @@ class Contract extends Model
         $contract_type = ContractType::find($this->type);
         return $contract_type->short . '[' . Date::parse($this->sign_date)->format('Y') . ']第' . $this->id . '号';
     }
+
+    public function construction()
+    {
+        return $this->hasOne('App\Models\Company', 'id', 'construction_id');
+    }
+
+    public function agency()
+    {
+        return $this->hasOne('App\Models\Company', 'id', 'agency_id');
+    }
 }

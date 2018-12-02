@@ -14,5 +14,5 @@ class Cpattachment extends Model
 {
     protected $table = 'cpattachment';
     public $timestamps = false;
-    protected $fillable = ['project_id', 'name', 'dir', 'operator_id', 'mimetype'];
+    protected $fillable = ['project_id', 'name', 'dir', 'operator_id', 'mimetype', 'check_status'];
 }

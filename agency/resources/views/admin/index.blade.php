@@ -22,7 +22,6 @@
             <input type="hidden" id="upload-operator-id" value="{{ Auth::guard('admin')->user()->id }}">
             <input type="hidden" id="upload-project-id" value="0">
             <input type="hidden" id="max-file-name" value="这是个测试">
-            <input type="hidden" id="max-file-type" value="2">
         </div>
     </div>
     <div id="result"></div>

@@ -34,4 +34,9 @@ class CostProject extends Model
     {
         return $this->hasMany('App\Models\CostSonProject', 'project_id', 'id');
     }
+
+    public function contract()
+    {
+        return $this->hasOne('App\Models\Contract', 'id', 'contract_id');
+    }
 }

@@ -20,7 +20,6 @@ var AetherUpload = {
             this.operatorId = this.wrapperDom.find("#upload-operator-id").val(),
             this.projectId = this.wrapperDom.find("#upload-project-id").val(),
             this.maxFileName = this.wrapperDom.find("#max-file-name").val(),
-            this.maxFileType = this.wrapperDom.find("#max-file-type").val(),
             this.checkStatus = this.wrapperDom.find("#check-status").val(),
 
             this.file = this.fileDom[0].files[0],
@@ -219,7 +218,6 @@ var AetherUpload = {
         form.append("operator_id", this.operatorId);
         form.append("project_id", this.projectId);
         form.append("max_file_name", this.maxFileName);
-        form.append("max_file_type", this.maxFileType);
         form.append("check_status", this.checkStatus);
 
         $.ajax({
@@ -371,11 +369,11 @@ var AetherUpload = {
  * file 文件对象
  * group 分组名
  */
-function aetherupload(file, group) {
+function aetherupload(upload, group) {
 
     var newInstance = Object.create(AetherUpload);
 
-    newInstance.wrapperDom = $(file).parents("#aetherupload-wrapper");
+    newInstance.wrapperDom = $(upload).parents("#aetherupload-wrapper");
 
     newInstance.group = group;
 

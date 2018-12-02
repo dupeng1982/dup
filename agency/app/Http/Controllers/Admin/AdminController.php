@@ -24,7 +24,7 @@ use App\Models\Contract;
 use App\Models\ContractType;
 use App\Models\CostProject;
 use App\Models\CostSonProject;
-use App\Models\Cspattachment;
+use App\Models\Cpattachment;
 use App\Models\DateSet;
 use App\Models\Department;
 use App\Models\Education;
@@ -2233,6 +2233,8 @@ class AdminController extends Controller
         $data['contract_type'] = ContractType::get();
         $data['company'] = Company::get();
         $data['project_type'] = Service::get();
+        $data['professions'] = Profession::get();
+        $data['contract'] = Contract::with('construction', 'agency')->get();
         return view('admin/costprojectmanage', ['data' => $data]);
     }
 
@@ -2250,7 +2252,7 @@ class AdminController extends Controller
         $arr = array();
         $request->service_id && array_push($arr, ['cost_project.service_id', '=', $request->service_id]);
         $search = $request->search;
-        $data = CostProject::with('profession', 'sonproject')
+        $data = CostProject::with('profession', 'sonproject', 'contract')
             ->select('cost_project.*', 'construction.name as construction_name', 'service.name as service_name',
                 'agency.name as agency_name', 'construction.contact as construction_contact',
                 'construction.phone as construction_phone', 'agency.contact as agency_contact',
@@ -2317,31 +2319,114 @@ class AdminController extends Controller
         return $this->resp(0, '删除成功');
     }
 
-    //获取子项目附件
-    public function getCspattachment(Request $request)
+    //添加造价项目
+    public function addCostProject(Request $request)
     {
         $rule = [
-            'sonproject_id' => 'required|integer|exists:cost_sonproject,id'
+            'project_name' => 'required|max:100',
+            'service_id' => 'required|integer|exists:service,id',
+            'profession' => 'required|array',
+            'cost' => 'nullable|numeric',
+            'receive_date' => 'required|date_format:Y-m-d',
+            'construction_id' => 'nullable|integer|exists:company,id',
+            'implement_id' => 'nullable|integer|exists:company,id',
+            'agency_id' => 'nullable|integer|exists:company,id',
+            'contract_id' => 'nullable|integer|exists:contract,id',
         ];
         $validator = Validator::make($request->all(), $rule);
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        $rs = Cspattachment::where('project_id', $request->sonproject_id)->get();
+        return DB::transaction(function () use ($request) {
+            //添加主项目
+            $project = CostProject::create(['name' => $request->project_name,
+                'contract_id' => $request->contract_id, 'service_id' => $request->service_id,
+                'cost' => $request->cost, 'receive_date' => $request->receive_date,
+                'construction_id' => $request->construction_id, 'agency_id' => $request->agency_id,
+                'implement_id' => $request->implement_id, 'remark' => $request->remark]);
+            //关联专业类型
+            $profession = $request->profession;
+            $project->profession()->attach($profession);
+            //添加子项目
+            $data = Array();
+            $i = 0;
+            foreach ($profession as $v) {
+                $data[$i]['project_id'] = $project->id;
+                $data[$i]['profession_id'] = $v;
+                $profession_name = Profession::find($v);
+                $data[$i]['name'] = $project->name . '-' . $profession_name->name;
+                $number = Date::parse($project->receive_date)->format('Y') . '-' . $project->id . '-' . ($i + 1);
+                $data[$i]['number'] = $number;
+                $now = Date::now()->format('Y-m-d H:i:s');
+                $data[$i]['created_at'] = $now;
+                $data[$i]['updated_at'] = $now;
+                $i = $i + 1;
+            }
+            DB::table('cost_sonproject')->insert($data);
+            return $this->resp(0, '项目添加成功');
+        });
+    }
+
+    //编辑造价项目
+    public function editCostProject(Request $request)
+    {
+        $rule = [
+            'project_id' => 'required|integer|exists:cost_project,id',
+            'project_name' => 'required|max:100',
+            'service_id' => 'required|integer|exists:service,id',
+            'profession' => 'required|array',
+            'cost' => 'nullable|numeric',
+            'receive_date' => 'required|date_format:Y-m-d',
+            'construction_id' => 'nullable|integer|exists:company,id',
+            'implement_id' => 'nullable|integer|exists:company,id',
+            'agency_id' => 'nullable|integer|exists:company,id',
+            'contract_id' => 'nullable|integer|exists:contract,id',
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        return DB::transaction(function () use ($request) {
+            //更新主项目
+            CostProject::where('id', $request->project_id)
+                ->update(['name' => $request->project_name,
+                    'contract_id' => $request->contract_id, 'service_id' => $request->service_id,
+                    'cost' => $request->cost, 'receive_date' => $request->receive_date,
+                    'construction_id' => $request->construction_id, 'agency_id' => $request->agency_id,
+                    'implement_id' => $request->implement_id, 'remark' => $request->remark]);
+            //更新专业类型
+            $profession = $request->profession;
+            $project = CostProject::find($request->project_id);
+            $project->profession()->sync($profession);
+            return $this->resp(0, '项目修改成功');
+        });
+    }
+
+    //获取项目附件
+    public function getCpattachment(Request $request)
+    {
+        $rule = [
+            'project_id' => 'required|integer|exists:cost_project,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $rs = Cpattachment::where('project_id', $request->project_id)->get();
         return $this->resp(0, $rs);
     }
 
-    //删除子项目附件
-    public function delCspattachment(Request $request)
+    //删除项目附件
+    public function delCpattachment(Request $request)
     {
         $rule = [
-            'cspattachment_id' => 'required|integer|exists:cspattachment,id'
+            'cpattachment_id' => 'required|integer|exists:cpattachment,id'
         ];
         $validator = Validator::make($request->all(), $rule);
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        $file = Cspattachment::find($request->cspattachment_id);
+        $file = Cpattachment::find($request->cpattachment_id);
         $file->delete();
         $this->_delFile($file->dir, 'aetherupload');
         return $this->resp(0, '删除成功');

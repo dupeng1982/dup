@@ -128,8 +128,11 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('getCostSonProjectList', 'AdminController@getCostSonProjectList');
     $router->post('delCostProject', 'AdminController@delCostProject');
     $router->post('delCostSonProject', 'AdminController@delCostSonProject');
-    $router->post('getCspattachment', 'AdminController@getCspattachment');
-    $router->post('delCspattachment', 'AdminController@delCspattachment');
+    $router->post('getCpattachment', 'AdminController@getCpattachment');
+    $router->post('delCpattachment', 'AdminController@delCpattachment');
+
+    $router->post('addCostProject', 'AdminController@addCostProject');
+    $router->post('editCostProject', 'AdminController@editCostProject');
 
 
 
@@ -155,7 +158,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     Route::get('aetherupload/download/{group}/{subDir}/{resourceName}/{newName}', '\AetherUpload\ResourceHandler@downloadResource');
 
     //测试
-    $router->any('test', 'AdminController@getCspattachment');
+    $router->any('test', 'AdminController@editCostProject');
 });
 
 

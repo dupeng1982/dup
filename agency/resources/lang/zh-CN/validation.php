@@ -197,7 +197,15 @@ return [
         'contract_remark' => '合同备注',
         'sign_date' => '签订时间',
         'cattachment_name' => '合同附件名称',
-        'sonproject_id' => '子项目ID'
+        'sonproject_id' => '子项目ID',
+        'project_id' => '项目ID',
+        'service_id' => '服务类型ID',
+        'profession' => '专业类型数据',
+        'cost' => '收费基数',
+        'receive_date' => '接收时间',
+        'construction_id' => '建设单位ID',
+        'implement_id' => '施工单位ID',
+        'agency_id' => '委托单位ID',
 
     ],
 

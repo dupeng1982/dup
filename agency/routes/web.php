@@ -134,6 +134,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('addCostProject', 'AdminController@addCostProject');
     $router->post('editCostProject', 'AdminController@editCostProject');
 
+    $router->post('addCostSonProject', 'AdminController@addCostSonProject');
+    $router->post('editCostSonProject', 'AdminController@editCostSonProject');
+
 
 
     //造价项目审核
@@ -158,7 +161,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     Route::get('aetherupload/download/{group}/{subDir}/{resourceName}/{newName}', '\AetherUpload\ResourceHandler@downloadResource');
 
     //测试
-    $router->any('test', 'AdminController@editCostProject');
+    $router->any('test', 'AdminController@addSonProject');
 });
 
 

@@ -79,13 +79,13 @@
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="form-group">
-                                        <label>项目名称</label>
+                                        <label>项目名称*</label>
                                         <input type="text" class="form-control"
                                                id="add-project-name"></div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>项目类型</label>
+                                        <label>项目类型*</label>
                                         <select class="custom-select form-control" id="add-project-service">
                                             <option value="">选择项目类型</option>
                                             @foreach($data['project_type'] as $v)
@@ -98,7 +98,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>专业类型</label>
+                                        <label>专业类型*</label>
                                         <div class="c-inputs-stacked">
                                             <div class="row">
                                                 @foreach($data['professions'] as $v)
@@ -126,7 +126,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>接收时间</label>
+                                        <label>接收时间*</label>
                                         <input type="date" class="form-control" id="add-project-receive-date"></div>
                                 </div>
                             </div>
@@ -275,13 +275,13 @@
                         <div class="row" id="aetherupload-wrapper">
                             <div class="col-md-5">
                                 <div class="form-group">
-                                    <label>附件名称</label>
+                                    <label>附件名称*</label>
                                     <input type="text" class="form-control" id="max-file-name">
                                 </div>
                             </div>
                             <div class="col-md-5">
                                 <div class="form-group">
-                                    <label>添加附件</label>
+                                    <label>添加附件*</label>
                                     <input type="file" class="form-control" id="file">
                                 </div>
                                 <div class="progress" id="upload-progress"
@@ -332,13 +332,13 @@
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="form-group">
-                                    <label>项目名称</label>
+                                    <label>项目名称*</label>
                                     <input type="text" class="form-control"
                                            id="edit-project-name"></div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label>项目类型</label>
+                                    <label>项目类型*</label>
                                     <select class="custom-select form-control" id="edit-project-service">
                                         <option value="">选择项目类型</option>
                                         @foreach($data['project_type'] as $v)
@@ -351,7 +351,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label>专业类型</label>
+                                    <label>专业类型*</label>
                                     <div class="c-inputs-stacked">
                                         <div class="row">
                                             @foreach($data['professions'] as $v)
@@ -379,7 +379,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>接收时间</label>
+                                    <label>接收时间*</label>
                                     <input type="date" class="form-control" id="edit-project-receive-date"></div>
                             </div>
                         </div>
@@ -512,7 +512,62 @@
             </div>
         </div>
     </div>
-
+    <div class="modal fade show" id="addSonProjectModal" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">添加子项目</h4>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <form id="add-cost-son-project-form">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>子项目名称*</label>
+                                        <input type="text" class="form-control" id="add-son-project-name"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>专业类型*</label>
+                                        <select class="custom-select form-control" id="add-son-project-profession">
+                                            <option value="">选择专业类型</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>收费基数</label>
+                                        <input type="text" class="form-control" id="add-son-project-cost"></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>备注</label>
+                                        <textarea name="remark" id="add-son-project-remark"
+                                                  rows="6" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" id="add-son-project-submit"
+                            class="btn btn-success">提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="modal fade show" id="editSonProjectModal" tabindex="-1" role="dialog"
          aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -527,19 +582,24 @@
                     <div class="card-body">
                         <form>
                             <div class="row">
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>子项目名称</label>
+                                        <label>子项目名称*</label>
                                         <input type="text" class="form-control"
                                                id="edit-son-project-name"></div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>专业类型</label>
+                                        <label>专业类型*</label>
                                         <select class="custom-select form-control" id="edit-son-project-profession">
                                             <option value="">选择专业类型</option>
                                         </select>
                                     </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>收费基数</label>
+                                        <input type="text" class="form-control" id="edit-son-project-cost"></div>
                                 </div>
                             </div>
                             <div class="row">
@@ -918,16 +978,10 @@
                     }
                 }, {
                     field: 'cost',
-                    title: '送审造价'
+                    title: '收费基数(万元)'
                 }, {
                     field: 'construction_name',
                     title: '建设单位'
-                }, {
-                    field: 'implement_name',
-                    title: '施工单位'
-                }, {
-                    field: 'agency_name',
-                    title: '委托单位'
                 }, {
                     field: 'id',
                     title: '操作<button type="button" id="addProject" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="添加项目"><i class="ti-user" aria-hidden="true"></i></button>',
@@ -985,13 +1039,10 @@
                             title: '专业类型'
                         }, {
                             field: 'cost',
-                            title: '送审造价'
-                        }, {
-                            field: 'check_cost',
-                            title: '核定造价'
+                            title: '收费基数(万元)'
                         }, {
                             field: 'id',
-                            title: '操作',
+                            title: '操作<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn addSonProject" data-project-index=' + index + ' data-project-id=' + row.id + ' data-toggle="tooltip" data-original-title="添加子项目"><i class="ti-user" aria-hidden="true"></i></button>',
                             formatter: function (value, row, index) {
                                 return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
                                     '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
@@ -1208,18 +1259,29 @@
                 $('.editSonProject').click(function () {
                     $('#editSonProjectModal').modal('show');
                     var index = $(this).attr('data-sonproject-index');
+                    public_project_id = $(this).attr('data-project-id');
                     public_sontable_index = $(this).attr('data-project-id');
                     var data = $('#sonproject-table-' + public_sontable_index).bootstrapTable('getData');
                     public_sonproject_id = data[index].id;
                     $('#edit-son-project-name').val(data[index].name);
                     addSonProfession('#edit-son-project-profession', data[index].profession, data[index].profession_id)
                     $('#edit-son-project-remark').val(data[index].remark);
+                    $('#edit-son-project-cost').val(data[index].cost);
+                });
+
+                $('.addSonProject').click(function () {
+                    $('#addSonProjectModal').modal('show');
+                    public_project_id = $(this).attr('data-project-id');
+                    public_sontable_index = $(this).attr('data-project-id');
+                    var index = $(this).attr('data-project-index');
+                    var data = $('#project_table').bootstrapTable('getData');
+                    addSonProfession('#add-son-project-profession', data[index].profession);
                 });
             }
 
             function addSonProfession(id, data, select) {
                 $(id).empty();
-                $(id).append('<option value="">请选择楼幢</option>');
+                $(id).append('<option value="">选择专业类型</option>');
                 var count = data.length;
                 var b = "";
                 for (var i = 0; i < count; i++) {
@@ -1383,6 +1445,58 @@
                 });
             });
 
+            $('#add-son-project-submit').click(function () {
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: 'addCostSonProject',
+                    type: 'POST',
+                    data: {
+                        project_id: public_project_id,
+                        sonproject_name: $('#add-son-project-name').val(),
+                        profession_id: $('#add-son-project-profession').val(),
+                        remark: $('#add-son-project-remark').val(),
+                        cost: $('#add-son-project-cost').val()
+                    },
+                    success: function (doc) {
+                        if (doc.code) {
+                            $.toast({
+                                heading: '警告',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'warning',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        } else {
+                            $.toast({
+                                heading: '成功',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'success',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                            $('#addSonProjectModal').modal('hide');
+                            clearModalInput()
+                            sonrefresh(public_sontable_index);
+                        }
+                    },
+                    error: function (doc) {
+                        $.toast({
+                            heading: '错误',
+                            text: '网络错误，请稍后重试！',
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'error',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                });
+            });
+
             $('#edit-project-submit').click(function () {
                 console.log($("input[name='edit-project-professions-checkbox-group']:checked")
                     .map(function (index, elem) {
@@ -1447,6 +1561,57 @@
                 });
             });
 
+            $('#edit-son-project-submit').click(function () {
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: 'editCostSonProject',
+                    type: 'POST',
+                    data: {
+                        sonproject_id: public_sonproject_id,
+                        sonproject_name: $('#edit-son-project-name').val(),
+                        profession_id: $('#edit-son-project-profession').val(),
+                        remark: $('#edit-son-project-remark').val(),
+                        cost: $('#edit-son-project-cost').val()
+                    },
+                    success: function (doc) {
+                        if (doc.code) {
+                            $.toast({
+                                heading: '警告',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'warning',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        } else {
+                            $.toast({
+                                heading: '成功',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'success',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                            $('#editSonProjectModal').modal('hide');
+                            sonrefresh(public_sontable_index);
+                        }
+                    },
+                    error: function (doc) {
+                        $.toast({
+                            heading: '错误',
+                            text: '网络错误，请稍后重试！',
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'error',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                });
+            });
+
             $('#addCpattachmentModal').on('hide.bs.modal', function () {
                 $('#add-cpattachment-table').bootstrapTable('destroy');
             });
@@ -1464,6 +1629,7 @@
 
             function clearModalInput() {
                 $("#addProjectForm")[0].reset();
+                $('#add-cost-son-project-form')[0].reset();
             }
 
             $('#project-type-select').change(function () {

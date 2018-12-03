@@ -201,6 +201,7 @@ return [
         'project_id' => '项目ID',
         'service_id' => '服务类型ID',
         'profession' => '专业类型数据',
+        'profession_id' => '专业类型ID',
         'cost' => '收费基数',
         'receive_date' => '接收时间',
         'construction_id' => '建设单位ID',

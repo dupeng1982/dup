@@ -2432,6 +2432,57 @@ class AdminController extends Controller
         return $this->resp(0, '删除成功');
     }
 
+    //添加子项目
+    public function addCostSonProject(Request $request)
+    {
+        $rule = [
+            'project_id' => 'required|integer|exists:cost_project,id',
+            'profession_id' => 'required|integer|exists:profession,id',
+            'sonproject_name' => 'required|max:100',
+            'cost' => 'nullable|numeric',
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        return DB::transaction(function () use ($request) {
+            $project = CostProject::find($request->project_id);
+            $sonproject_number = CostSonProject::where('project_id', $request->project_id)
+                ->pluck('number')->take(-1)->first();
+            if ($sonproject_number) {
+                $code = explode('-', $sonproject_number);
+                $number = $project->number . '-' . ($code[2] + 1);
+            } else {
+                $number = $project->number . '-' . '1';
+            }
+            CostSonProject::create(['project_id' => $request->project_id, 'name' => $request->sonproject_name,
+                'profession_id' => $request->profession_id, 'number' => $number, 'cost' => $request->cost,
+                'remark' => $request->remark]);
+            return $this->resp(0, '添加子项目成功');
+        });
+    }
+
+    //编辑子项目
+    public function editCostSonProject(Request $request)
+    {
+        $rule = [
+            'sonproject_id' => 'required|integer|exists:cost_sonproject,id',
+            'profession_id' => 'required|integer|exists:profession,id',
+            'sonproject_name' => 'required|max:100',
+            'cost' => 'nullable|numeric',
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        return DB::transaction(function () use ($request) {
+            CostSonProject::where('id',$request->sonproject_id)
+                ->update(['name' => $request->sonproject_name, 'cost' => $request->cost,
+                'profession_id' => $request->profession_id, 'remark' => $request->remark]);
+            return $this->resp(0, '编辑子项目成功');
+        });
+    }
+
     /*******造价项目审核视图*******/
     public function costprojectcheck()
     {

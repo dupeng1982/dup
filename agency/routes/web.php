@@ -135,10 +135,17 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('editCostSonProject', 'AdminController@editCostSonProject');
     $router->post('allotCostSonProject', 'AdminController@allotCostSonProject');
 
-
-
+    //造价项目初审
+    $router->get('costsonprojectcheck', 'AdminController@costsonprojectcheck');
+    //造价项目专项审核
+    $router->get('costsonprojectprofessioncheck', 'AdminController@costsonprojectprofessioncheck');
     //造价项目审核
     $router->get('costprojectcheck', 'AdminController@costprojectcheck');
+    //造价项目技术审核
+    $router->get('costprojecttechcheck', 'AdminController@costprojecttechcheck');
+    //造价项目结项审核
+    $router->get('costprojectknotcheck', 'AdminController@costprojectknotcheck');
+
     //工程单位管理
     $router->get('projectunitmanage', 'AdminController@projectunitmanage');
     $router->post('addProjectUnit', 'AdminController@addProjectUnit');

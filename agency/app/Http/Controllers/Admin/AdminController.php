@@ -2555,17 +2555,64 @@ class AdminController extends Controller
         return $id;
     }
 
+    /*******造价项目初审视图*******/
+    public function costsonprojectcheck()
+    {
+        $data['contract_type'] = ContractType::get();
+        $data['company'] = Company::get();
+        $data['project_type'] = Service::get();
+        $data['professions'] = Profession::get();
+        $data['marcher'] = Admininfo::select('admin_id', 'name')->where('admin_level_id', 6)->get();//负责人
+        $data['contract'] = Contract::with('construction', 'agency')->get();
+        return view('admin/costsonprojectcheck', ['data' => $data]);
+    }
+
+    /*******造价项目专项审核视图*******/
+    public function costsonprojectprofessioncheck()
+    {
+        $data['contract_type'] = ContractType::get();
+        $data['company'] = Company::get();
+        $data['project_type'] = Service::get();
+        $data['professions'] = Profession::get();
+        $data['marcher'] = Admininfo::select('admin_id', 'name')->where('admin_level_id', 6)->get();//负责人
+        $data['contract'] = Contract::with('construction', 'agency')->get();
+        return view('admin/costsonprojectprofessioncheck', ['data' => $data]);
+    }
+
     /*******造价项目审核视图*******/
     public function costprojectcheck()
     {
-        $data['education'] = Education::get();
-        $data['level'] = Level::get();
-        $data['department'] = Department::get();
-        $data['admin_level'] = AdminLevel::get();
-        $data['technical_level'] = TechnicalLevel::get();
-        $data['work_status'] = WorkStatus::get();
+        $data['contract_type'] = ContractType::get();
+        $data['company'] = Company::get();
+        $data['project_type'] = Service::get();
         $data['professions'] = Profession::get();
+        $data['marcher'] = Admininfo::select('admin_id', 'name')->where('admin_level_id', 6)->get();//负责人
+        $data['contract'] = Contract::with('construction', 'agency')->get();
         return view('admin/costprojectcheck', ['data' => $data]);
+    }
+
+    /*******造价项目技术审核视图*******/
+    public function costprojecttechcheck()
+    {
+        $data['contract_type'] = ContractType::get();
+        $data['company'] = Company::get();
+        $data['project_type'] = Service::get();
+        $data['professions'] = Profession::get();
+        $data['marcher'] = Admininfo::select('admin_id', 'name')->where('admin_level_id', 6)->get();//负责人
+        $data['contract'] = Contract::with('construction', 'agency')->get();
+        return view('admin/costprojecttechcheck', ['data' => $data]);
+    }
+
+    /*******造价项目结项审核视图*******/
+    public function costprojectknotcheck()
+    {
+        $data['contract_type'] = ContractType::get();
+        $data['company'] = Company::get();
+        $data['project_type'] = Service::get();
+        $data['professions'] = Profession::get();
+        $data['marcher'] = Admininfo::select('admin_id', 'name')->where('admin_level_id', 6)->get();//负责人
+        $data['contract'] = Contract::with('construction', 'agency')->get();
+        return view('admin/costprojectknotcheck', ['data' => $data]);
     }
 
     /*******工程单位管理视图*******/

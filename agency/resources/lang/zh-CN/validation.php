@@ -207,6 +207,9 @@ return [
         'construction_id' => '建设单位ID',
         'implement_id' => '施工单位ID',
         'agency_id' => '委托单位ID',
+        'son_marcher_id' => '专项实施人ID',
+        'basic_rate' => '基础提成',
+        'check_rate' => '基础提成',
 
     ],
 

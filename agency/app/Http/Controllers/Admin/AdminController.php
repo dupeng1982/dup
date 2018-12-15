@@ -1464,6 +1464,7 @@ class AdminController extends Controller
                 'admininfo.work_start_date', 'admininfo.remark', 'admininfo.work_resume', 'admininfo.study_resume',
                 'admininfo.performance', 'admininfo.rewards', 'admininfo.rewards', 'admininfo.avatar')
             ->rightjoin('admins', 'admins.id', '=', 'admininfo.admin_id')
+            ->where('admins.id', '<>', 1)
             ->get();
         return $this->resp(0, $data);
     }
@@ -1836,8 +1837,11 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        Admin::where('id', $request->admin_id)->delete();
-        return $this->resp(0, '删除成功');
+        return DB::transaction(function () use ($request) {
+            Admin::where('id', $request->admin_id)->delete();
+            Admininfo::where('admin_id', $request->admin_id)->update(['work_status' => 3]);
+            return $this->resp(0, '删除成功');
+        });
     }
 
     //获取非公开头像
@@ -2234,7 +2238,7 @@ class AdminController extends Controller
         $data['company'] = Company::get();
         $data['project_type'] = Service::get();
         $data['professions'] = Profession::get();
-        $data['marcher'] = Admininfo::select('admin_id', 'name')->where('admin_level_id', 6)->get();
+        $data['marcher'] = Admininfo::select('admin_id', 'name')->where('admin_level_id', 6)->get();//负责人
         $data['contract'] = Contract::with('construction', 'agency')->get();
         return view('admin/costprojectmanage', ['data' => $data]);
     }
@@ -2258,11 +2262,14 @@ class AdminController extends Controller
                 'agency.name as agency_name', 'construction.contact as construction_contact',
                 'construction.phone as construction_phone', 'agency.contact as agency_contact',
                 'agency.phone as agency_phone', 'implement.name as implement_name',
-                'implement.phone as implement_phone', 'implement.contact as implement_contact')
+                'implement.phone as implement_phone', 'implement.contact as implement_contact',
+                'marcher.name as marcher_name', 'recorder.name as recorder_name')
             ->leftjoin('company as construction', 'construction.id', '=', 'cost_project.construction_id')
             ->leftjoin('company as agency', 'agency.id', '=', 'cost_project.agency_id')
             ->leftjoin('company as implement', 'implement.id', '=', 'cost_project.implement_id')
             ->leftjoin('service', 'service.id', '=', 'cost_project.service_id')
+            ->leftjoin('admininfo as marcher', 'marcher.admin_id', '=', 'cost_project.marcher_id')
+            ->leftjoin('admininfo as recorder', 'recorder.admin_id', '=', 'cost_project.recorder_id')
             ->where($arr)
             ->where(function ($q) use ($search) {
                 $search &&
@@ -2285,7 +2292,9 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
-        $data = CostSonProject::where('project_id', $request->project_id)->get();
+        $data = CostSonProject::select('cost_sonproject.*', 'marcher.name as marcher_name')
+            ->leftjoin('admininfo as marcher', 'marcher.admin_id', '=', 'cost_sonproject.marcher_id')
+            ->where('cost_sonproject.project_id', $request->project_id)->get();
         return $this->resp(0, $data);
     }
 
@@ -2486,6 +2495,64 @@ class AdminController extends Controller
                     'profession_id' => $request->profession_id, 'remark' => $request->remark]);
             return $this->resp(0, '编辑子项目成功');
         });
+    }
+
+    //项目分配
+    public function allotCostSonProject(Request $request)
+    {
+        $rule = [
+            'sonproject_id' => 'required|integer|exists:cost_sonproject,id',
+            'cost' => 'nullable|numeric',
+            'son_marcher_id' => 'required|integer|exists:admins,id',
+            'basic_rate' => 'required|numeric',
+            'check_rate' => 'required|numeric',
+            'start_date' => 'required|date_format:Y-m-d',
+            'end_date' => 'required|date_format:Y-m-d|after:start_date',
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        return DB::transaction(function () use ($request) {
+            //子项目状态更新
+            $sonproject = CostSonProject::find($request->sonproject_id);
+            $sonproject->cost = $request->cost;
+            $sonproject->marcher_id = $request->son_marcher_id;
+            $sonproject->basic_rate = $request->basic_rate;
+            $sonproject->check_rate = $request->check_rate;
+            $sonproject->start_date = $request->start_date;
+            $sonproject->end_date = $request->end_date;
+            $checker_id = $this->_getCheckerId();
+            if ($checker_id) {
+                $sonproject->checker_id = $checker_id;
+            } else {
+                return $this->resp(10000, '未设置总经理帐号，无法分配！');
+            }
+            $sonproject->status = 1;
+            $sonproject->save();
+            //主项目状态更新
+            CostProject::where('id', $sonproject->project_id)
+                ->update(['status' => 1, 'checker_id' => $checker_id]);
+            return $this->resp(0, '项目分配成功！');
+        });
+    }
+
+    //获取审批人ID
+    private function _getCheckerId()
+    {
+        $id = Admininfo::where('admin_level_id', 2)
+            ->where('work_status', '<>', 3)
+            ->pluck('admin_id')->first();
+        return $id;
+    }
+
+    //获取技术负责人ID
+    private function _getTechnicerId()
+    {
+        $id = Admininfo::where('admin_level_id', 5)
+            ->where('work_status', '<>', 3)
+            ->pluck('admin_id')->first();
+        return $id;
     }
 
     /*******造价项目审核视图*******/

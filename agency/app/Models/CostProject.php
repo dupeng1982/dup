@@ -17,11 +17,29 @@ class CostProject extends Model
     public $timestamps = true;
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
-    protected $appends = ['number'];
+    protected $appends = ['number', 'status_txt'];
 
     public function getNumberAttribute()
     {
         return Date::parse($this->receive_date)->format('Y') . '-' . $this->id;
+    }
+
+    public function getStatusTxtAttribute()
+    {
+        //项目状态：0-初始待分配，1-待审批，2-负责人待审核，3-技术负责人待审核，4-结项待审核，5-结项
+        if ($this->status == 1) {
+            return '项目初审';
+        } elseif ($this->status == 2) {
+            return '项目负责人审核';
+        } elseif ($this->status == 3) {
+            return '技术负责人审核';
+        } elseif ($this->status == 4) {
+            return '结项审核';
+        } elseif ($this->status == 5) {
+            return '结项';
+        } else {
+            return '项目分配';
+        }
     }
 
     public function profession()

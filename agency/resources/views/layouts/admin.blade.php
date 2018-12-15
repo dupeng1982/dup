@@ -153,7 +153,11 @@
                             <li> <a class="has-arrow" href="#" aria-expanded="false">造价项目管理</a>
                                 <ul aria-expanded="false" class="collapse">
                                     <li><a href="{{ url('admin/costprojectmanage') }}">项目列表</a></li>
+                                    <li><a href="{{ url('admin/costsonprojectcheck') }}">项目初审</a></li>
+                                    <li><a href="{{ url('admin/costsonprojectprofessioncheck') }}">专项审核</a></li>
                                     <li><a href="{{ url('admin/costprojectcheck') }}">项目审核</a></li>
+                                    <li><a href="{{ url('admin/costprojecttechcheck') }}">技术审核</a></li>
+                                    <li><a href="{{ url('admin/costprojectknotcheck') }}">结项审核</a></li>
                                 </ul>
                             </li>
                             <li><a href="{{ url('admin/projectunitmanage') }}">项目单位管理</a></li>

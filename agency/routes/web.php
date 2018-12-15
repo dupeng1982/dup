@@ -137,6 +137,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
 
     //造价项目初审
     $router->get('costsonprojectcheck', 'AdminController@costsonprojectcheck');
+    $router->post('getCostProjectACheckList', 'AdminController@getCostProjectACheckList');
+
     //造价项目专项审核
     $router->get('costsonprojectprofessioncheck', 'AdminController@costsonprojectprofessioncheck');
     //造价项目审核

@@ -652,7 +652,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">分配专项</h4>
+                    <h4 class="modal-title">专项初审</h4>
                     <button type="button" class="close" data-dismiss="modal"
                             aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
@@ -727,7 +727,7 @@
                             data-dismiss="modal">关闭
                     </button>
                     <button type="button" id="allot-son-project-submit"
-                            class="btn btn-success">分配
+                            class="btn btn-success">审核
                     </button>
                 </div>
             </div>
@@ -1021,7 +1021,7 @@
             });
 
             $('#project_table').bootstrapTable({
-                url: 'getCostProjectList',
+                url: 'getCostProjectACheckList',
                 ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
                 cache: false,
                 method: 'POST',
@@ -1095,11 +1095,10 @@
                     title: '项目进度'
                 }, {
                     field: 'id',
-                    title: '操作<button type="button" id="addProject" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="添加专项"><i class="ti-user" aria-hidden="true"></i></button>',
+                    title: '操作',
                     formatter: function (value, row, index) {
                         return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn addCpattachment" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="附件管理"><i class="ti-file" aria-hidden="true"></i></button>' +
-                            '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editProject" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
-                            '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delProject" data-project-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                            '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editProject" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>';
                     }
                 }],
                 onPostBody: onPostBody,
@@ -1157,15 +1156,13 @@
                             title: '实施人'
                         }, {
                             field: 'id',
-                            title: '操作<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn addSonProject" data-project-index=' + index + ' data-project-id=' + row.id + ' data-toggle="tooltip" data-original-title="添加子项目"><i class="ti-user" aria-hidden="true"></i></button>',
+                            title: '操作',
                             formatter: function (value, row, index) {
-                                if (marcher_id && row.status == 0) {
-                                    return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn allotSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="分配"><i class="ti-stamp" aria-hidden="true"></i></button>' +
-                                        '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
-                                        '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                                if (row.status == 1) {
+                                    return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn allotSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="初审"><i class="ti-stamp" aria-hidden="true"></i></button>' +
+                                        '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>';
                                 } else {
-                                    return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
-                                        '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                                    return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>';
                                 }
 
                             }
@@ -1213,7 +1210,7 @@
                     $('#edit-project-service').val(data[index].service_id);
                     $('#edit-project-marcher').val(data[index].marcher_id);
                     data[index].profession.map(function (value, index, array) {
-                        $("#edit-project-profession-" + value.id).attr("checked", "checked");
+                        $("#edit-project-profession-" + value.id).prop("checked",true);
                     });
                     $('#edit-project-cost').val(data[index].cost);
                     $('#edit-project-receive-date').val(data[index].receive_date);
@@ -1414,8 +1411,8 @@
                     addSonMarcher('#allot-son-project-marcher', data[index].marchers, '');
                     $('#allot-son-project-basic-rate').val(data[index].rates.basic_rate);
                     $('#allot-son-project-check-rate').val(data[index].rates.check_rate);
-                    $('#allot-son-project-start-date').val('');
-                    $('#allot-son-project-end-date').val('');
+                    $('#allot-son-project-start-date').val(data[index].start_date);
+                    $('#allot-son-project-end-date').val(data[index].end_date);
                 });
             }
 
@@ -1826,7 +1823,7 @@
             $('#editProjectModal').on('hide.bs.modal', function () {
                 $("input[name='edit-project-professions-checkbox-group']")
                     .map(function (index, elem) {
-                        $(elem).removeAttr('checked');
+                        $(elem).prop("checked",false);
                     });
             });
 

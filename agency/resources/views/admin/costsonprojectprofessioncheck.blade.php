@@ -1213,7 +1213,7 @@
                     $('#edit-project-service').val(data[index].service_id);
                     $('#edit-project-marcher').val(data[index].marcher_id);
                     data[index].profession.map(function (value, index, array) {
-                        $("#edit-project-profession-" + value.id).attr("checked", "checked");
+                        $("#edit-project-profession-" + value.id).prop("checked",true);
                     });
                     $('#edit-project-cost').val(data[index].cost);
                     $('#edit-project-receive-date').val(data[index].receive_date);
@@ -1826,7 +1826,7 @@
             $('#editProjectModal').on('hide.bs.modal', function () {
                 $("input[name='edit-project-professions-checkbox-group']")
                     .map(function (index, elem) {
-                        $(elem).removeAttr('checked');
+                        $(elem).prop("checked",false);
                     });
             });
 

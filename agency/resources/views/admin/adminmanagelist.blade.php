@@ -1804,7 +1804,7 @@
                     $('#edit-work_status').val(data[index].work_status);
                     //checkbox
                     data[index].professions.map(function (value, index, array) {
-                        $("#edit-admin_profession_" + value.id).attr("checked", "checked");
+                        $("#edit-admin_profession_" + value.id).prop("checked",true);
                     });
                     var admininfo_avatar;
                     if (data[index].avatar) {
@@ -2244,7 +2244,7 @@
             $('#editAdminInfoModal').on('hide.bs.modal', function () {
                 $("input[name='edit-admin_professions_checkbox_group']")
                     .map(function (index, elem) {
-                        $(elem).removeAttr('checked');
+                        $(elem).prop("checked",false);
                     });
                 $('#edit-admin_family_table').bootstrapTable('destroy');
                 $('#edit-admin_certificate_table').bootstrapTable('destroy');

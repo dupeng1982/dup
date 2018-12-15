@@ -2335,7 +2335,7 @@ class AdminController extends Controller
         $rule = [
             'project_name' => 'required|max:100',
             'service_id' => 'required|integer|exists:service,id',
-            'marcher_id' => 'required|integer|exists:admins,id',
+            'marcher_id' => 'nullable|integer|exists:admins,id',
             'profession' => 'required|array',
             'cost' => 'nullable|numeric',
             'receive_date' => 'required|date_format:Y-m-d',
@@ -2441,6 +2441,10 @@ class AdminController extends Controller
             return $this->resp(10000, $validator->messages()->first());
         }
         $file = Cpattachment::find($request->cpattachment_id);
+        $admin_id = Auth::guard('admin')->user()->id;
+        if($admin_id != $file->operator_id){
+            return $this->resp(10000, '您没有权限删除该文件！');
+        }
         $file->delete();
         $this->_delFile($file->dir, 'aetherupload');
         return $this->resp(0, '删除成功');
@@ -2565,6 +2569,49 @@ class AdminController extends Controller
         $data['marcher'] = Admininfo::select('admin_id', 'name')->where('admin_level_id', 6)->get();//负责人
         $data['contract'] = Contract::with('construction', 'agency')->get();
         return view('admin/costsonprojectcheck', ['data' => $data]);
+    }
+
+    //获取项目初审列表
+    public function getCostProjectACheckList(Request $request)
+    {
+        $admin_id = Auth::guard('admin')->user()->id;
+        $rule = [
+            'page' => 'integer',
+            'item' => 'integer'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $arr = array();
+        $request->service_id && array_push($arr, ['cost_project.service_id', '=', $request->service_id]);
+        $search = $request->search;
+        $data = CostProject::with('profession', 'sonproject', 'contract')
+            ->select('cost_project.*', 'construction.name as construction_name', 'service.name as service_name',
+                'agency.name as agency_name', 'construction.contact as construction_contact',
+                'construction.phone as construction_phone', 'agency.contact as agency_contact',
+                'agency.phone as agency_phone', 'implement.name as implement_name',
+                'implement.phone as implement_phone', 'implement.contact as implement_contact',
+                'marcher.name as marcher_name', 'recorder.name as recorder_name')
+            ->leftjoin('company as construction', 'construction.id', '=', 'cost_project.construction_id')
+            ->leftjoin('company as agency', 'agency.id', '=', 'cost_project.agency_id')
+            ->leftjoin('company as implement', 'implement.id', '=', 'cost_project.implement_id')
+            ->leftjoin('service', 'service.id', '=', 'cost_project.service_id')
+            ->leftjoin('admininfo as marcher', 'marcher.admin_id', '=', 'cost_project.marcher_id')
+            ->leftjoin('admininfo as recorder', 'recorder.admin_id', '=', 'cost_project.recorder_id')
+            ->leftjoin('cost_sonproject', 'cost_sonproject.project_id', '=', 'cost_project.id')
+            ->where([['cost_sonproject.status', 1], ['cost_sonproject.checker_id', $admin_id]])
+            ->where($arr)
+            ->where(function ($q) use ($search) {
+                $search &&
+                $q->orWhere('construction.name', 'like', '%' . $search . '%')
+                    ->orWhere('agency.name', 'like', '%' . $search . '%')
+                    ->orWhere('implement.name', 'like', '%' . $search . '%')
+                    ->orWhere('cost_project.name', 'like', '%' . $search . '%');
+            })
+            ->groupBy('cost_project.id')
+            ->paginate($request->item);
+        return $this->resp(0, $data);
     }
 
     /*******造价项目专项审核视图*******/

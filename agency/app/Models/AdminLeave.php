@@ -14,8 +14,7 @@ class AdminLeave extends Model
 {
     protected $table = 'admin_leave';
     public $timestamps = false;
-    protected $fillable = ['admin_id', 'submit_time', 'leave_start_time', 'leave_end_time', 'leave_type',
-        'leave_reason', 'leave_status', 'leave_approval', 'approval_time', 'approval_note'];
+    protected $guarded = ['id'];
     protected $appends = ['leave_type_name'];
 
     public function getLeaveTypeNameAttribute()

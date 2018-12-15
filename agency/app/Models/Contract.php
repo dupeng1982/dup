@@ -15,8 +15,7 @@ class Contract extends Model
 {
     protected $table = 'contract';
     public $timestamps = true;
-    protected $fillable = ['name', 'type', 'address', 'start_date', 'end_date',
-        'construction_id', 'agency_id', 'content', 'remark', 'sign_date'];
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 
     protected $appends = ['contract_type_name', 'number', 'number_name'];
 

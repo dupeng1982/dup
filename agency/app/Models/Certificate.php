@@ -14,6 +14,5 @@ class Certificate extends Model
 {
     protected $table = 'certificate';
     public $timestamps = false;
-    protected $fillable = ['admininfo_id', 'name', 'number', 'continue_password', 'study_password',
-        'change_password', 'operator_id'];
+    protected $guarded = ['id'];
 }

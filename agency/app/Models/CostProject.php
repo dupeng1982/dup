@@ -15,8 +15,7 @@ class CostProject extends Model
 {
     protected $table = 'cost_project';
     public $timestamps = true;
-    protected $fillable = ['name', 'contract_id', 'service_id', 'cost', 'receive_date',
-        'construction_id', 'agency_id', 'implement_id', 'remark', 'basic_rate', 'check_rate', 'check_cost_rate'];
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 
     protected $appends = ['number'];
 

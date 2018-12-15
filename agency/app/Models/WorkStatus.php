@@ -14,5 +14,5 @@ class WorkStatus extends Model
 {
     protected $table = 'work_status';
     public $timestamps = false;
-    protected $fillable = ['name'];
+    protected $guarded = ['id'];
 }

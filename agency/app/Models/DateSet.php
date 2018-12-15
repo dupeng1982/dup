@@ -17,5 +17,5 @@ class DateSet extends Model
     protected $keyType = 'string';
     public $incrementing = false;
     public $timestamps = false;
-    protected $fillable = ['set_date'];
+    protected $guarded = [];
 }

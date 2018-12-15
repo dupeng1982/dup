@@ -14,5 +14,5 @@ class TechnicalLevel extends Model
 {
     protected $table = 'technical_level';
     public $timestamps = false;
-    protected $fillable = ['name'];
+    protected $guarded = ['id'];
 }

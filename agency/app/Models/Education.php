@@ -14,5 +14,5 @@ class Education extends Model
 {
     protected $table = 'education';
     public $timestamps = false;
-    protected $fillable = ['name'];
+    protected $guarded = ['id'];
 }

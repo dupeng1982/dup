@@ -77,19 +77,30 @@
                     <div class="card-body">
                         <form id="addProjectForm">
                             <div class="row">
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <div class="form-group">
                                         <label>项目名称*</label>
                                         <input type="text" class="form-control"
                                                id="add-project-name"></div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label>项目类型*</label>
                                         <select class="custom-select form-control" id="add-project-service">
                                             <option value="">选择项目类型</option>
                                             @foreach($data['project_type'] as $v)
                                                 <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>项目负责人</label>
+                                        <select class="custom-select form-control" id="add-project-marcher">
+                                            <option value="">选择项目负责人</option>
+                                            @foreach($data['marcher'] as $v)
+                                                <option value="{{ $v->admin_id }}">{{ $v->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -330,19 +341,30 @@
                 <div class="modal-body">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-md-12">
                                 <div class="form-group">
                                     <label>项目名称*</label>
                                     <input type="text" class="form-control"
                                            id="edit-project-name"></div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label>项目类型*</label>
                                     <select class="custom-select form-control" id="edit-project-service">
                                         <option value="">选择项目类型</option>
                                         @foreach($data['project_type'] as $v)
                                             <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>项目负责人</label>
+                                    <select class="custom-select form-control" id="edit-project-marcher">
+                                        <option value="">选择项目负责人</option>
+                                        @foreach($data['marcher'] as $v)
+                                            <option value="{{ $v->admin_id }}">{{ $v->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -1089,6 +1111,7 @@
                     public_project_id = data[index].id;
                     $('#edit-project-name').val(data[index].name);
                     $('#edit-project-service').val(data[index].service_id);
+                    $('#edit-project-marcher').val(data[index].marcher_id);
                     data[index].profession.map(function (value, index, array) {
                         $("#edit-project-profession-" + value.id).attr("checked", "checked");
                     });
@@ -1393,6 +1416,7 @@
                     data: {
                         project_name: $('#add-project-name').val(),
                         service_id: $('#add-project-service').val(),
+                        marcher_id: $('#add-project-marcher').val(),
                         profession: $("input[name='add-project-professions-checkbox-group']:checked")
                             .map(function (index, elem) {
                                 return $(elem).val();
@@ -1510,6 +1534,7 @@
                         project_id: public_project_id,
                         project_name: $('#edit-project-name').val(),
                         service_id: $('#edit-project-service').val(),
+                        marcher_id: $('#edit-project-marcher').val(),
                         profession: $("input[name='edit-project-professions-checkbox-group']:checked")
                             .map(function (index, elem) {
                                 return $(elem).val();

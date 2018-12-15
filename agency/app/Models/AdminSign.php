@@ -15,7 +15,7 @@ class AdminSign extends Model
 {
     protected $table = 'admin_sign';
     public $timestamps = false;
-    protected $fillable = ['admin_id', 'sign_time', 'sign_type'];
+    protected $guarded = ['id'];
     protected $appends = ['sign_status'];
 
     //获取签到状态

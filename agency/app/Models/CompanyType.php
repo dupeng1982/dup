@@ -14,5 +14,5 @@ class CompanyType extends Model
 {
     protected $table = 'company_type';
     public $timestamps = false;
-    protected $fillable = ['name'];
+    protected $guarded = ['id'];
 }

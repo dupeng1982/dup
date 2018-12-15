@@ -14,5 +14,5 @@ class AdminLeaveType extends Model
 {
     protected $table = 'admin_leave_type';
     public $timestamps = false;
-    protected $fillable = ['name'];
+    protected $guarded = ['id'];
 }

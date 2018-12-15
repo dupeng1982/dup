@@ -14,5 +14,5 @@ class AdmininfoPic extends Model
 {
     protected $table = 'admininfo_pic';
     public $timestamps = false;
-    protected $fillable = ['admininfo_id', 'name', 'dir', 'operator_id'];
+    protected $guarded = ['id'];
 }

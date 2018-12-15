@@ -14,5 +14,5 @@ class AdminLevel extends Model
 {
     protected $table = 'admin_level';
     public $timestamps = false;
-    protected $fillable = ['name', 'role_id'];
+    protected $guarded = ['id'];
 }

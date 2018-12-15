@@ -14,8 +14,7 @@ class Company extends Model
 {
     protected $table = 'company';
     public $timestamps = true;
-    protected $fillable = ['name', 'type', 'bankname', 'taxnumber', 'cardno', 'orgcode',
-        'contact', 'phone'];
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 
     protected $appends = ['company_type_name'];
 

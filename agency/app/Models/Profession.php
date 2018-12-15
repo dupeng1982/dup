@@ -14,5 +14,5 @@ class Profession extends Model
 {
     protected $table = 'profession';
     public $timestamps = false;
-    protected $fillable = ['name'];
+    protected $guarded = ['id'];
 }

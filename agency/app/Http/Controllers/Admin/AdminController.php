@@ -2234,6 +2234,7 @@ class AdminController extends Controller
         $data['company'] = Company::get();
         $data['project_type'] = Service::get();
         $data['professions'] = Profession::get();
+        $data['marcher'] = Admininfo::select('admin_id', 'name')->where('admin_level_id', 6)->get();
         $data['contract'] = Contract::with('construction', 'agency')->get();
         return view('admin/costprojectmanage', ['data' => $data]);
     }
@@ -2325,6 +2326,7 @@ class AdminController extends Controller
         $rule = [
             'project_name' => 'required|max:100',
             'service_id' => 'required|integer|exists:service,id',
+            'marcher_id' => 'required|integer|exists:admins,id',
             'profession' => 'required|array',
             'cost' => 'nullable|numeric',
             'receive_date' => 'required|date_format:Y-m-d',
@@ -2343,7 +2345,8 @@ class AdminController extends Controller
                 'contract_id' => $request->contract_id, 'service_id' => $request->service_id,
                 'cost' => $request->cost, 'receive_date' => $request->receive_date,
                 'construction_id' => $request->construction_id, 'agency_id' => $request->agency_id,
-                'implement_id' => $request->implement_id, 'remark' => $request->remark]);
+                'implement_id' => $request->implement_id, 'remark' => $request->remark,
+                'marcher_id' => $request->marcher_id, 'recorder_id' => Auth::guard('admin')->user()->id]);
             //关联专业类型
             $profession = $request->profession;
             $project->profession()->attach($profession);
@@ -2374,6 +2377,7 @@ class AdminController extends Controller
             'project_id' => 'required|integer|exists:cost_project,id',
             'project_name' => 'required|max:100',
             'service_id' => 'required|integer|exists:service,id',
+            'marcher_id' => 'required|integer|exists:admins,id',
             'profession' => 'required|array',
             'cost' => 'nullable|numeric',
             'receive_date' => 'required|date_format:Y-m-d',
@@ -2393,7 +2397,8 @@ class AdminController extends Controller
                     'contract_id' => $request->contract_id, 'service_id' => $request->service_id,
                     'cost' => $request->cost, 'receive_date' => $request->receive_date,
                     'construction_id' => $request->construction_id, 'agency_id' => $request->agency_id,
-                    'implement_id' => $request->implement_id, 'remark' => $request->remark]);
+                    'implement_id' => $request->implement_id, 'remark' => $request->remark,
+                    'marcher_id' => $request->marcher_id]);
             //更新专业类型
             $profession = $request->profession;
             $project = CostProject::find($request->project_id);
@@ -2476,9 +2481,9 @@ class AdminController extends Controller
             return $this->resp(10000, $validator->messages()->first());
         }
         return DB::transaction(function () use ($request) {
-            CostSonProject::where('id',$request->sonproject_id)
+            CostSonProject::where('id', $request->sonproject_id)
                 ->update(['name' => $request->sonproject_name, 'cost' => $request->cost,
-                'profession_id' => $request->profession_id, 'remark' => $request->remark]);
+                    'profession_id' => $request->profession_id, 'remark' => $request->remark]);
             return $this->resp(0, '编辑子项目成功');
         });
     }

@@ -14,5 +14,5 @@ class Cattachment extends Model
 {
     protected $table = 'cattachment';
     public $timestamps = false;
-    protected $fillable = ['contract_id', 'name', 'dir', 'operator_id', 'mimetype'];
+    protected $guarded = ['id'];
 }

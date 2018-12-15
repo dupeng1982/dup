@@ -14,10 +14,7 @@ class Admininfo extends Model
 {
     protected $table = 'admininfo';
     public $timestamps = true;
-    protected $fillable = ['admin_id', 'name', 'sex', 'birthday', 'work_status', 'work_year', 'work_start_date',
-        'department_id', 'technical_level_id', 'admin_level_id', 'phone', 'level_id', 'level_type', 'cardno',
-        'address', 'education_id', 'school', 'major', 'graduate_date', 'work_resume', 'study_resume', 'performance',
-        'rewards', 'expertise', 'remark', 'avatar', 'operator_id'];
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 
     protected $appends = ['work_status_name', 'department_name', 'technical_level_name', 'admin_level_name',
         'level_name', 'education_name', 'sex_name'];

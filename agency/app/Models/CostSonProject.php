@@ -14,8 +14,7 @@ class CostSonProject extends Model
 {
     protected $table = 'cost_sonproject';
     public $timestamps = true;
-    protected $fillable = ['project_id', 'profession_id', 'name', 'number', 'cost', 'check_cost', 'remark'];
-
+    protected $guarded = ['id', 'created_at', 'updated_at'];
     protected $appends = ['profession_name', 'profession'];
 
     public function getProfessionNameAttribute()

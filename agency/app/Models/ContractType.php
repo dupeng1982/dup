@@ -14,5 +14,5 @@ class ContractType extends Model
 {
     protected $table = 'contract_type';
     public $timestamps = false;
-    protected $fillable = ['name', 'short'];
+    protected $guarded = ['id'];
 }

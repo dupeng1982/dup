@@ -14,5 +14,5 @@ class Department extends Model
 {
     protected $table = 'department';
     public $timestamps = false;
-    protected $fillable = ['name'];
+    protected $guarded = ['id'];
 }

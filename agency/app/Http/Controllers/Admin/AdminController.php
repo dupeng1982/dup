@@ -2520,18 +2520,19 @@ class AdminController extends Controller
         return DB::transaction(function () use ($request) {
             //子项目状态更新
             $sonproject = CostSonProject::find($request->sonproject_id);
-            $sonproject->cost = $request->cost;
-            $sonproject->marcher_id = $request->son_marcher_id;
-            $sonproject->basic_rate = $request->basic_rate;
-            $sonproject->check_rate = $request->check_rate;
-            $sonproject->start_date = $request->start_date;
-            $sonproject->end_date = $request->end_date;
             $checker_id = $this->_getCheckerId();
             if ($checker_id) {
                 $sonproject->checker_id = $checker_id;
             } else {
                 return $this->resp(10000, '未设置总经理帐号，无法分配！');
             }
+            $sonproject->cost = $request->cost;
+            $sonproject->marcher_id = $request->son_marcher_id;
+            $sonproject->basic_rate = $request->basic_rate;
+            $sonproject->check_rate = $request->check_rate;
+            $sonproject->start_date = $request->start_date;
+            $sonproject->end_date = $request->end_date;
+            $sonproject->check_mark = $request->check_mark;
             $sonproject->status = 1;
             $sonproject->save();
             //主项目状态更新

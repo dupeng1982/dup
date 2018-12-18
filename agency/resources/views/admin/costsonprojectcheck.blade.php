@@ -718,6 +718,13 @@
                                         <input type="date" class="form-control" id="allot-son-project-end-date">
                                     </div>
                                 </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>审核说明</label>
+                                        <textarea name="remark" id="allot-son-project-check-mark"
+                                                  rows="3" class="form-control"></textarea>
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -1141,7 +1148,7 @@
                             }
                         }, {
                             field: 'number',
-                            title: '专业编号'
+                            title: '专项编号'
                         }, {
                             field: 'name',
                             title: '专项名称'
@@ -1408,11 +1415,12 @@
                     $('#allot-son-project-name').val(data[index].name);
                     $('#allot-son-project-profession').val(data[index].profession_id);
                     $('#allot-son-project-cost').val(data[index].cost);
-                    addSonMarcher('#allot-son-project-marcher', data[index].marchers, '');
+                    addSonMarcher('#allot-son-project-marcher', data[index].marchers, data[index].marcher_id);
                     $('#allot-son-project-basic-rate').val(data[index].rates.basic_rate);
                     $('#allot-son-project-check-rate').val(data[index].rates.check_rate);
                     $('#allot-son-project-start-date').val(data[index].start_date);
                     $('#allot-son-project-end-date').val(data[index].end_date);
+                    $('#allot-son-project-check-mark').val(data[index].check_mark);
                 });
             }
 
@@ -1775,7 +1783,8 @@
                         basic_rate: $('#allot-son-project-basic-rate').val(),
                         check_rate: $('#allot-son-project-check-rate').val(),
                         start_date: $('#allot-son-project-start-date').val(),
-                        end_date: $('#allot-son-project-end-date').val()
+                        end_date: $('#allot-son-project-end-date').val(),
+                        check_mark: $('#allot-son-project-check-mark').val()
                     },
                     success: function (doc) {
                         if (doc.code) {

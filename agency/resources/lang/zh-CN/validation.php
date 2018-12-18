@@ -210,6 +210,7 @@ return [
         'son_marcher_id' => '专项实施人ID',
         'basic_rate' => '基础提成',
         'check_rate' => '基础提成',
+        'check_mark' => '审核说明',
 
     ],
 

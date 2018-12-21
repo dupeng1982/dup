@@ -2442,7 +2442,7 @@ class AdminController extends Controller
         }
         $file = Cpattachment::find($request->cpattachment_id);
         $admin_id = Auth::guard('admin')->user()->id;
-        if($admin_id != $file->operator_id){
+        if ($admin_id != $file->operator_id) {
             return $this->resp(10000, '您没有权限删除该文件！');
         }
         $file->delete();
@@ -2615,6 +2615,44 @@ class AdminController extends Controller
         return $this->resp(0, $data);
     }
 
+    //项目初审
+    public function CostProjectACheck(Request $request)
+    {
+        $rule = [
+            'sonproject_id' => 'required|integer|exists:cost_sonproject,id',
+            'cost' => 'nullable|numeric',
+            'son_marcher_id' => 'required|integer|exists:admins,id',
+            'basic_rate' => 'required|numeric',
+            'check_rate' => 'required|numeric',
+            'start_date' => 'required|date_format:Y-m-d',
+            'end_date' => 'required|date_format:Y-m-d|after:start_date',
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        return DB::transaction(function () use ($request) {
+            //子项目状态更新
+            $sonproject = CostSonProject::find($request->sonproject_id);
+            $sonproject->checker_id = $request->son_marcher_id;
+            $sonproject->cost = $request->cost;
+            $sonproject->marcher_id = $request->son_marcher_id;
+            $sonproject->basic_rate = $request->basic_rate;
+            $sonproject->check_rate = $request->check_rate;
+            $sonproject->start_date = $request->start_date;
+            $sonproject->end_date = $request->end_date;
+            $sonproject->check_mark = $request->check_mark;
+            $sonproject->status = 2;
+            $sonproject->save();
+            //主项目状态更新
+            $project = CostProject::find($sonproject->project_id);
+            $project->status = 2;
+            $project->checker_id = $project->marcher_id;
+            $project->save();
+            return $this->resp(0, '项目初审成功！');
+        });
+    }
+
     /*******造价项目专项审核视图*******/
     public function costsonprojectprofessioncheck()
     {
@@ -2625,6 +2663,74 @@ class AdminController extends Controller
         $data['marcher'] = Admininfo::select('admin_id', 'name')->where('admin_level_id', 6)->get();//负责人
         $data['contract'] = Contract::with('construction', 'agency')->get();
         return view('admin/costsonprojectprofessioncheck', ['data' => $data]);
+    }
+
+    //获取项目专项审核列表
+    public function getCostProjectBCheckList(Request $request)
+    {
+        $admin_id = Auth::guard('admin')->user()->id;
+        $rule = [
+            'page' => 'integer',
+            'item' => 'integer'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $arr = array();
+        $request->service_id && array_push($arr, ['cost_project.service_id', '=', $request->service_id]);
+        $search = $request->search;
+        $data = CostProject::with('profession', 'sonproject', 'contract')
+            ->select('cost_project.*', 'construction.name as construction_name', 'service.name as service_name',
+                'agency.name as agency_name', 'construction.contact as construction_contact',
+                'construction.phone as construction_phone', 'agency.contact as agency_contact',
+                'agency.phone as agency_phone', 'implement.name as implement_name',
+                'implement.phone as implement_phone', 'implement.contact as implement_contact',
+                'marcher.name as marcher_name', 'recorder.name as recorder_name')
+            ->leftjoin('company as construction', 'construction.id', '=', 'cost_project.construction_id')
+            ->leftjoin('company as agency', 'agency.id', '=', 'cost_project.agency_id')
+            ->leftjoin('company as implement', 'implement.id', '=', 'cost_project.implement_id')
+            ->leftjoin('service', 'service.id', '=', 'cost_project.service_id')
+            ->leftjoin('admininfo as marcher', 'marcher.admin_id', '=', 'cost_project.marcher_id')
+            ->leftjoin('admininfo as recorder', 'recorder.admin_id', '=', 'cost_project.recorder_id')
+            ->leftjoin('cost_sonproject', 'cost_sonproject.project_id', '=', 'cost_project.id')
+            ->where([['cost_sonproject.status', 2], ['cost_sonproject.checker_id', $admin_id]])
+            ->where($arr)
+            ->where(function ($q) use ($search) {
+                $search &&
+                $q->orWhere('construction.name', 'like', '%' . $search . '%')
+                    ->orWhere('agency.name', 'like', '%' . $search . '%')
+                    ->orWhere('implement.name', 'like', '%' . $search . '%')
+                    ->orWhere('cost_project.name', 'like', '%' . $search . '%');
+            })
+            ->groupBy('cost_project.id')
+            ->paginate($request->item);
+        return $this->resp(0, $data);
+    }
+
+    //项目专项审核
+    public function CostProjectBCheck(Request $request)
+    {
+        $rule = [
+            'sonproject_id' => 'required|integer|exists:cost_sonproject,id',
+            'service_id' => 'required|integer|exists:service,id',
+            'cost' => 'required|numeric',
+            'check_cost' => 'required_if:service_id,19|numeric'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        return DB::transaction(function () use ($request) {
+            //子项目状态更新
+            $sonproject = CostSonProject::find($request->sonproject_id);
+            $sonproject->cost = $request->cost;
+            $sonproject->checkcost = $request->checkcost;
+            $sonproject->check_mark = $request->check_mark;
+            $sonproject->status = 3;
+            $sonproject->save();
+            return $this->resp(0, '项目审核成功！');
+        });
     }
 
     /*******造价项目审核视图*******/
@@ -2661,6 +2767,18 @@ class AdminController extends Controller
         $data['marcher'] = Admininfo::select('admin_id', 'name')->where('admin_level_id', 6)->get();//负责人
         $data['contract'] = Contract::with('construction', 'agency')->get();
         return view('admin/costprojectknotcheck', ['data' => $data]);
+    }
+
+    /*******造价项目详情视图*******/
+    public function costprojectinfo()
+    {
+        $data['contract_type'] = ContractType::get();
+        $data['company'] = Company::get();
+        $data['project_type'] = Service::get();
+        $data['professions'] = Profession::get();
+        $data['marcher'] = Admininfo::select('admin_id', 'name')->where('admin_level_id', 6)->get();//负责人
+        $data['contract'] = Contract::with('construction', 'agency')->get();
+        return view('admin/costprojectinfo', ['data' => $data]);
     }
 
     /*******工程单位管理视图*******/

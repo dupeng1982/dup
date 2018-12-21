@@ -8,10 +8,10 @@
 @section('admin-title')
     <div class="row page-titles">
         <div class="col-md-5 col-8 align-self-center">
-            <h3 class="text-themecolor m-b-0 m-t-0">造价项目管理</h3>
+            <h3 class="text-themecolor m-b-0 m-t-0">造价项目分配</h3>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url('admin/index') }}">首页</a></li>
-                <li class="breadcrumb-item active">造价项目管理</li>
+                <li class="breadcrumb-item active">造价项目分配</li>
             </ol>
         </div>
         <div class="col-md-7 col-4 align-self-center">

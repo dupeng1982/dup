@@ -129,7 +129,9 @@
         <div class="scroll-sidebar">
             <div class="user-profile"
                  style="background: url({{ asset('admin/assets/images/background/user-info.jpg') }}) no-repeat;">
-                <div class="profile-img"><img src="@if(Auth::guard('admin')->user()->avatar){{ Auth::guard('admin')->user()->avatar }}@else{{ asset('admin/avatars/avatar.png') }}@endif" alt="user"/>
+                <div class="profile-img"><img
+                            src="@if(Auth::guard('admin')->user()->avatar){{ Auth::guard('admin')->user()->avatar }}@else{{ asset('admin/avatars/avatar.png') }}@endif"
+                            alt="user"/>
                 </div>
                 <div class="profile-text"><a href="javascript:void(0)" role="button">
                         @if(Auth::guard('admin')->user()->admininfo)
@@ -150,9 +152,10 @@
                                     class="mdi mdi-store"></i><span class="hide-menu">项目管理</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="{{ url('admin/contractmanage') }}">合同管理</a></li>
-                            <li> <a class="has-arrow" href="#" aria-expanded="false">造价项目管理</a>
+                            <li><a class="has-arrow" href="#" aria-expanded="false">造价项目管理</a>
                                 <ul aria-expanded="false" class="collapse">
-                                    <li><a href="{{ url('admin/costprojectmanage') }}">项目列表</a></li>
+                                    <li><a href="{{ url('admin/costprojectinfo') }}">项目详情</a></li>
+                                    <li><a href="{{ url('admin/costprojectmanage') }}">项目分配</a></li>
                                     <li><a href="{{ url('admin/costsonprojectcheck') }}">项目初审</a></li>
                                     <li><a href="{{ url('admin/costsonprojectprofessioncheck') }}">专项审核</a></li>
                                     <li><a href="{{ url('admin/costprojectcheck') }}">项目审核</a></li>

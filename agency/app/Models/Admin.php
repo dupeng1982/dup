@@ -32,11 +32,6 @@ class Admin extends Authenticatable
 
     public function getAdmininfoAttribute()
     {
-        $admin = Admininfo::find($this->id);
-        if ($admin) {
-            return $admin;
-        } else {
-            return null;
-        }
+        return  Admininfo::where('admin_id', $this->id)->first();
     }
 }

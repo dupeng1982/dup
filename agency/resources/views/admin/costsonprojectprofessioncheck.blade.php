@@ -8,10 +8,10 @@
 @section('admin-title')
     <div class="row page-titles">
         <div class="col-md-5 col-8 align-self-center">
-            <h3 class="text-themecolor m-b-0 m-t-0">造价项目管理</h3>
+            <h3 class="text-themecolor m-b-0 m-t-0">造价项目专项审核</h3>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url('admin/index') }}">首页</a></li>
-                <li class="breadcrumb-item active">造价项目管理</li>
+                <li class="breadcrumb-item active">造价项目专项审核</li>
             </ol>
         </div>
         <div class="col-md-7 col-4 align-self-center">
@@ -63,214 +63,6 @@
         </div>
     </div>
 
-    <div class="modal fade show" id="addProjectModal" tabindex="-1" role="dialog"
-         aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">添加项目</h4>
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <div class="card-body">
-                        <form id="addProjectForm">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>项目名称*</label>
-                                        <input type="text" class="form-control"
-                                               id="add-project-name"></div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>项目类型*</label>
-                                        <select class="custom-select form-control" id="add-project-service">
-                                            <option value="">选择项目类型</option>
-                                            @foreach($data['project_type'] as $v)
-                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>项目负责人</label>
-                                        <select class="custom-select form-control" id="add-project-marcher">
-                                            <option value="">选择项目负责人</option>
-                                            @foreach($data['marcher'] as $v)
-                                                <option value="{{ $v->admin_id }}">{{ $v->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>专业类型*</label>
-                                        <div class="c-inputs-stacked">
-                                            <div class="row">
-                                                @foreach($data['professions'] as $v)
-                                                    <div class="col-md-4">
-                                                        <label class="inline custom-control custom-checkbox block">
-                                                            <input type="checkbox" class="custom-control-input"
-                                                                   id="add-project-profession-{{ $v->id }}"
-                                                                   name="add-project-professions-checkbox-group"
-                                                                   value="{{ $v->id }}"> <span
-                                                                    class="custom-control-indicator"></span>
-                                                            <span class="custom-control-description ml-0">{{ $v->name }}</span>
-                                                        </label>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>收费基数(万元)</label>
-                                        <input type="text" class="form-control" id="add-project-cost"></div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>接收时间*</label>
-                                        <input type="date" class="form-control" id="add-project-receive-date"></div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="form-group">
-                                        <label>项目合同</label>
-                                        <select class="custom-select form-control"
-                                                id="add-project-contract-select">
-                                            <option value="">选择项目合同</option>
-                                            @foreach($data['contract'] as $v)
-                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>合同编号</label>
-                                        <input type="text" class="form-control" disabled="disabled"
-                                               id="add-project-contract-number">
-                                        <input type="hidden" id="add-project-contract-id">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-7">
-                                    <div class="form-group">
-                                        <label>建设单位</label>
-                                        <select class="custom-select form-control"
-                                                id="add-project-construction-select">
-                                            <option value="">选择建设单位</option>
-                                            @foreach($data['company'] as $v)
-                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label>联系人</label>
-                                        <input type="text" class="form-control" disabled="disabled"
-                                               id="add-project-construction-contact">
-                                        <input type="hidden" id="add-project-construction-id">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>联系电话</label>
-                                        <input type="text" class="form-control" disabled="disabled"
-                                               id="add-project-construction-phone">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-7">
-                                    <div class="form-group">
-                                        <label>委托单位</label>
-                                        <select class="custom-select form-control"
-                                                id="add-project-agency-select">
-                                            <option value="">选择委托单位</option>
-                                            @foreach($data['company'] as $v)
-                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label>联系人</label>
-                                        <input type="text" class="form-control" disabled="disabled"
-                                               id="add-project-agency-contact">
-                                        <input type="hidden" id="add-project-agency-id">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>联系电话</label>
-                                        <input type="text" class="form-control" disabled="disabled"
-                                               id="add-project-agency-phone"></div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-7">
-                                    <div class="form-group">
-                                        <label>施工单位</label>
-                                        <select class="custom-select form-control"
-                                                id="add-project-implement-select">
-                                            <option value="">选择施工单位</option>
-                                            @foreach($data['company'] as $v)
-                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label>联系人</label>
-                                        <input type="text" class="form-control" disabled="disabled"
-                                               id="add-project-implement-contact">
-                                        <input type="hidden" id="add-project-implement-id">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>联系电话</label>
-                                        <input type="text" class="form-control" disabled="disabled"
-                                               id="add-project-implement-phone"></div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>备注</label>
-                                        <textarea name="remark" id="add-project-remark"
-                                                  rows="6" class="form-control"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
-                            data-dismiss="modal">关闭
-                    </button>
-                    <button type="button" id="add-project-submit"
-                            class="btn btn-success">提交
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="modal fade show" id="addCpattachmentModal" tabindex="-1" role="dialog"
          aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -333,7 +125,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">编辑项目</h4>
+                    <h4 class="modal-title">项目详情</h4>
                     <button type="button" class="close" data-dismiss="modal"
                             aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
@@ -527,65 +319,6 @@
                     <button type="button" class="btn btn-secondary"
                             data-dismiss="modal">关闭
                     </button>
-                    <button type="button" id="edit-project-submit"
-                            class="btn btn-success">提交
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade show" id="addSonProjectModal" tabindex="-1" role="dialog"
-         aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">添加专项</h4>
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <div class="card-body">
-                        <form id="add-cost-son-project-form">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>专项名称*</label>
-                                        <input type="text" class="form-control" id="add-son-project-name"></div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>专业类型*</label>
-                                        <select class="custom-select form-control" id="add-son-project-profession">
-                                            <option value="">选择专业类型</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>收费基数(万元)</label>
-                                        <input type="text" class="form-control" id="add-son-project-cost"></div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>备注</label>
-                                        <textarea name="remark" id="add-son-project-remark"
-                                                  rows="6" class="form-control"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
-                            data-dismiss="modal">关闭
-                    </button>
-                    <button type="button" id="add-son-project-submit"
-                            class="btn btn-success">提交
-                    </button>
                 </div>
             </div>
         </div>
@@ -595,7 +328,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">编辑专项</h4>
+                    <h4 class="modal-title">专项详情</h4>
                     <button type="button" class="close" data-dismiss="modal"
                             aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
@@ -625,6 +358,40 @@
                                 </div>
                             </div>
                             <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>专项实施人</label>
+                                        <select class="custom-select form-control" id="edit-son-project-marcher">
+                                            <option value="">选择专项实施人</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>提成比例</label>
+                                        <input type="text" class="form-control" id="edit-son-project-basic-rate">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>考核提成比例</label>
+                                        <input type="text" class="form-control" id="edit-son-project-check-rate">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>专项开始时间</label>
+                                        <input type="date" class="form-control" id="edit-son-project-start-date">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>专项结束时间</label>
+                                        <input type="date" class="form-control" id="edit-son-project-end-date">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>备注</label>
@@ -640,9 +407,6 @@
                     <button type="button" class="btn btn-secondary"
                             data-dismiss="modal">关闭
                     </button>
-                    <button type="button" id="edit-son-project-submit"
-                            class="btn btn-success">提交
-                    </button>
                 </div>
             </div>
         </div>
@@ -652,7 +416,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">分配专项</h4>
+                    <h4 class="modal-title">专项审核</h4>
                     <button type="button" class="close" data-dismiss="modal"
                             aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
@@ -685,37 +449,21 @@
                                         <input type="text" class="form-control" id="allot-son-project-cost"></div>
                                 </div>
                             </div>
+                            <div class="row" id="cost-sonproject-check-cost">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>核定基数(万元)</label>
+                                        <input type="text" class="form-control" id="allot-son-project-checkcost"></div>
+                                </div>
+                                <div class="col-md-6">
+                                </div>
+                            </div>
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>专项实施人</label>
-                                        <select class="custom-select form-control" id="allot-son-project-marcher">
-                                            <option value="">选择专项实施人</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>提成比例</label>
-                                        <input type="text" class="form-control" id="allot-son-project-basic-rate">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>考核提成比例</label>
-                                        <input type="text" class="form-control" id="allot-son-project-check-rate">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>专项开始时间</label>
-                                        <input type="date" class="form-control" id="allot-son-project-start-date">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>专项结束时间</label>
-                                        <input type="date" class="form-control" id="allot-son-project-end-date">
+                                        <label>审核说明</label>
+                                        <textarea name="remark" id="allot-son-project-check-mark"
+                                                  rows="3" class="form-control"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -727,7 +475,7 @@
                             data-dismiss="modal">关闭
                     </button>
                     <button type="button" id="allot-son-project-submit"
-                            class="btn btn-success">分配
+                            class="btn btn-success">审核
                     </button>
                 </div>
             </div>
@@ -797,6 +545,8 @@
             var public_project_id;
             var public_sonproject_id;
             var public_sontable_index;
+            var operator_id = $('#upload-operator-id').val();
+            var service_id;
 
             $('#add-project-contract-select').comboSelect();
             $('#add-project-contract-select').change(function () {
@@ -1021,7 +771,7 @@
             });
 
             $('#project_table').bootstrapTable({
-                url: 'getCostProjectList',
+                url: 'getCostProjectBCheckList',
                 ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
                 cache: false,
                 method: 'POST',
@@ -1095,11 +845,10 @@
                     title: '项目进度'
                 }, {
                     field: 'id',
-                    title: '操作<button type="button" id="addProject" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="添加专项"><i class="ti-user" aria-hidden="true"></i></button>',
+                    title: '操作',
                     formatter: function (value, row, index) {
                         return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn addCpattachment" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="附件管理"><i class="ti-file" aria-hidden="true"></i></button>' +
-                            '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editProject" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
-                            '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delProject" data-project-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                            '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editProject" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="查看"><i class="ti-eye" aria-hidden="true"></i></button>';
                     }
                 }],
                 onPostBody: onPostBody,
@@ -1107,6 +856,7 @@
                 onExpandRow: function (index, row, $detail) {
                     var son_table = $detail.html('<table id="sonproject-table-' + row.id + '" class="table table-bordered table-hover toggle-circle" data-page-size="6"></table>').find('table');
                     var marcher_id = row.marcher_id;
+                    var service_id = row.service_id;
                     $(son_table).bootstrapTable({
                         url: 'getCostSonProjectList',
                         ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
@@ -1142,7 +892,7 @@
                             }
                         }, {
                             field: 'number',
-                            title: '专业编号'
+                            title: '专项编号'
                         }, {
                             field: 'name',
                             title: '专项名称'
@@ -1157,15 +907,13 @@
                             title: '实施人'
                         }, {
                             field: 'id',
-                            title: '操作<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn addSonProject" data-project-index=' + index + ' data-project-id=' + row.id + ' data-toggle="tooltip" data-original-title="添加子项目"><i class="ti-user" aria-hidden="true"></i></button>',
+                            title: '操作',
                             formatter: function (value, row, index) {
-                                if (marcher_id && row.status == 0) {
-                                    return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn allotSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="分配"><i class="ti-stamp" aria-hidden="true"></i></button>' +
-                                        '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
-                                        '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                                if (row.status == 2 && marcher_id && row.marcher_id == operator_id) {
+                                    return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn allotSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-service-id=' + service_id + ' data-toggle="tooltip" data-original-title="审核"><i class="ti-stamp" aria-hidden="true"></i></button>' +
+                                        '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="查看"><i class="ti-eye" aria-hidden="true"></i></button>';
                                 } else {
-                                    return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
-                                        '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                                    return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="查看"><i class="ti-eye" aria-hidden="true"></i></button>';
                                 }
 
                             }
@@ -1185,7 +933,7 @@
             });
 
             function refresh() {
-                $('#project_table').bootstrapTable('refresh', {url: 'getCostProjectList'});
+                $('#project_table').bootstrapTable('refresh', {url: 'getCostProjectBCheckList'});
             }
 
             function sonrefresh(project_id) {
@@ -1199,10 +947,6 @@
             function onPostBody(res) {
                 $("[data-toggle='tooltip']").tooltip();
 
-                $('#addProject').click(function () {
-                    $('#addProjectModal').modal('show');
-                });
-
                 $('.editProject').click(function () {
                     $('#editProjectModal').modal('show');
 
@@ -1213,7 +957,7 @@
                     $('#edit-project-service').val(data[index].service_id);
                     $('#edit-project-marcher').val(data[index].marcher_id);
                     data[index].profession.map(function (value, index, array) {
-                        $("#edit-project-profession-" + value.id).prop("checked",true);
+                        $("#edit-project-profession-" + value.id).prop("checked", true);
                     });
                     $('#edit-project-cost').val(data[index].cost);
                     $('#edit-project-receive-date').val(data[index].receive_date);
@@ -1244,11 +988,6 @@
                     $('#edit-project-remark').val(data[index].remark);
                 });
 
-                $('.delProject').click(function () {
-                    $('#confirmDelProjectModal').modal('show');
-                    public_project_id = $(this).attr('data-project-id');
-                });
-
                 $('.addCpattachment').click(function () {
                     $('#addCpattachmentModal').modal('show');
                     $('#upload-progress').hide();
@@ -1258,7 +997,7 @@
                     var data = $('#project_table').bootstrapTable('getData');
                     var index = $(this).attr('data-project-index');
                     $('#upload-project-id').val(data[index].id);
-                    $('#check-status').val(0);
+                    $('#check-status').val(2);
                     $('#add-cpattachment-table').bootstrapTable({
                         url: 'getCpattachment',
                         ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
@@ -1371,14 +1110,6 @@
             function onPostBodySon(res) {
                 $("[data-toggle='tooltip']").tooltip();
 
-                $('.delSonProject').click(function () {
-                    $('#confirmDelSonProjectModal').modal('show');
-                    var index = $(this).attr('data-sonproject-index');
-                    public_sontable_index = $(this).attr('data-project-id');
-                    var data = $('#sonproject-table-' + public_sontable_index).bootstrapTable('getData');
-                    public_sonproject_id = data[index].id;
-                });
-
                 $('.editSonProject').click(function () {
                     $('#editSonProjectModal').modal('show');
                     var index = $(this).attr('data-sonproject-index');
@@ -1390,19 +1121,22 @@
                     addSonProfession('#edit-son-project-profession', data[index].profession, data[index].profession_id);
                     $('#edit-son-project-remark').val(data[index].remark);
                     $('#edit-son-project-cost').val(data[index].cost);
-                });
-
-                $('.addSonProject').click(function () {
-                    $('#addSonProjectModal').modal('show');
-                    public_project_id = $(this).attr('data-project-id');
-                    public_sontable_index = $(this).attr('data-project-id');
-                    var index = $(this).attr('data-project-index');
-                    var data = $('#project_table').bootstrapTable('getData');
-                    addSonProfession('#add-son-project-profession', data[index].profession);
+                    addSonMarcher('#edit-son-project-marcher', data[index].marchers, data[index].marcher_id);
+                    $('#edit-son-project-basic-rate').val(data[index].rates.basic_rate);
+                    $('#edit-son-project-check-rate').val(data[index].rates.check_rate);
+                    $('#edit-son-project-start-date').val(data[index].start_date);
+                    $('#edit-son-project-end-date').val(data[index].end_date);
                 });
 
                 $('.allotSonProject').click(function () {
+                    $('#cost-sonproject-check-cost').val('');
                     $('#allotSonProjectModal').modal('show');
+                    service_id = $(this).attr('data-service-id');
+                    if (service_id == 19) {
+                        $('#cost-sonproject-check-cost').show();
+                    } else {
+                        $('#cost-sonproject-check-cost').hide();
+                    }
                     var index = $(this).attr('data-sonproject-index');
                     public_project_id = $(this).attr('data-project-id');
                     public_sontable_index = $(this).attr('data-project-id');
@@ -1411,11 +1145,7 @@
                     $('#allot-son-project-name').val(data[index].name);
                     $('#allot-son-project-profession').val(data[index].profession_id);
                     $('#allot-son-project-cost').val(data[index].cost);
-                    addSonMarcher('#allot-son-project-marcher', data[index].marchers, '');
-                    $('#allot-son-project-basic-rate').val(data[index].rates.basic_rate);
-                    $('#allot-son-project-check-rate').val(data[index].rates.check_rate);
-                    $('#allot-son-project-start-date').val('');
-                    $('#allot-son-project-end-date').val('');
+                    $('#allot-son-project-check-mark').val(data[index].check_mark);
                 });
             }
 
@@ -1443,342 +1173,17 @@
                 $(id).val(select);
             }
 
-            $('#del-project-submit').click(function () {
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'delCostProject',
-                    type: 'POST',
-                    data: {
-                        project_id: public_project_id
-                    },
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            $('#confirmDelProjectModal').modal('hide');
-                            refresh();
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
-            });
-
-            $('#del-sonproject-submit').click(function () {
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'delCostSonProject',
-                    type: 'POST',
-                    data: {
-                        sonproject_id: public_sonproject_id
-                    },
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            $('#confirmDelSonProjectModal').modal('hide');
-                            sonrefresh(public_sontable_index);
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
-            });
-
-            $('#add-project-submit').click(function () {
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'addCostProject',
-                    type: 'POST',
-                    data: {
-                        project_name: $('#add-project-name').val(),
-                        service_id: $('#add-project-service').val(),
-                        marcher_id: $('#add-project-marcher').val(),
-                        profession: $("input[name='add-project-professions-checkbox-group']:checked")
-                            .map(function (index, elem) {
-                                return $(elem).val();
-                            }).get(),
-                        cost: $('#add-project-cost').val(),
-                        receive_date: $('#add-project-receive-date').val(),
-                        construction_id: $('#add-project-construction-id').val(),
-                        implement_id: $('#add-project-implement-id').val(),
-                        agency_id: $('#add-project-agency-id').val(),
-                        contract_id: $('#add-project-contract-id').val(),
-                        remark: $('#add-project-remark').val()
-                    },
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            $('#addProjectModal').modal('hide');
-                            clearModalInput()
-                            refresh();
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
-            });
-
-            $('#add-son-project-submit').click(function () {
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'addCostSonProject',
-                    type: 'POST',
-                    data: {
-                        project_id: public_project_id,
-                        sonproject_name: $('#add-son-project-name').val(),
-                        profession_id: $('#add-son-project-profession').val(),
-                        remark: $('#add-son-project-remark').val(),
-                        cost: $('#add-son-project-cost').val()
-                    },
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            $('#addSonProjectModal').modal('hide');
-                            clearModalInput()
-                            sonrefresh(public_sontable_index);
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
-            });
-
-            $('#edit-project-submit').click(function () {
-                console.log($("input[name='edit-project-professions-checkbox-group']:checked")
-                    .map(function (index, elem) {
-                        return $(elem).val();
-                    }).get());
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'editCostProject',
-                    type: 'POST',
-                    data: {
-                        project_id: public_project_id,
-                        project_name: $('#edit-project-name').val(),
-                        service_id: $('#edit-project-service').val(),
-                        marcher_id: $('#edit-project-marcher').val(),
-                        profession: $("input[name='edit-project-professions-checkbox-group']:checked")
-                            .map(function (index, elem) {
-                                return $(elem).val();
-                            }).get(),
-                        cost: $('#edit-project-cost').val(),
-                        receive_date: $('#edit-project-receive-date').val(),
-                        construction_id: $('#edit-project-construction-id').val(),
-                        implement_id: $('#edit-project-implement-id').val(),
-                        agency_id: $('#edit-project-agency-id').val(),
-                        contract_id: $('#edit-project-contract-id').val(),
-                        remark: $('#edit-project-remark').val()
-                    },
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            $('#editProjectModal').modal('hide');
-                            refresh();
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
-            });
-
-            $('#edit-son-project-submit').click(function () {
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'editCostSonProject',
-                    type: 'POST',
-                    data: {
-                        sonproject_id: public_sonproject_id,
-                        sonproject_name: $('#edit-son-project-name').val(),
-                        profession_id: $('#edit-son-project-profession').val(),
-                        remark: $('#edit-son-project-remark').val(),
-                        cost: $('#edit-son-project-cost').val()
-                    },
-                    success: function (doc) {
-                        if (doc.code) {
-                            $.toast({
-                                heading: '警告',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'warning',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        } else {
-                            $.toast({
-                                heading: '成功',
-                                text: doc.data,
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'success',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                            $('#editSonProjectModal').modal('hide');
-                            sonrefresh(public_sontable_index);
-                        }
-                    },
-                    error: function (doc) {
-                        $.toast({
-                            heading: '错误',
-                            text: '网络错误，请稍后重试！',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 3000,
-                            stack: 6
-                        });
-                    }
-                });
-            });
-
             $('#allot-son-project-submit').click(function () {
                 $.ajax({
                     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'allotCostSonProject',
+                    url: 'CostProjectBCheck',
                     type: 'POST',
                     data: {
                         sonproject_id: public_sonproject_id,
                         cost: $('#allot-son-project-cost').val(),
-                        son_marcher_id: $('#allot-son-project-marcher').val(),
-                        basic_rate: $('#allot-son-project-basic-rate').val(),
-                        check_rate: $('#allot-son-project-check-rate').val(),
-                        start_date: $('#allot-son-project-start-date').val(),
-                        end_date: $('#allot-son-project-end-date').val()
+                        check_cost: $('#allot-son-project-marcher').val(),
+                        service_id: service_id,
+                        check_mark: $('#allot-son-project-check-mark').val()
                     },
                     success: function (doc) {
                         if (doc.code) {
@@ -1826,18 +1231,13 @@
             $('#editProjectModal').on('hide.bs.modal', function () {
                 $("input[name='edit-project-professions-checkbox-group']")
                     .map(function (index, elem) {
-                        $(elem).prop("checked",false);
+                        $(elem).prop("checked", false);
                     });
             });
 
             $('#editSonProjectModal').on('hide.bs.modal', function () {
                 $('#edit-cspattachment-table').bootstrapTable('destroy');
             });
-
-            function clearModalInput() {
-                $("#addProjectForm")[0].reset();
-                $('#add-cost-son-project-form')[0].reset();
-            }
 
             $('#project-type-select').change(function () {
                 refresh();

@@ -131,7 +131,7 @@ var AetherUpload = {
 
         var _this = this;
 
-        $.post("/aetherupload/preprocess", {
+        $.post("aetherupload/preprocess", {
 
             file_name: _this.fileName,
 
@@ -222,7 +222,7 @@ var AetherUpload = {
 
         $.ajax({
 
-            url: "/aetherupload/uploading",
+            url: "aetherupload/uploading",
 
             type: "POST",
 

@@ -147,6 +147,10 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
 
     //造价项目审核
     $router->get('costprojectcheck', 'AdminController@costprojectcheck');
+    $router->post('getCostProjectCCheckList', 'AdminController@getCostProjectCCheckList');
+    $router->post('CostProjectCCheck', 'AdminController@CostProjectCCheck');
+    $router->post('getCostProjectMoney', 'AdminController@getCostProjectMoney');
+    $router->post('CostSonProjectCCheck', 'AdminController@CostSonProjectCCheck');
     //造价项目技术审核
     $router->get('costprojecttechcheck', 'AdminController@costprojecttechcheck');
     //造价项目结项审核
@@ -174,7 +178,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     Route::get('aetherupload/download/{group}/{subDir}/{resourceName}/{newName}', '\AetherUpload\ResourceHandler@downloadResource');
 
     //测试
-    $router->any('test', 'AdminController@getCostSonProjectList');
+    $router->any('test', 'AdminController@getCostProjectMoney');
 });
 
 

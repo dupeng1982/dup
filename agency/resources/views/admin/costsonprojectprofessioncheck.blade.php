@@ -1129,7 +1129,6 @@
                 });
 
                 $('.allotSonProject').click(function () {
-                    $('#cost-sonproject-check-cost').val('');
                     $('#allotSonProjectModal').modal('show');
                     service_id = $(this).attr('data-service-id');
                     if (service_id == 19) {
@@ -1146,6 +1145,7 @@
                     $('#allot-son-project-profession').val(data[index].profession_id);
                     $('#allot-son-project-cost').val(data[index].cost);
                     $('#allot-son-project-check-mark').val(data[index].check_mark);
+                    $('#allot-son-project-checkcost').val(data[index].check_cost);
                 });
             }
 
@@ -1181,7 +1181,7 @@
                     data: {
                         sonproject_id: public_sonproject_id,
                         cost: $('#allot-son-project-cost').val(),
-                        check_cost: $('#allot-son-project-marcher').val(),
+                        check_cost: $('#allot-son-project-checkcost').val(),
                         service_id: service_id,
                         check_mark: $('#allot-son-project-check-mark').val()
                     },

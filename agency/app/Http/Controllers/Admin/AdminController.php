@@ -23,6 +23,7 @@ use App\Models\CompanyType;
 use App\Models\Contract;
 use App\Models\ContractType;
 use App\Models\CostProject;
+use App\Models\CostProjectList;
 use App\Models\CostSonProject;
 use App\Models\Cpattachment;
 use App\Models\DateSet;
@@ -2646,7 +2647,7 @@ class AdminController extends Controller
             $sonproject->save();
             //主项目状态更新
             $project = CostProject::find($sonproject->project_id);
-            $project->status = 2;
+            $project->status = 3;
             $project->checker_id = $project->marcher_id;
             $project->save();
             return $this->resp(0, '项目初审成功！');
@@ -2715,7 +2716,7 @@ class AdminController extends Controller
             'sonproject_id' => 'required|integer|exists:cost_sonproject,id',
             'service_id' => 'required|integer|exists:service,id',
             'cost' => 'required|numeric',
-            'check_cost' => 'required_if:service_id,19|numeric'
+            'check_cost' => 'required_if:service_id,19|nullable|numeric'
         ];
         $validator = Validator::make($request->all(), $rule);
         if ($validator->fails()) {
@@ -2725,7 +2726,7 @@ class AdminController extends Controller
             //子项目状态更新
             $sonproject = CostSonProject::find($request->sonproject_id);
             $sonproject->cost = $request->cost;
-            $sonproject->checkcost = $request->checkcost;
+            $sonproject->check_cost = $request->check_cost;
             $sonproject->check_mark = $request->check_mark;
             $sonproject->status = 3;
             $sonproject->save();
@@ -2743,6 +2744,137 @@ class AdminController extends Controller
         $data['marcher'] = Admininfo::select('admin_id', 'name')->where('admin_level_id', 6)->get();//负责人
         $data['contract'] = Contract::with('construction', 'agency')->get();
         return view('admin/costprojectcheck', ['data' => $data]);
+    }
+
+    //获取项目审核列表
+    public function getCostProjectCCheckList(Request $request)
+    {
+        $admin_id = Auth::guard('admin')->user()->id;
+        $rule = [
+            'page' => 'integer',
+            'item' => 'integer'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $arr = array();
+        $request->service_id && array_push($arr, ['cost_project.service_id', '=', $request->service_id]);
+        $search = $request->search;
+        $data = CostProjectList::with('profession', 'sonproject', 'contract')
+            ->select('cost_project.*', 'construction.name as construction_name', 'service.name as service_name',
+                'agency.name as agency_name', 'construction.contact as construction_contact',
+                'construction.phone as construction_phone', 'agency.contact as agency_contact',
+                'agency.phone as agency_phone', 'implement.name as implement_name',
+                'implement.phone as implement_phone', 'implement.contact as implement_contact',
+                'marcher.name as marcher_name', 'recorder.name as recorder_name')
+            ->leftjoin('company as construction', 'construction.id', '=', 'cost_project.construction_id')
+            ->leftjoin('company as agency', 'agency.id', '=', 'cost_project.agency_id')
+            ->leftjoin('company as implement', 'implement.id', '=', 'cost_project.implement_id')
+            ->leftjoin('service', 'service.id', '=', 'cost_project.service_id')
+            ->leftjoin('admininfo as marcher', 'marcher.admin_id', '=', 'cost_project.marcher_id')
+            ->leftjoin('admininfo as recorder', 'recorder.admin_id', '=', 'cost_project.recorder_id')
+            ->leftjoin('cost_sonproject', 'cost_sonproject.project_id', '=', 'cost_project.id')
+            ->where([['cost_project.status', 3], ['cost_project.checker_id', $admin_id]])
+            ->where($arr)
+            ->where(function ($q) use ($search) {
+                $search &&
+                $q->orWhere('construction.name', 'like', '%' . $search . '%')
+                    ->orWhere('agency.name', 'like', '%' . $search . '%')
+                    ->orWhere('implement.name', 'like', '%' . $search . '%')
+                    ->orWhere('cost_project.name', 'like', '%' . $search . '%');
+            })
+            ->groupBy('cost_project.id')
+            ->paginate($request->item);
+        return $this->resp(0, $data);
+    }
+
+    //项目审核
+    public function CostProjectCCheck(Request $request)
+    {
+        $rule = [
+            'sonproject_id' => 'required|integer|exists:cost_sonproject,id',
+            'service_id' => 'required|integer|exists:service,id',
+            'cost' => 'required|numeric',
+            'check_cost' => 'required_if:service_id,19|numeric'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        return DB::transaction(function () use ($request) {
+            //子项目状态更新
+            $sonproject = CostSonProject::find($request->sonproject_id);
+            $sonproject->cost = $request->cost;
+            $sonproject->check_cost = $request->check_cost;
+            $sonproject->check_mark = $request->check_mark;
+            $sonproject->status = 3;
+            $sonproject->save();
+            return $this->resp(0, '项目审核成功！');
+        });
+    }
+
+    //费用计算
+    public function getCostProjectMoney(Request $request)
+    {
+        $rule = [
+            'service_id' => 'required|integer|exists:service,id',
+            'cost' => 'required|numeric',
+            'project_basic_rate' => 'required|numeric',
+            'min_profit' => 'required|numeric',
+            'check_cost' => 'required_if:service_id,19|numeric',
+            'project_check_rate' => 'required_if:service_id,19|numeric',
+            'check_cost_rate' => 'required_if:service_id,19|numeric',
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $data = Array();
+        $cost = $request->cost;
+        $project_basic_rate = $request->project_basic_rate;
+        $min_profit = $request->min_profit / 10000;
+        $check_money = 0;
+
+        $money = ($cost * $project_basic_rate) / 1000;
+        if ($request->service_id == 19) {
+            $check_cost = $request->check_cost;
+            $project_check_rate = $request->project_check_rate;
+            $check_cost_rate = $request->check_cost_rate;
+            $check_money = $check_cost - $cost;
+
+            $tmp1 = $cost * $project_check_rate / 100;
+            $tmp2 = abs($check_money);
+            if ($tmp2 > $tmp1) {
+                $money = $money + (($tmp2 - $tmp1) * $check_cost_rate / 100);
+            }
+        }
+        if ($money < $min_profit) {
+            $money = $min_profit;
+        }
+        $data['service_money'] = round($money, 4);
+        $data['check_money'] = $check_money;
+        return $this->resp(0, $data);
+    }
+
+    //子项目退回
+    public function CostSonProjectCCheck(Request $request)
+    {
+        $rule = [
+            'sonproject_id' => 'required|integer|exists:cost_sonproject,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        return DB::transaction(function () use ($request) {
+            //子项目状态更新
+            $sonproject = CostSonProject::find($request->sonproject_id);
+            $sonproject->check_mark = $request->check_mark;
+            $sonproject->status = 2;
+            $sonproject->save();
+            return $this->resp(0, '项目退回成功！');
+        });
     }
 
     /*******造价项目技术审核视图*******/

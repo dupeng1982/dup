@@ -8,10 +8,10 @@
 @section('admin-title')
     <div class="row page-titles">
         <div class="col-md-5 col-8 align-self-center">
-            <h3 class="text-themecolor m-b-0 m-t-0">造价项目专项审核</h3>
+            <h3 class="text-themecolor m-b-0 m-t-0">造价项目结项审核</h3>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url('admin/index') }}">首页</a></li>
-                <li class="breadcrumb-item active">造价项目专项审核</li>
+                <li class="breadcrumb-item active">造价项目结项审核</li>
             </ol>
         </div>
         <div class="col-md-7 col-4 align-self-center">
@@ -35,7 +35,7 @@
                         <div class="m-t-20">
                             <div class="row">
                                 <div class="col-7">
-                                    <h4>造价项目列表</h4>
+                                    <h4>造价项目结项审核列表</h4>
                                 </div>
                                 <div class="col-2">
                                     <div class="form-group">

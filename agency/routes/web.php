@@ -161,6 +161,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('CostProjectECheck', 'AdminController@CostProjectECheck');
     //造价项目详情
     $router->get('costprojectinfo', 'AdminController@costprojectinfo');
+    $router->post('getCostProjectFCheckList', 'AdminController@getCostProjectFCheckList');
 
     //工程单位管理
     $router->get('projectunitmanage', 'AdminController@projectunitmanage');

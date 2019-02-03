@@ -140,7 +140,7 @@ class CostProjectList extends Model
     {
         $data = $this->sonproject->where('status', '<>', 3)->first();
         if ($data) {
-            return 1;
+            return 0;
         } else {
             return 1;
         }

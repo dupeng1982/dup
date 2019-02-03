@@ -153,8 +153,12 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('CostSonProjectCCheck', 'AdminController@CostSonProjectCCheck');
     //造价项目技术审核
     $router->get('costprojecttechcheck', 'AdminController@costprojecttechcheck');
+    $router->post('getCostProjectDCheckList', 'AdminController@getCostProjectDCheckList');
+    $router->post('CostProjectDCheck', 'AdminController@CostProjectDCheck');
     //造价项目结项审核
     $router->get('costprojectknotcheck', 'AdminController@costprojectknotcheck');
+    $router->post('getCostProjectECheckList', 'AdminController@getCostProjectECheckList');
+    $router->post('CostProjectECheck', 'AdminController@CostProjectECheck');
     //造价项目详情
     $router->get('costprojectinfo', 'AdminController@costprojectinfo');
 

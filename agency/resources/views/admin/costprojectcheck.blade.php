@@ -978,7 +978,7 @@
                     field: 'id',
                     title: '操作',
                     formatter: function (value, row, index) {
-                        if (row.show_check) {
+                        if (row.show_check) {console.log(row.show_check);
                             return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn checkProject" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="审核"><i class="ti-stamp" aria-hidden="true"></i></button>' +
                                 '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn addCpattachment" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="附件管理"><i class="ti-file" aria-hidden="true"></i></button>' +
                                 '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editProject" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="查看"><i class="ti-eye" aria-hidden="true"></i></button>';
@@ -1429,6 +1429,61 @@
                             });
                             $('#check-project-check-money').val(doc.data.check_money);
                             $('#check-project-service-fee').val(doc.data.service_money);
+                        }
+                    },
+                    error: function (doc) {
+                        $.toast({
+                            heading: '错误',
+                            text: '网络错误，请稍后重试！',
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'error',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                });
+            });
+
+            $('#check-project-submit').click(function(){
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: 'CostProjectCCheck',
+                    type: 'POST',
+                    data: {
+                        project_id: public_project_id,
+                        service_id: $('#check-project-service').val(),
+                        cost: $('#check-project-cost').val(),
+                        project_basic_rate: $('#check-project-basic-rate').val(),
+                        min_profit: $('#check-project-min-profit').val(),
+                        check_cost: $('#check-project-checkcost').val(),
+                        project_check_rate: $('#check-project-check-rate').val(),
+                        check_cost_rate: $('#check-project-check-cost-rate').val(),
+                        check_mark: $('#check-project-checkmark').val()
+                    },
+                    success: function (doc) {
+                        if (doc.code) {
+                            $.toast({
+                                heading: '警告',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'warning',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        } else {
+                            $.toast({
+                                heading: '成功',
+                                text: '费用计算成功',
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'success',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                            $('#checkProjectModal').modal('hide');
+                            refresh();
                         }
                     },
                     error: function (doc) {

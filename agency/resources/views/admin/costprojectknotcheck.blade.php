@@ -443,6 +443,9 @@
                     <button type="button" id="check-project-submit"
                             class="btn btn-success">审核
                     </button>
+                    <button type="button" id="check-project-back"
+                            class="btn btn-success">退回
+                    </button>
                 </div>
             </div>
         </div>
@@ -1389,6 +1392,54 @@
                             $.toast({
                                 heading: '成功',
                                 text: '费用计算成功',
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'success',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                            $('#checkProjectModal').modal('hide');
+                            refresh();
+                        }
+                    },
+                    error: function (doc) {
+                        $.toast({
+                            heading: '错误',
+                            text: '网络错误，请稍后重试！',
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'error',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                });
+            });
+
+            $('#check-project-back').click(function () {
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: 'CostProjectEBack',
+                    type: 'POST',
+                    data: {
+                        project_id: public_project_id,
+                        check_mark: $('#check-project-checkmark').val()
+                    },
+                    success: function (doc) {
+                        if (doc.code) {
+                            $.toast({
+                                heading: '警告',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'warning',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        } else {
+                            $.toast({
+                                heading: '成功',
+                                text: '项目退回成功',
                                 position: 'top-right',
                                 loaderBg: '#ff6849',
                                 icon: 'success',

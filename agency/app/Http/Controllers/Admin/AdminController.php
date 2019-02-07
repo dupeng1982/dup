@@ -2793,7 +2793,7 @@ class AdminController extends Controller
     public function CostProjectCCheck(Request $request)
     {
         $rule = [
-            'project_id' => 'required|integer|exists:cost_sonproject,id',
+            'project_id' => 'required|integer|exists:cost_project,id',
             'service_id' => 'required|integer|exists:service,id',
             'cost' => 'required|numeric',
             'project_basic_rate' => 'required|numeric',
@@ -2808,13 +2808,18 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return $this->resp(10000, $validator->messages()->first());
         }
+        $sonproject = CostSonProject::where('project_id', $request->project_id)
+            ->where('status', '<>', 3)->first();
+        if ($sonproject) {
+            return $this->resp(10000, '该项目还存在未结项的专项项目！');
+        }
         return DB::transaction(function () use ($request) {
             //项目状态更新
             $project = CostProject::find($request->project_id);
             $project->cost = $request->cost;
             $project->basic_rate = $request->project_basic_rate;
             $project->min_profit = $request->min_profit;
-            if($request->service_id == 19){
+            if ($request->service_id == 19) {
                 $project->check_cost = $request->check_cost;
                 $project->check_rate = $request->check_rate;
                 $project->check_cost_rate = $request->check_cost_rate;
@@ -2949,7 +2954,7 @@ class AdminController extends Controller
     public function CostProjectDCheck(Request $request)
     {
         $rule = [
-            'project_id' => 'required|integer|exists:cost_sonproject,id',
+            'project_id' => 'required|integer|exists:cost_project,id',
             'service_id' => 'required|integer|exists:service,id',
             'cost' => 'required|numeric',
             'project_basic_rate' => 'required|numeric',
@@ -2970,7 +2975,7 @@ class AdminController extends Controller
             $project->cost = $request->cost;
             $project->basic_rate = $request->project_basic_rate;
             $project->min_profit = $request->min_profit;
-            if($request->service_id == 19){
+            if ($request->service_id == 19) {
                 $project->check_cost = $request->check_cost;
                 $project->check_rate = $request->check_rate;
                 $project->check_cost_rate = $request->check_cost_rate;
@@ -2980,6 +2985,27 @@ class AdminController extends Controller
             $project->status = 5;
             $project->save();
             return $this->resp(0, '项目审核成功！');
+        });
+    }
+
+    //项目退回
+    public function CostProjectDBack(Request $request){
+        $rule = [
+            'project_id' => 'required|integer|exists:cost_project,id',
+            'check_mark' => 'required'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        return DB::transaction(function () use ($request) {
+            //项目状态更新
+            $project = CostProject::find($request->project_id);
+            $project->check_mark = $request->check_mark;
+            $project->status = 3;
+            $project->checker_id = $project->marcher_id;
+            $project->save();
+            return $this->resp(0, '项目退回成功！');
         });
     }
 
@@ -3042,7 +3068,7 @@ class AdminController extends Controller
     public function CostProjectECheck(Request $request)
     {
         $rule = [
-            'project_id' => 'required|integer|exists:cost_sonproject,id',
+            'project_id' => 'required|integer|exists:cost_project,id',
             'service_id' => 'required|integer|exists:service,id',
             'cost' => 'required|numeric',
             'project_basic_rate' => 'required|numeric',
@@ -3063,7 +3089,7 @@ class AdminController extends Controller
             $project->cost = $request->cost;
             $project->basic_rate = $request->project_basic_rate;
             $project->min_profit = $request->min_profit;
-            if($request->service_id == 19){
+            if ($request->service_id == 19) {
                 $project->check_cost = $request->check_cost;
                 $project->check_rate = $request->check_rate;
                 $project->check_cost_rate = $request->check_cost_rate;
@@ -3072,6 +3098,27 @@ class AdminController extends Controller
             $project->status = 6;
             $project->save();
             return $this->resp(0, '项目审核成功！');
+        });
+    }
+
+    //项目退回
+    public function CostProjectEBack(Request $request){
+        $rule = [
+            'project_id' => 'required|integer|exists:cost_project,id',
+            'check_mark' => 'required'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        return DB::transaction(function () use ($request) {
+            //项目状态更新
+            $project = CostProject::find($request->project_id);
+            $project->check_mark = $request->check_mark;
+            $project->status = 4;
+            $project->checker_id = $this->_getTechnicerId();
+            $project->save();
+            return $this->resp(0, '项目退回成功！');
         });
     }
 

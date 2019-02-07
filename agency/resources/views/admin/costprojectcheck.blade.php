@@ -309,7 +309,7 @@
                                 <div class="form-group">
                                     <label>备注</label>
                                     <textarea name="remark" id="edit-project-remark"
-                                              rows="6" class="form-control"></textarea>
+                                              rows="6" class="form-control" style="overflow-x:hidden"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -423,7 +423,7 @@
                                 <div class="form-group">
                                     <label>审核说明</label>
                                     <textarea name="remark" id="check-project-checkmark"
-                                              rows="6" class="form-control"></textarea>
+                                              rows="6" class="form-control" style="overflow-x:hidden"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -525,7 +525,7 @@
                                     <div class="form-group">
                                         <label>备注</label>
                                         <textarea name="remark" id="edit-son-project-remark"
-                                                  rows="6" class="form-control"></textarea>
+                                                  rows="6" class="form-control" style="overflow-x:hidden"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -594,7 +594,7 @@
                                     <div class="form-group">
                                         <label>审核说明</label>
                                         <textarea name="remark" id="allot-son-project-check-mark"
-                                                  rows="6" class="form-control"></textarea>
+                                                  rows="6" class="form-control" style="overflow-x:hidden"></textarea>
                                     </div>
                                 </div>
                             </div>

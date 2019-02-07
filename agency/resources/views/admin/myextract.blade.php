@@ -294,7 +294,7 @@
                                             <div class="form-group">
                                                 <label for="remark"> 备注 :</label>
                                                 <textarea name="remark" id="remark"
-                                                          rows="6" class="form-control"></textarea>
+                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -307,14 +307,14 @@
                                             <div class="form-group">
                                                 <label for="work_resume"> 工作简历 :</label>
                                                 <textarea name="work_resume" id="work_resume"
-                                                          rows="6" class="form-control"></textarea>
+                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="study_resume"> 学习简历 :</label>
                                                 <textarea name="study_resume" id="study_resume"
-                                                          rows="6" class="form-control"></textarea>
+                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -327,13 +327,13 @@
                                             <div class="form-group">
                                                 <label for="performance"> 主要业绩 :</label>
                                                 <textarea name="performance" id="performance"
-                                                          rows="6" class="form-control"></textarea>
+                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="rewards"> 奖惩情况 :</label>
-                                                <textarea name="rewards" id="rewards"
+                                                <textarea name="rewards" id="rewards" style="overflow-x:hidden"
                                                           rows="6" class="form-control"></textarea>
                                             </div>
                                         </div>
@@ -753,7 +753,7 @@
                                             <div class="form-group">
                                                 <label for="edit-remark"> 备注 :</label>
                                                 <textarea name="remark" id="edit-remark"
-                                                          rows="6" class="form-control"></textarea>
+                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -765,7 +765,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="edit-work_resume"> 工作简历 :</label>
-                                                <textarea name="work_resume" id="edit-work_resume"
+                                                <textarea name="work_resume" id="edit-work_resume" style="overflow-x:hidden"
                                                           rows="6" class="form-control"></textarea>
                                             </div>
                                         </div>
@@ -773,7 +773,7 @@
                                             <div class="form-group">
                                                 <label for="edit-study_resume"> 学习简历 :</label>
                                                 <textarea name="study_resume" id="edit-study_resume"
-                                                          rows="6" class="form-control"></textarea>
+                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -786,13 +786,13 @@
                                             <div class="form-group">
                                                 <label for="edit-performance"> 主要业绩 :</label>
                                                 <textarea name="performance" id="edit-performance"
-                                                          rows="6" class="form-control"></textarea>
+                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="edit-rewards"> 奖惩情况 :</label>
-                                                <textarea name="rewards" id="edit-rewards"
+                                                <textarea name="rewards" id="edit-rewards" style="overflow-x:hidden"
                                                           rows="6" class="form-control"></textarea>
                                             </div>
                                         </div>

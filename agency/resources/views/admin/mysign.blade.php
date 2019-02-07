@@ -56,11 +56,11 @@
                                    id="admin-sign-apply-type"></div>
                         <div class="form-group">
                             <label>补签说明</label>
-                            <textarea type="text" class="form-control"
+                            <textarea type="text" class="form-control" style="overflow-x:hidden"
                                       id="admin-sign-apply-description"></textarea></div>
                         <div class="form-group">
                             <label>审核说明</label>
-                            <textarea type="text" class="form-control" disabled
+                            <textarea type="text" class="form-control" disabled style="overflow-x:hidden"
                                       id="admin-sign-apply-check-description"></textarea></div>
                     </form>
                 </div>
@@ -107,7 +107,7 @@
                         </div>
                         <div class="form-group">
                             <label>请假原因</label>
-                            <textarea type="text" class="form-control"
+                            <textarea type="text" class="form-control" style="overflow-x:hidden"
                                       id="leave-reason"></textarea></div>
                     </form>
                 </div>
@@ -152,7 +152,7 @@
                                    id="leave-type-show"></div>
                         <div class="form-group">
                             <label>请假原因</label>
-                            <textarea type="text" class="form-control" disabled="disabled"
+                            <textarea type="text" class="form-control" disabled="disabled" style="overflow-x:hidden"
                                       id="leave-reason-show"></textarea></div>
                         <div class="form-group">
                             <label>审核说明</label>

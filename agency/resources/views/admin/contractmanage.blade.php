@@ -185,7 +185,7 @@
                                     <div class="form-group">
                                         <label>主要内容</label>
                                         <textarea name="remark" id="add-contract-content"
-                                                  rows="6" class="form-control"></textarea>
+                                                  rows="6" class="form-control" style="overflow-x:hidden"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -194,7 +194,7 @@
                                     <div class="form-group">
                                         <label>备注</label>
                                         <textarea name="remark" id="add-contract-remark"
-                                                  rows="6" class="form-control"></textarea>
+                                                  rows="6" class="form-control" style="overflow-x:hidden"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -366,7 +366,7 @@
                                     <div class="form-group">
                                         <label>主要内容</label>
                                         <textarea name="remark" id="edit-contract-content"
-                                                  rows="6" class="form-control"></textarea>
+                                                  rows="6" class="form-control" style="overflow-x:hidden"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -375,7 +375,7 @@
                                     <div class="form-group">
                                         <label>备注</label>
                                         <textarea name="remark" id="edit-contract-remark"
-                                                  rows="6" class="form-control"></textarea>
+                                                  rows="6" class="form-control" style="overflow-x:hidden"></textarea>
                                     </div>
                                 </div>
                             </div>

@@ -3090,7 +3090,6 @@ class AdminController extends Controller
     //获取项目详情列表
     public function getCostProjectFCheckList(Request $request)
     {
-        $admin_id = Auth::guard('admin')->user()->id;
         $rule = [
             'page' => 'integer',
             'item' => 'integer'

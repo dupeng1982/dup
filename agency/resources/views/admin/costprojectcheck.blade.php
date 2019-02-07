@@ -594,7 +594,7 @@
                                     <div class="form-group">
                                         <label>审核说明</label>
                                         <textarea name="remark" id="allot-son-project-check-mark"
-                                                  rows="3" class="form-control"></textarea>
+                                                  rows="6" class="form-control"></textarea>
                                     </div>
                                 </div>
                             </div>

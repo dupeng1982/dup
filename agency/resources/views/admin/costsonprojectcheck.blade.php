@@ -1024,6 +1024,12 @@
                             field: 'mimetype',
                             title: '文件类型'
                         }, {
+                            field: 'operator_name',
+                            title: '上传人'
+                        }, {
+                            field: 'check_name',
+                            title: '审核类型'
+                        }, {
                             field: 'id',
                             title: '操作',
                             formatter: function (value, row, index) {

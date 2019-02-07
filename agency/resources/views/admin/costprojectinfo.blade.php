@@ -68,7 +68,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">附件管理</h4>
+                    <h4 class="modal-title">附件</h4>
                     <button type="button" class="close" data-dismiss="modal"
                             aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
@@ -76,39 +76,6 @@
                 <div class="modal-body">
                     <div class="card-body">
                         <div class="row" id="aetherupload-wrapper">
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label>附件名称*</label>
-                                    <input type="text" class="form-control" id="max-file-name">
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label>添加附件*</label>
-                                    <input type="file" class="form-control" id="file">
-                                </div>
-                                <div class="progress" id="upload-progress"
-                                     style="height: 6px;margin-bottom: 2px;margin-top: 10px;width: 200px;">
-                                    <div id="progressbar" style="background:blue;height:6px;width:0;"></div>
-                                </div>
-                                <span style="font-size:12px;color:#aaa;" id="output"></span>
-                                <input type="hidden" name="file1" id="savedpath">
-                                <input type="hidden" id="upload-operator-id"
-                                       value="{{ Auth::guard('admin')->user()->id }}">
-                                <input type="hidden" id="upload-project-id" value="">
-                                <input type="hidden" id="check-status" value="">
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label></label>
-                                    <p>
-                                        <button type="button" id="add-cpattachment-button"
-                                                class="btn waves-effect waves-light btn-rounded btn-secondary"
-                                                style="top :10px;">添加
-                                        </button>
-                                    </p>
-                                </div>
-                            </div>
                             <div class="col-md-12">
                                 <table class="table table-bordered table-hover toggle-circle"
                                        data-page-size="7" id="add-cpattachment-table">
@@ -1051,14 +1018,9 @@
 
                 $('.addCpattachment').click(function () {
                     $('#addCpattachmentModal').modal('show');
-                    $('#upload-progress').hide();
-                    $('#output').val('');
-                    $('#output').hide();
 
                     var data = $('#project_table').bootstrapTable('getData');
                     var index = $(this).attr('data-project-index');
-                    $('#upload-project-id').val(data[index].id);
-                    $('#check-status').val(6);
                     $('#add-cpattachment-table').bootstrapTable({
                         url: 'getCpattachment',
                         ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
@@ -1099,61 +1061,20 @@
                             field: 'mimetype',
                             title: '文件类型'
                         }, {
+                            field: 'operator_name',
+                            title: '上传人'
+                        }, {
+                            field: 'check_name',
+                            title: '审核类型'
+                        }, {
                             field: 'id',
                             title: '操作',
                             formatter: function (value, row, index) {
                                 return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn showCpattachment" data-cpattachment-dir=' + row.dir + ' data-toggle="tooltip" data-original-title="查看"><i class="ti-eye" aria-hidden="true"></i></button>' +
-                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn downLoadCpattachment" data-cpattachment-dir=' + row.dir + ' data-cpattachment-name=' + row.name + ' data-toggle="tooltip" data-original-title="下载"><i class="ti-save" aria-hidden="true"></i></button>' +
-                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delCpattachment" data-cpattachment-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn downLoadCpattachment" data-cpattachment-dir=' + row.dir + ' data-cpattachment-name=' + row.name + ' data-toggle="tooltip" data-original-title="下载"><i class="ti-save" aria-hidden="true"></i></button>';
                             }
                         }],
                         onPostBody: function (res) {
-                            $('.delCpattachment').click(function () {
-                                var cpattachment_id = $(this).attr('data-cpattachment-id');
-                                $.ajax({
-                                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                                    url: 'delCpattachment',
-                                    type: 'POST',
-                                    data: {
-                                        cpattachment_id: cpattachment_id
-                                    },
-                                    success: function (doc) {
-                                        if (doc.code) {
-                                            $.toast({
-                                                heading: '警告',
-                                                text: doc.data,
-                                                position: 'top-right',
-                                                loaderBg: '#ff6849',
-                                                icon: 'warning',
-                                                hideAfter: 3000,
-                                                stack: 6
-                                            });
-                                        } else {
-                                            $.toast({
-                                                heading: '成功',
-                                                text: doc.data,
-                                                position: 'top-right',
-                                                loaderBg: '#ff6849',
-                                                icon: 'success',
-                                                hideAfter: 3000,
-                                                stack: 6
-                                            });
-                                            attachment();
-                                        }
-                                    },
-                                    error: function (doc) {
-                                        $.toast({
-                                            heading: '错误',
-                                            text: '网络错误，请稍后重试！',
-                                            position: 'top-right',
-                                            loaderBg: '#ff6849',
-                                            icon: 'error',
-                                            hideAfter: 3000,
-                                            stack: 6
-                                        });
-                                    }
-                                });
-                            });
                             $('.showCpattachment').click(function () {
                                 var dir = $(this).attr('data-cpattachment-dir');
                                 window.open('aetherupload/display/' + dir);

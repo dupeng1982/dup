@@ -15,7 +15,8 @@ class CostSonProject extends Model
     protected $table = 'cost_sonproject';
     public $timestamps = true;
     protected $guarded = ['id', 'created_at', 'updated_at'];
-    protected $appends = ['profession_name', 'profession', 'status_txt', 'marchers', 'rates'];
+    protected $appends = ['profession_name', 'profession', 'status_txt', 'marchers', 'rates',
+        'project_allot_money', 'check_allot_money'];
 
     public function getStatusTxtAttribute()
     {
@@ -54,5 +55,55 @@ class CostSonProject extends Model
     {
         return Royalty::where('profession_id', $this->profession_id)
             ->where('type', 1)->first();
+    }
+
+    public function getProjectAllotMoneyAttribute()
+    {
+        //获取主项收费基数
+        $cost_project = CostProject::find($this->project_id);
+        if ($cost_project) {
+            $cost = $cost_project->cost;
+        } else {
+            $cost = 0;
+        }
+        //获取专项收费基数和
+        $max = CostSonProjectM::where('project_id', $this->project_id)->sum('cost');
+        //求最大收费基数
+        if ($cost > $max) {
+            $max = $cost;
+        }
+        if (!$max) {
+            return 0;
+        }
+        //获取总分配金额
+        $allot_money = Allot::where('project_id', $this->project_id)->sum('money');
+        //返回子分配金额
+        $money = ($allot_money * $this->cost * $this->basic_rate) / ($max * 100);
+        return $money;
+    }
+
+    public function getCheckAllotMoneyAttribute()
+    {
+        //获取主项收费基数
+        $cost_project = CostProject::find($this->project_id);
+        if ($cost_project) {
+            $cost = $cost_project->cost;
+        } else {
+            $cost = 0;
+        }
+        //获取专项收费基数和
+        $max = CostSonProjectM::where('project_id', $this->project_id)->sum('cost');
+        //求最大收费基数
+        if ($cost > $max) {
+            $max = $cost;
+        }
+        if (!$max || $this->check_result != 1) {
+            return 0;
+        }
+        //获取总分配金额
+        $allot_money = Allot::where('project_id', $this->project_id)->sum('money');
+        //返回子分配金额
+        $money = ($allot_money * $this->cost * $this->check_rate) / ($max * 100);
+        return $money;
     }
 }

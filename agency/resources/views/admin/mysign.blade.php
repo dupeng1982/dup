@@ -156,7 +156,7 @@
                                       id="leave-reason-show"></textarea></div>
                         <div class="form-group">
                             <label>审核说明</label>
-                            <textarea type="text" class="form-control" disabled
+                            <textarea type="text" class="form-control" disabled style="overflow-x:hidden"
                                       id="leave-check-reason-show"></textarea></div>
                     </form>
                 </div>

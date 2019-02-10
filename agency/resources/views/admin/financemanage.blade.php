@@ -275,7 +275,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label>备注</label>
-                                    <textarea name="remark" id="edit-project-remark"
+                                    <textarea name="remark" id="edit-project-remark" style="overflow-x:hidden"
                                               rows="6" class="form-control"></textarea>
                                 </div>
                             </div>
@@ -393,7 +393,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label>审核说明</label>
-                                    <textarea name="remark" id="check-project-checkmark"
+                                    <textarea name="remark" id="check-project-checkmark" style="overflow-x:hidden"
                                               rows="6" class="form-control"></textarea>
                                 </div>
                             </div>
@@ -492,7 +492,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>备注</label>
-                                        <textarea name="remark" id="edit-son-project-remark"
+                                        <textarea name="remark" id="edit-son-project-remark" style="overflow-x:hidden"
                                                   rows="6" class="form-control"></textarea>
                                     </div>
                                 </div>
@@ -1074,6 +1074,12 @@
                         }, {
                             field: 'marcher_name',
                             title: '实施人'
+                        }, {
+                            field: 'project_allot_money',
+                            title: '项目提成（万元）'
+                        }, {
+                            field: 'check_allot_money',
+                            title: '考核提成（万元）'
                         }, {
                             field: 'id',
                             title: '查看',

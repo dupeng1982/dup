@@ -8,10 +8,10 @@
 @section('admin-title')
     <div class="row page-titles">
         <div class="col-md-5 col-8 align-self-center">
-            <h3 class="text-themecolor m-b-0 m-t-0">造价项目专项审核</h3>
+            <h3 class="text-themecolor m-b-0 m-t-0">造价项目详情</h3>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url('admin/index') }}">首页</a></li>
-                <li class="breadcrumb-item active">造价项目专项审核</li>
+                <li class="breadcrumb-item active">造价项目详情</li>
             </ol>
         </div>
         <div class="col-md-7 col-4 align-self-center">
@@ -275,7 +275,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label>备注</label>
-                                    <textarea name="remark" id="edit-project-remark"
+                                    <textarea name="remark" id="edit-project-remark" style="overflow-x:hidden"
                                               rows="6" class="form-control"></textarea>
                                 </div>
                             </div>
@@ -393,7 +393,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label>审核说明</label>
-                                    <textarea name="remark" id="check-project-checkmark"
+                                    <textarea name="remark" id="check-project-checkmark" style="overflow-x:hidden"
                                               rows="6" class="form-control"></textarea>
                                 </div>
                             </div>
@@ -492,7 +492,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>备注</label>
-                                        <textarea name="remark" id="edit-son-project-remark"
+                                        <textarea name="remark" id="edit-son-project-remark" style="overflow-x:hidden"
                                                   rows="6" class="form-control"></textarea>
                                     </div>
                                 </div>

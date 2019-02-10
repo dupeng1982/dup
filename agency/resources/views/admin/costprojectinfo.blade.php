@@ -875,7 +875,6 @@
                     title: '操作',
                     formatter: function (value, row, index) {
                         if (row.show_check) {
-                            console.log(row.show_check);
                             return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn checkProject" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="审核详情"><i class="ti-stamp" aria-hidden="true"></i></button>' +
                                 '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn addCpattachment" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="附件管理"><i class="ti-file" aria-hidden="true"></i></button>' +
                                 '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editProject" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="项目详情"><i class="ti-eye" aria-hidden="true"></i></button>';

@@ -16,6 +16,7 @@ use App\Models\AdminSign;
 use App\Models\AdminSignApply;
 use App\Models\AdminSignStatistic;
 use App\Models\AdminSignSummary;
+use App\Models\Allot;
 use App\Models\Cattachment;
 use App\Models\Certificate;
 use App\Models\Company;
@@ -30,6 +31,7 @@ use App\Models\DateSet;
 use App\Models\Department;
 use App\Models\Education;
 use App\Models\Family;
+use App\Models\Income;
 use App\Models\Level;
 use App\Models\Profession;
 use App\Models\Service;
@@ -2989,7 +2991,8 @@ class AdminController extends Controller
     }
 
     //项目退回
-    public function CostProjectDBack(Request $request){
+    public function CostProjectDBack(Request $request)
+    {
         $rule = [
             'project_id' => 'required|integer|exists:cost_project,id',
             'check_mark' => 'required'
@@ -3102,7 +3105,8 @@ class AdminController extends Controller
     }
 
     //项目退回
-    public function CostProjectEBack(Request $request){
+    public function CostProjectEBack(Request $request)
+    {
         $rule = [
             'project_id' => 'required|integer|exists:cost_project,id',
             'check_mark' => 'required'
@@ -3268,14 +3272,127 @@ class AdminController extends Controller
     /*******财务管理视图*******/
     public function financemanage()
     {
-        $data['education'] = Education::get();
-        $data['level'] = Level::get();
-        $data['department'] = Department::get();
-        $data['admin_level'] = AdminLevel::get();
-        $data['technical_level'] = TechnicalLevel::get();
-        $data['work_status'] = WorkStatus::get();
+        $data['contract_type'] = ContractType::get();
+        $data['company'] = Company::get();
+        $data['project_type'] = Service::get();
         $data['professions'] = Profession::get();
+        $data['marcher'] = Admininfo::select('admin_id', 'name')->where('admin_level_id', 6)->get();//负责人
+        $data['contract'] = Contract::with('construction', 'agency')->get();
         return view('admin/financemanage', ['data' => $data]);
+    }
+
+    //获取项目财务列表
+    public function getFinaceManageList(Request $request)
+    {
+        $rule = [
+            'page' => 'integer',
+            'item' => 'integer'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $arr = array();
+        $request->service_id && array_push($arr, ['cost_project.service_id', '=', $request->service_id]);
+        $search = $request->search;
+        $data = CostProjectList::with('profession', 'sonproject', 'contract', 'incomes', 'allots')
+            ->select('cost_project.*', 'construction.name as construction_name', 'service.name as service_name',
+                'agency.name as agency_name', 'construction.contact as construction_contact',
+                'construction.phone as construction_phone', 'agency.contact as agency_contact',
+                'agency.phone as agency_phone', 'implement.name as implement_name',
+                'implement.phone as implement_phone', 'implement.contact as implement_contact',
+                'marcher.name as marcher_name', 'recorder.name as recorder_name')
+            ->leftjoin('company as construction', 'construction.id', '=', 'cost_project.construction_id')
+            ->leftjoin('company as agency', 'agency.id', '=', 'cost_project.agency_id')
+            ->leftjoin('company as implement', 'implement.id', '=', 'cost_project.implement_id')
+            ->leftjoin('service', 'service.id', '=', 'cost_project.service_id')
+            ->leftjoin('admininfo as marcher', 'marcher.admin_id', '=', 'cost_project.marcher_id')
+            ->leftjoin('admininfo as recorder', 'recorder.admin_id', '=', 'cost_project.recorder_id')
+            ->leftjoin('cost_sonproject', 'cost_sonproject.project_id', '=', 'cost_project.id')
+            ->where($arr)
+            ->where(function ($q) use ($search) {
+                $search &&
+                $q->orWhere('construction.name', 'like', '%' . $search . '%')
+                    ->orWhere('agency.name', 'like', '%' . $search . '%')
+                    ->orWhere('implement.name', 'like', '%' . $search . '%')
+                    ->orWhere('cost_project.name', 'like', '%' . $search . '%');
+            })
+            ->groupBy('cost_project.id')
+            ->paginate($request->item);
+        return $this->resp(0, $data);
+    }
+
+    //收款
+    public function incomeMoney(Request $request)
+    {
+        $rule = [
+            'project_id' => 'required|integer|exists:cost_project,id',
+            'money' => 'required|numeric',
+            'receipt_date' => 'required|date_format:Y-m-d'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $admin_id = Auth::guard('admin')->user()->id;
+        Income::create([
+            'project_id' => $request->project_id,
+            'money' => $request->money,
+            'receipt_date' => $request->receipt_date,
+            'operator_id' => $admin_id
+        ]);
+        return $this->resp(0, '收款成功！');
+    }
+
+    //删除收款
+    public function delIncomeMoney(Request $request)
+    {
+        $rule = [
+            'income_id' => 'required|integer|exists:income,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        Income::where('id', $request->income_id)->delete();
+        return $this->resp(0, '删除收款成功！');
+    }
+
+    //分配收款
+    public function allotMoney(Request $request)
+    {
+        $rule = [
+            'project_id' => 'required|integer|exists:cost_project,id',
+            'money' => 'required|numeric',
+            'allot_year' => 'required|date_format:Y'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $admin_id = Auth::guard('admin')->user()->id;
+        Allot::create([
+            'project_id' => $request->project_id,
+            'money' => $request->money,
+            'allot_year' => $request->allot_year,
+            'operator_id' => $admin_id
+        ]);
+        return $this->resp(0, '分配成功！');
+
+    }
+
+    //删除分配收款
+    public function delAllotMoney(Request $request)
+    {
+        $rule = [
+            'allot_id' => 'required|integer|exists:allot,id'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        Allot::where('id', $request->allot_id)->delete();
+        return $this->resp(0, '删除分配金额成功！');
     }
 
 }

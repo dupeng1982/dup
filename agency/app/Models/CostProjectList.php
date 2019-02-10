@@ -188,4 +188,14 @@ class CostProjectList extends Model
     {
         return $this->hasOne('App\Models\Service', 'id', 'service_id');
     }
+
+    public function incomes()
+    {
+        return $this->hasMany('App\Models\Income', 'project_id', 'id');
+    }
+
+    public function allots()
+    {
+        return $this->hasMany('App\Models\Allot', 'project_id', 'id');
+    }
 }

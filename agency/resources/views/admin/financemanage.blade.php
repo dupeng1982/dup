@@ -2,8 +2,7 @@
 
 @section('admin-css')
     <link href="{{ asset('admin/assets/plugins/bootstrap-table/dist/bootstrap-table.min.css') }}" rel="stylesheet"/>
-    <link href="{{ asset('admin/assets/plugins/bootstrap-switch/bootstrap-switch.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('admin/assets/plugins/wizard/steps.css') }}" rel="stylesheet">
+    <link href="{{ asset('admin/assets/plugins/jquery-combo-select/combo.select.css') }}" rel="stylesheet"/>
 @endsection
 
 @section('admin-title')
@@ -32,931 +31,590 @@
             <div class="card">
                 <div class="card-body">
                     <table class="table table-bordered table-hover toggle-circle"
-                           data-page-size="7" id="admin_info_table">
+                           data-page-size="7" id="project_table">
+                        <div class="m-t-20">
+                            <div class="row">
+                                <div class="col-7">
+                                    <h4>财务管理列表</h4>
+                                </div>
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <select class="custom-select form-control" id="project-type-select">
+                                            <option value="">选择项目类型</option>
+                                            @foreach($data['project_type'] as $v)
+                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <input id="demo-input-search2" type="text" placeholder="Search"
+                                               autocomplete="off">
+                                        <span><button id="project-search-button"
+                                                      class="btn btn-info btn-search">查找</button></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal bs-example-modal-lg fade show" id="addAdminInfoModal" tabindex="-1" role="dialog"
+    <div class="modal fade show" id="addCpattachmentModal" tabindex="-1" role="dialog"
          aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">添加人员</h4>
+                    <h4 class="modal-title">附件</h4>
                     <button type="button" class="close" data-dismiss="modal"
                             aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row" id="validation">
-                        <div class="col-12 wizard-content">
-                            <form action="#" class="validation-wizard wizard-circle" id="addAdminInfoForm">
-                                <!-- Step 1 -->
-                                <h6>基本信息</h6>
-                                <section>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="username"> 用户名 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="text" class="form-control required"
-                                                       id="username" name="username"></div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="realname"> 姓名 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="text" class="form-control required" id="realname"
-                                                       name="realname"></div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="adminsex"> 性别 : <span
-                                                            class="danger">*</span> </label>
-                                                <select class="custom-select form-control required"
-                                                        id="adminsex" name="adminsex">
-                                                    <option value="">选择性别</option>
-                                                    <option value="1">男</option>
-                                                    <option value="2">女</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="birthday"> 出生年月 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="date" class="form-control required"
-                                                       id="birthday" name="birthday"
-                                                       style="padding-top: 6px;padding-bottom: 6px;"></div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="cardno"> 身份证号码 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="text" class="form-control required"
-                                                       id="cardno" name="cardno"></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="phone"> 手机号码 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="tel" class="form-control required" id="phone"
-                                                       name="phone">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="form-group">
-                                                <label for="address"> 现在住址 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="text" class="form-control required"
-                                                       id="address" name="address"></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="education"> 学历 : <span
-                                                            class="danger">*</span> </label>
-                                                <select class="custom-select form-control required"
-                                                        id="education" name="education">
-                                                    <option value="">选择学历</option>
-                                                    @foreach($data['education'] as $v)
-                                                        <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="school"> 毕业院校 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="text" class="form-control required" id="school"
-                                                       name="school"></div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="major"> 所学专业 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="text" class="form-control required" id="major"
-                                                       name="major"></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="graduate_date"> 毕业时间 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="date" class="form-control required"
-                                                       id="graduate_date" name="graduate_date"></div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <label for="work_year"> 工作年限 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="text" class="form-control required" id="work_year"
-                                                       name="work_year"></div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="level_id"> 所获职称 :</label>
-                                                <select class="custom-select form-control"
-                                                        id="level_id" name="level_id">
-                                                    <option value="">选择职称</option>
-                                                    @foreach($data['level'] as $v)
-                                                        <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="level_type"> 职称类别 :</label>
-                                                <input type="text" class="form-control" id="level_type"
-                                                       name="level_type"></div>
-                                        </div>
-                                    </div>
-                                </section>
-                                <!-- Step 2 -->
-                                <h6>职务信息</h6>
-                                <section>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <div class="u-img">
-                                                    <input type="file" class="dropify" id="admininfo-avatar"
-                                                           data-show-remove="false" data-height="250"
-                                                           data-max-file-size="1M"
-                                                           data-allowed-file-extensions="jpg png"
-                                                           data-default-file="{{ asset('admin/avatars/avatar.png') }}"/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="department"> 所属部门 : <span
-                                                                    class="danger">*</span> </label>
-                                                        <select class="custom-select form-control required"
-                                                                id="department" name="department">
-                                                            <option value="">选择部门</option>
-                                                            @foreach($data['department'] as $v)
-                                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="admin_level"> 行政职务 : <span
-                                                                    class="danger">*</span> </label>
-                                                        <select class="custom-select form-control required"
-                                                                id="admin_level" name="admin_level">
-                                                            <option value="">选择职务</option>
-                                                            @foreach($data['admin_level'] as $v)
-                                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="technical_level"> 人员类别 : <span
-                                                                    class="danger">*</span> </label>
-                                                        <select class="custom-select form-control required"
-                                                                id="technical_level" name="technical_level">
-                                                            <option value="">选择类别</option>
-                                                            @foreach($data['technical_level'] as $v)
-                                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="work_status"> 在职状态 : <span
-                                                                    class="danger">*</span> </label>
-                                                        <select class="custom-select form-control required"
-                                                                id="work_status" name="work_status">
-                                                            <option value="">选择类别</option>
-                                                            @foreach($data['work_status'] as $v)
-                                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="work_start_date"> 入职时间 : <span
-                                                                    class="danger">*</span> </label>
-                                                        <input type="date" class="form-control required"
-                                                               id="work_start_date" name="work_start_date">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label> 专业类别 :</label>
-                                                <div class="c-inputs-stacked">
-                                                    <div class="row">
-                                                        @foreach($data['professions'] as $v)
-                                                            <div class="col-md-4">
-                                                                <label class="inline custom-control custom-checkbox block">
-                                                                    <input type="checkbox" class="custom-control-input"
-                                                                           name="admin_professions_checkbox_group"
-                                                                           id="admin_profession_{{ $v->id }}"
-                                                                           value="{{ $v->id }}"> <span
-                                                                            class="custom-control-indicator"></span>
-                                                                    <span
-                                                                            class="custom-control-description ml-0">{{ $v->name }}</span>
-                                                                </label>
-                                                            </div>
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="remark"> 备注 :</label>
-                                                <textarea name="remark" id="remark" style="overflow-x:hidden"
-                                                          rows="6" class="form-control"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>
-                                <!-- Step 3 -->
-                                <h6>工作及学习</h6>
-                                <section>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="work_resume"> 工作简历 :</label>
-                                                <textarea name="work_resume" id="work_resume"
-                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="study_resume"> 学习简历 :</label>
-                                                <textarea name="study_resume" id="study_resume"
-                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>
-                                <!-- Step 4 -->
-                                <h6>业绩及奖惩</h6>
-                                <section>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="performance"> 主要业绩 :</label>
-                                                <textarea name="performance" id="performance"
-                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="rewards"> 奖惩情况 :</label>
-                                                <textarea name="rewards" id="rewards"
-                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>
-                                <!-- Step 5 -->
-                                <h6>所获证书</h6>
-                                <section>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="certificate_name"> 证书名称 :</label>
-                                                <input type="text" class="form-control" name="certificate_name"
-                                                       id="certificate_name">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="certificate_number"> 证书编号 :</label>
-                                                <input type="text" class="form-control" name="certificate_number"
-                                                       id="certificate_number">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="certificate_continue_password"> 延续注册密码 :</label>
-                                                <input type="text" class="form-control"
-                                                       name="certificate_continue_password"
-                                                       id="certificate_continue_password">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="certificate_study_password"> 继续再教育密码 :</label>
-                                                <input type="text" class="form-control"
-                                                       name="certificate_study_password"
-                                                       id="certificate_study_password">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="certificate_change_password"> 变更密码 :</label>
-                                                <input type="text" class="form-control"
-                                                       name="certificate_change_password"
-                                                       id="certificate_change_password">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="add_tmp_certificate_info"> </label>
-                                                <p>
-                                                    <button type="button" id="add_tmp_certificate_info"
-                                                            class="btn waves-effect waves-light btn-rounded btn-secondary"
-                                                            style="top :10px;">
-                                                        添加
-                                                    </button>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <table class="table table-bordered table-hover toggle-circle"
-                                                   data-page-size="7" id="admin_certificate_table">
-                                            </table>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <hr>
-                                        </div>
-                                    </div>
-                                </section>
-                                <!-- Step 6 -->
-                                <h6>家庭主要成员</h6>
-                                <section>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="family_name"> 姓名 :</label>
-                                                <input type="text" class="form-control" name="family_name"
-                                                       id="family_name">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="family_relation"> 关系 :</label>
-                                                <input type="text" class="form-control" name="family_relation"
-                                                       id="family_relation">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="family_phone"> 电话 :</label>
-                                                <input type="text" class="form-control" name="family_phone"
-                                                       id="family_phone">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="add_tmp_family_info"> </label>
-                                                <p>
-                                                    <button type="button" id="add_tmp_family_info"
-                                                            class="btn waves-effect waves-light btn-rounded btn-secondary"
-                                                            style="top :10px;">
-                                                        添加
-                                                    </button>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <table class="table table-bordered table-hover toggle-circle"
-                                                   data-page-size="7" id="admin_family_table">
-                                            </table>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <hr>
-                                        </div>
-                                    </div>
-                                </section>
-                                <!-- Step 7 -->
-                                <h6>附件</h6>
-                                <section>
-                                    <div class="row">
-                                        <div class="col-md-5">
-                                            <div class="form-group">
-                                                <label for="admininfo_pic_name"> 名称 :</label>
-                                                <input type="text" class="form-control" name="admininfo_pic_name"
-                                                       id="admininfo_pic_name">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-5">
-                                            <div class="form-group">
-                                                <label for="admininfo_pic_dir"> 附件 :</label>
-                                                <input type="file" class="form-control" id="admininfo_pic_dir"
-                                                       multiple="multiple">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <label for="add_tmp_admininfo_pic"> </label>
-                                                <p>
-                                                    <button type="button" id="add_tmp_admininfo_pic"
-                                                            class="btn waves-effect waves-light btn-rounded btn-secondary"
-                                                            style="top :10px;">
-                                                        添加
-                                                    </button>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <table class="table table-bordered table-hover toggle-circle"
-                                                   data-page-size="7" id="admininfo_pic_table">
-                                            </table>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <hr>
-                                        </div>
-                                    </div>
-                                </section>
-                            </form>
+                    <div class="card-body">
+                        <div class="row" id="aetherupload-wrapper">
+                            <div class="col-md-12">
+                                <table class="table table-bordered table-hover toggle-circle"
+                                       data-page-size="7" id="add-cpattachment-table">
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="modal bs-example-modal-lg fade show" id="editAdminInfoModal" tabindex="-1" role="dialog"
+    <div class="modal fade show" id="editProjectModal" tabindex="-1" role="dialog"
          aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">编辑人员信息</h4>
+                    <h4 class="modal-title">项目详情</h4>
                     <button type="button" class="close" data-dismiss="modal"
                             aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row" id="edit-validation">
-                        <div class="col-12 wizard-content">
-                            <form action="#" class="validation-wizard wizard-circle" id="editAdminInfoForm">
-                                <input type="hidden" class="form-control" id="edit-admininfo_id">
-                                <!-- Step 1 -->
-                                <h6>基本信息</h6>
-                                <section>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="edit-username"> 用户名 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="text" class="form-control required"
-                                                       id="edit-username" name="username"></div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="edit-realname"> 姓名 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="text" class="form-control required" id="edit-realname"
-                                                       name="realname"></div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="edit-adminsex"> 性别 : <span
-                                                            class="danger">*</span> </label>
-                                                <select class="custom-select form-control required"
-                                                        id="edit-adminsex" name="adminsex">
-                                                    <option value="">选择性别</option>
-                                                    <option value="1">男</option>
-                                                    <option value="2">女</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="edit-birthday"> 出生年月 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="date" class="form-control required"
-                                                       id="edit-birthday" name="birthday"
-                                                       style="padding-top: 6px;padding-bottom: 6px;"></div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="edit-cardno"> 身份证号码 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="text" class="form-control required"
-                                                       id="edit-cardno" name="cardno"></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="edit-phone"> 手机号码 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="tel" class="form-control required" id="edit-phone"
-                                                       name="phone">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="form-group">
-                                                <label for="edit-address"> 现在住址 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="text" class="form-control required"
-                                                       id="edit-address" name="address"></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="edit-education"> 学历 : <span
-                                                            class="danger">*</span> </label>
-                                                <select class="custom-select form-control required"
-                                                        id="edit-education" name="education">
-                                                    <option value="">选择学历</option>
-                                                    @foreach($data['education'] as $v)
-                                                        <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="edit-school"> 毕业院校 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="text" class="form-control required" id="edit-school"
-                                                       name="school"></div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="edit-major"> 所学专业 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="text" class="form-control required" id="edit-major"
-                                                       name="major"></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="edit-graduate_date"> 毕业时间 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="date" class="form-control required"
-                                                       id="edit-graduate_date" name="graduate_date"></div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <label for="edit-work_year"> 工作年限 : <span
-                                                            class="danger">*</span> </label>
-                                                <input type="text" class="form-control required" id="edit-work_year"
-                                                       name="work_year"></div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="edit-level_id"> 所获职称 :</label>
-                                                <select class="custom-select form-control"
-                                                        id="edit-level_id" name="level_id">
-                                                    <option value="">选择职称</option>
-                                                    @foreach($data['level'] as $v)
-                                                        <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="edit-level_type"> 职称类别 :</label>
-                                                <input type="text" class="form-control" id="edit-level_type"
-                                                       name="level_type"></div>
-                                        </div>
-                                    </div>
-                                </section>
-                                <!-- Step 2 -->
-                                <h6>职务信息</h6>
-                                <section>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <div class="u-img">
-                                                    <input type="file" class="dropify" id="edit-admininfo-avatar"
-                                                           data-show-remove="false" data-height="250"
-                                                           data-max-file-size="1M"
-                                                           data-allowed-file-extensions="jpg png"
-                                                           data-default-file="{{ asset('admin/avatars/avatar.png') }}"/>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>项目名称*</label>
+                                    <input type="text" class="form-control"
+                                           id="edit-project-name"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>项目类型*</label>
+                                    <select class="custom-select form-control" id="edit-project-service">
+                                        <option value="">选择项目类型</option>
+                                        @foreach($data['project_type'] as $v)
+                                            <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>项目负责人</label>
+                                    <select class="custom-select form-control" id="edit-project-marcher">
+                                        <option value="">选择项目负责人</option>
+                                        @foreach($data['marcher'] as $v)
+                                            <option value="{{ $v->admin_id }}">{{ $v->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>专业类型*</label>
+                                    <div class="c-inputs-stacked">
+                                        <div class="row">
+                                            @foreach($data['professions'] as $v)
+                                                <div class="col-md-4">
+                                                    <label class="inline custom-control custom-checkbox block">
+                                                        <input type="checkbox" class="custom-control-input"
+                                                               id="edit-project-profession-{{ $v->id }}"
+                                                               name="edit-project-professions-checkbox-group"
+                                                               value="{{ $v->id }}"> <span
+                                                                class="custom-control-indicator"></span>
+                                                        <span class="custom-control-description ml-0">{{ $v->name }}</span>
+                                                    </label>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="edit-department"> 所属部门 : <span
-                                                                    class="danger">*</span> </label>
-                                                        <select class="custom-select form-control required"
-                                                                id="edit-department" name="department">
-                                                            <option value="">选择部门</option>
-                                                            @foreach($data['department'] as $v)
-                                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="edit-admin_level"> 行政职务 : <span
-                                                                    class="danger">*</span> </label>
-                                                        <select class="custom-select form-control required"
-                                                                id="edit-admin_level" name="admin_level">
-                                                            <option value="">选择职务</option>
-                                                            @foreach($data['admin_level'] as $v)
-                                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="edit-technical_level"> 人员类别 : <span
-                                                                    class="danger">*</span> </label>
-                                                        <select class="custom-select form-control required"
-                                                                id="edit-technical_level" name="technical_level">
-                                                            <option value="">选择类别</option>
-                                                            @foreach($data['technical_level'] as $v)
-                                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="edit-work_status"> 在职状态 : <span
-                                                                    class="danger">*</span> </label>
-                                                        <select class="custom-select form-control required"
-                                                                id="edit-work_status" name="work_status">
-                                                            <option value="">选择类别</option>
-                                                            @foreach($data['work_status'] as $v)
-                                                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="edit-work_start_date"> 入职时间 : <span
-                                                                    class="danger">*</span> </label>
-                                                        <input type="date" class="form-control required"
-                                                               id="edit-work_start_date" name="work_start_date">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6"></div>
-                                            </div>
+                                            @endforeach
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label> 专业类别 :</label>
-                                                <div class="c-inputs-stacked">
-                                                    <div class="row">
-                                                        @foreach($data['professions'] as $v)
-                                                            <div class="col-md-4">
-                                                                <label class="inline custom-control custom-checkbox block">
-                                                                    <input type="checkbox" class="custom-control-input"
-                                                                           name="edit-admin_professions_checkbox_group"
-                                                                           id="edit-admin_profession_{{ $v->id }}"
-                                                                           value="{{ $v->id }}"> <span
-                                                                            class="custom-control-indicator"></span>
-                                                                    <span
-                                                                            class="custom-control-description ml-0">{{ $v->name }}</span>
-                                                                </label>
-                                                            </div>
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="edit-remark"> 备注 :</label>
-                                                <textarea name="remark" id="edit-remark"
-                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>
-                                <!-- Step 3 -->
-                                <h6>工作及学习</h6>
-                                <section>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="edit-work_resume"> 工作简历 :</label>
-                                                <textarea name="work_resume" id="edit-work_resume"
-                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="edit-study_resume"> 学习简历 :</label>
-                                                <textarea name="study_resume" id="edit-study_resume"
-                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>
-                                <!-- Step 4 -->
-                                <h6>业绩及奖惩</h6>
-                                <section>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="edit-performance"> 主要业绩 :</label>
-                                                <textarea name="performance" id="edit-performance"
-                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="edit-rewards"> 奖惩情况 :</label>
-                                                <textarea name="rewards" id="edit-rewards"
-                                                          rows="6" class="form-control" style="overflow-x:hidden"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>
-                                <!-- Step 5 -->
-                                <h6>所获证书</h6>
-                                <section>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="edit-certificate_name"> 证书名称 :</label>
-                                                <input type="text" class="form-control" name="certificate_name"
-                                                       id="edit-certificate_name">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="edit-certificate_number"> 证书编号 :</label>
-                                                <input type="text" class="form-control" name="certificate_number"
-                                                       id="edit-certificate_number">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="edit-certificate_continue_password"> 延续注册密码 :</label>
-                                                <input type="text" class="form-control"
-                                                       name="certificate_continue_password"
-                                                       id="edit-certificate_continue_password">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="edit-certificate_study_password"> 继续再教育密码 :</label>
-                                                <input type="text" class="form-control"
-                                                       name="certificate_study_password"
-                                                       id="edit-certificate_study_password">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="edit-certificate_change_password"> 变更密码 :</label>
-                                                <input type="text" class="form-control"
-                                                       name="certificate_change_password"
-                                                       id="edit-certificate_change_password">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="edit-add_tmp_certificate_info"> </label>
-                                                <p>
-                                                    <button type="button" id="edit-add_tmp_certificate_info"
-                                                            class="btn waves-effect waves-light btn-rounded btn-secondary"
-                                                            style="top :10px;">
-                                                        添加
-                                                    </button>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <table class="table table-bordered table-hover toggle-circle"
-                                                   data-page-size="7" id="edit-admin_certificate_table">
-                                            </table>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <hr>
-                                        </div>
-                                    </div>
-                                </section>
-                                <!-- Step 6 -->
-                                <h6>家庭主要成员</h6>
-                                <section>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="edit-family_name"> 姓名 :</label>
-                                                <input type="text" class="form-control" name="family_name"
-                                                       id="edit-family_name">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="edit-family_relation"> 关系 :</label>
-                                                <input type="text" class="form-control" name="family_relation"
-                                                       id="edit-family_relation">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="edit-family_phone"> 电话 :</label>
-                                                <input type="text" class="form-control" name="family_phone"
-                                                       id="edit-family_phone">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="edit-add_tmp_family_info"> </label>
-                                                <p>
-                                                    <button type="button" id="edit-add_tmp_family_info"
-                                                            class="btn waves-effect waves-light btn-rounded btn-secondary"
-                                                            style="top :10px;">
-                                                        添加
-                                                    </button>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <table class="table table-bordered table-hover toggle-circle"
-                                                   data-page-size="7" id="edit-admin_family_table">
-                                            </table>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <hr>
-                                        </div>
-                                    </div>
-                                </section>
-                                <!-- Step 7 -->
-                                <h6>附件</h6>
-                                <section>
-                                    <div class="row">
-                                        <div class="col-md-5">
-                                            <div class="form-group">
-                                                <label for="edit-admininfo_pic_name"> 名称 :</label>
-                                                <input type="text" class="form-control" name="admininfo_pic_name"
-                                                       id="edit-admininfo_pic_name">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-5">
-                                            <div class="form-group">
-                                                <label for="edit-admininfo_pic_dir"> 附件 :</label>
-                                                <input type="file" class="form-control" id="edit-admininfo_pic_dir"
-                                                       multiple="multiple">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <label for="edit-add_tmp_admininfo_pic"> </label>
-                                                <p>
-                                                    <button type="button" id="edit-add_tmp_admininfo_pic"
-                                                            class="btn waves-effect waves-light btn-rounded btn-secondary"
-                                                            style="top :10px;">
-                                                        添加
-                                                    </button>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <table class="table table-bordered table-hover toggle-circle"
-                                                   data-page-size="7" id="edit-admininfo_pic_table">
-                                            </table>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <hr>
-                                        </div>
-                                    </div>
-                                </section>
-                            </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>收费基数(万元)</label>
+                                    <input type="text" class="form-control" id="edit-project-cost"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>接收时间*</label>
+                                    <input type="date" class="form-control" id="edit-project-receive-date"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label>项目合同</label>
+                                    <select class="custom-select form-control"
+                                            id="edit-project-contract-select">
+                                        <option value="">选择项目合同</option>
+                                        @foreach($data['contract'] as $v)
+                                            <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>合同编号</label>
+                                    <input type="text" class="form-control" disabled="disabled"
+                                           id="edit-project-contract-number">
+                                    <input type="hidden" id="edit-project-contract-id">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <label>建设单位</label>
+                                    <select class="custom-select form-control"
+                                            id="edit-project-construction-select">
+                                        <option value="">选择建设单位</option>
+                                        @foreach($data['company'] as $v)
+                                            <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>联系人</label>
+                                    <input type="text" class="form-control" disabled="disabled"
+                                           id="edit-project-construction-contact">
+                                    <input type="hidden" id="edit-project-construction-id">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>联系电话</label>
+                                    <input type="text" class="form-control" disabled="disabled"
+                                           id="edit-project-construction-phone">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <label>委托单位</label>
+                                    <select class="custom-select form-control"
+                                            id="edit-project-agency-select">
+                                        <option value="">选择委托单位</option>
+                                        @foreach($data['company'] as $v)
+                                            <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>联系人</label>
+                                    <input type="text" class="form-control" disabled="disabled"
+                                           id="edit-project-agency-contact">
+                                    <input type="hidden" id="edit-project-agency-id">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>联系电话</label>
+                                    <input type="text" class="form-control" disabled="disabled"
+                                           id="edit-project-agency-phone"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <label>施工单位</label>
+                                    <select class="custom-select form-control"
+                                            id="edit-project-implement-select">
+                                        <option value="">选择施工单位</option>
+                                        @foreach($data['company'] as $v)
+                                            <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>联系人</label>
+                                    <input type="text" class="form-control" disabled="disabled"
+                                           id="edit-project-implement-contact">
+                                    <input type="hidden" id="edit-project-implement-id">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>联系电话</label>
+                                    <input type="text" class="form-control" disabled="disabled"
+                                           id="edit-project-implement-phone"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>备注</label>
+                                    <textarea name="remark" id="edit-project-remark"
+                                              rows="6" class="form-control"></textarea>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">关闭
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="modal fade show" id="confirmDelAdmin" tabindex="-1" role="dialog"
+    <div class="modal fade show" id="checkProjectModal" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">项目审核详情</h4>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>项目名称*</label>
+                                    <input type="text" class="form-control" disabled="disabled"
+                                           id="check-project-name"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>项目类型*</label>
+                                    <select class="custom-select form-control" disabled="disabled"
+                                            id="check-project-service">
+                                        <option value="">选择项目类型</option>
+                                        @foreach($data['project_type'] as $v)
+                                            <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>项目负责人</label>
+                                    <select class="custom-select form-control" disabled="disabled"
+                                            id="check-project-marcher">
+                                        <option value="">选择项目负责人</option>
+                                        @foreach($data['marcher'] as $v)
+                                            <option value="{{ $v->admin_id }}">{{ $v->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>收费基数(万元)</label>
+                                    <input type="text" class="form-control" id="check-project-cost"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>费率‰</label>
+                                    <input type="text" class="form-control" id="check-project-basic-rate"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>最小费用(元)</label>
+                                    <input type="text" class="form-control" id="check-project-min-profit"></div>
+                            </div>
+                        </div>
+                        <div class="row" id="check-project-check-info">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>核定基数(万元)</label>
+                                    <input type="text" class="form-control" id="check-project-checkcost"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>核定率%</label>
+                                    <input type="text" class="form-control" id="check-project-check-rate"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>核定费率%</label>
+                                    <input type="text" class="form-control" id="check-project-check-cost-rate"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>服务收费(万元)</label>
+                                    <input type="text" class="form-control" disabled="disabled"
+                                           id="check-project-service-fee"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" id="check-project-check-money-show">
+                                    <label>核增核减额(万元)</label>
+                                    <input type="text" class="form-control" disabled="disabled"
+                                           id="check-project-check-money"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-bordered table-hover toggle-circle"
+                                       data-page-size="7" id="sonproject-cost-table">
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>审核说明</label>
+                                    <textarea name="remark" id="check-project-checkmark"
+                                              rows="6" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" id="check-project-sum-cost"
+                            class="btn btn-success">费用计算
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade show" id="editSonProjectModal" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">专项详情</h4>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>专项名称*</label>
+                                        <input type="text" class="form-control"
+                                               id="edit-son-project-name"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>专业类型*</label>
+                                        <select class="custom-select form-control" id="edit-son-project-profession">
+                                            <option value="">选择专业类型</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>收费基数(万元)</label>
+                                        <input type="text" class="form-control" id="edit-son-project-cost"></div>
+                                </div>
+                            </div>
+                            <div class="row" id="cost-sonproject-check-cost-show">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>核定基数(万元)</label>
+                                        <input type="text" class="form-control" id="edit-son-project-checkcost"></div>
+                                </div>
+                                <div class="col-md-6">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>专项实施人</label>
+                                        <select class="custom-select form-control" id="edit-son-project-marcher">
+                                            <option value="">选择专项实施人</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>提成比例</label>
+                                        <input type="text" class="form-control" id="edit-son-project-basic-rate">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>考核提成比例</label>
+                                        <input type="text" class="form-control" id="edit-son-project-check-rate">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>专项开始时间</label>
+                                        <input type="date" class="form-control" id="edit-son-project-start-date">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>专项结束时间</label>
+                                        <input type="date" class="form-control" id="edit-son-project-end-date">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>备注</label>
+                                        <textarea name="remark" id="edit-son-project-remark"
+                                                  rows="6" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade show" id="addIncomeMoneyModal" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">收款</h4>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>项目名称</label>
+                                    <input type="text" class="form-control" disabled="disabled"
+                                           id="income-money-project-name"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>金额（万元）*</label>
+                                    <input type="text" class="form-control"
+                                           id="income-money"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>日期*</label>
+                                    <input type="date" class="form-control"
+                                           id="income-money-date"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-bordered table-hover toggle-circle"
+                                       data-page-size="7" id="income-money-table">
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" id="income-money-submit"
+                            class="btn btn-success">收款
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade show" id="addAllotMoneyModal" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">分配</h4>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>项目名称</label>
+                                    <input type="text" class="form-control" disabled="disabled"
+                                           id="allot-money-project-name"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>金额（万元）*</label>
+                                    <input type="text" class="form-control"
+                                           id="allot-money"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>年度*</label>
+                                    <input id="allot-money-year" type="text" class="form-control"
+                                           value="{{ Date::now()->format('Y') }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-bordered table-hover toggle-circle"
+                                       data-page-size="7" id="allot-money-table">
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" id="allot-money-submit"
+                            class="btn btn-success">分配
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade show" id="confirmDelProjectModal" tabindex="-1" role="dialog"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -974,7 +632,32 @@
                     <button type="button" class="btn btn-secondary"
                             data-dismiss="modal">关闭
                     </button>
-                    <button type="button" id="del-admin-info"
+                    <button type="button" id="del-project-submit"
+                            class="btn btn-success">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade show" id="confirmDelSonProjectModal" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">操作提示</h4>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <h2 class="center-block" style="margin:0px auto;display:table;">是否删除？</h2>
+                    <p class="center-block" style="margin:0px auto;display:table;">删除后不能恢复!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" id="del-sonproject-submit"
                             class="btn btn-success">确定
                     </button>
                 </div>
@@ -986,16 +669,242 @@
 @section('admin-js')
     <script src="{{ asset('admin/assets/plugins/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>
     <script src="{{ asset('admin/assets/plugins/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js') }}"></script>
-    <script src="{{ asset('admin/assets/plugins/bootstrap-switch/bootstrap-switch.min.js') }}"></script>
+    <script src="{{ asset('admin/assets/plugins/jquery-combo-select/jquery.combo.select.js') }}"></script>
     <script src="{{ asset('admin/assets/plugins/moment/min/moment.min.js') }}"></script>
-    <script src="{{ asset('admin/assets/plugins/wizard/jquery.steps.min.js') }}"></script>
-    <script src="{{ asset('admin/assets/plugins/wizard/jquery.validate.min.js') }}"></script>
-    <script src="{{ asset('admin/assets/plugins/wizard/messages_zh.js') }}"></script>
+    <script src="{{ asset('js/spark-md5.min.js') }}"></script>
+    <script src="{{ asset('js/aetherupload.js') }}"></script>
     <script>
         $(function () {
-            var del_admin_id;
-            $('#admin_info_table').bootstrapTable({
-                url: 'getAdminInfoList',
+            var public_project_id;
+            var public_sonproject_id;
+            var public_sontable_index;
+            var operator_id = $('#upload-operator-id').val();
+            var service_id;
+
+            $('#add-project-contract-select').comboSelect();
+            $('#add-project-contract-select').change(function () {
+                var construction_id = $(this).val();
+                var construction_select = {!! $data['contract'] !!};
+                var construction_selected = construction_select.filter(function (e) {
+                    if (e.id == construction_id) {
+                    } else {
+                        return null;
+                    }
+                    return e;
+                });
+
+                var contract_number = construction_selected[0] ? construction_selected[0].number_name : null;
+                var contract_id = construction_selected[0] ? construction_selected[0].id : null;
+
+                var construction_id = construction_selected[0] ? construction_selected[0].construction_id : null;
+                var agency_id = construction_selected[0] ? construction_selected[0].agency_id : null;
+
+                $('#add-project-contract-number').val(contract_number);
+                $('#add-project-contract-id').val(contract_id);
+
+                if (construction_id) {
+                    var construction_phone = construction_selected[0].construction.phone;
+                    var construction_name = construction_selected[0].construction.name;
+                    var construction_contact = construction_selected[0].construction.contact;
+                    $('#add-project-construction-contact').val(construction_contact);
+                    $('#add-project-construction-phone').val(construction_phone);
+                    $('#add-project-construction-id').val(construction_id);
+                    $('#add-project-construction-select').nextAll('input[type="text"]').val(construction_name);
+                } else {
+                    $('#add-project-construction-contact').val('');
+                    $('#add-project-construction-phone').val('');
+                    $('#add-project-construction-id').val('');
+                    $('#add-project-construction-select').nextAll('input[type="text"]').val('选择建设单位');
+                }
+                if (agency_id) {
+                    var agency_phone = construction_selected[0].agency.phone;
+                    var agency_name = construction_selected[0].agency.name;
+                    var agency_contact = construction_selected[0].agency.contact;
+                    $('#add-project-agency-contact').val(agency_contact);
+                    $('#add-project-agency-phone').val(agency_phone);
+                    $('#add-project-agency-id').val(agency_id);
+                    $('#add-project-agency-select').nextAll('input[type="text"]').val(agency_name);
+                } else {
+                    $('#add-project-agency-contact').val('');
+                    $('#add-project-agency-phone').val('');
+                    $('#add-project-agency-id').val('');
+                    $('#add-project-agency-select').nextAll('input[type="text"]').val('选择委托单位');
+                }
+            });
+            $('#add-project-construction-select').comboSelect();
+            $('#add-project-construction-select').change(function () {
+                var construction_id = $(this).val();
+                var construction_select = {!! $data['company'] !!};
+                var construction_selected = construction_select.filter(function (e) {
+                    if (e.id == construction_id) {
+                    } else {
+                        return null;
+                    }
+                    return e;
+                });
+
+                var construction_contact = construction_selected[0] ? construction_selected[0].contact : null;
+                var construction_phone = construction_selected[0] ? construction_selected[0].phone : null;
+                var construction_id = construction_selected[0] ? construction_selected[0].id : null;
+
+                $('#add-project-construction-contact').val(construction_contact);
+                $('#add-project-construction-phone').val(construction_phone);
+                $('#add-project-construction-id').val(construction_id);
+            });
+            $('#add-project-agency-select').comboSelect();
+            $('#add-project-agency-select').change(function () {
+                var agency_id = $(this).val();
+                var agency_select = {!! $data['company'] !!};
+                var agency_selected = agency_select.filter(function (e) {
+                    if (e.id == agency_id) {
+                    } else {
+                        return null;
+                    }
+                    return e;
+                });
+
+                var agency_contact = agency_selected[0] ? agency_selected[0].contact : null;
+                var agency_phone = agency_selected[0] ? agency_selected[0].phone : null;
+                var agency_id = agency_selected[0] ? agency_selected[0].id : null;
+
+                $('#add-project-agency-contact').val(agency_contact);
+                $('#add-project-agency-phone').val(agency_phone);
+                $('#add-project-agency-id').val(agency_id);
+            });
+            $('#add-project-implement-select').comboSelect();
+            $('#add-project-implement-select').change(function () {
+                var agency_id = $(this).val();
+                var agency_select = {!! $data['company'] !!};
+                var agency_selected = agency_select.filter(function (e) {
+                    if (e.id == agency_id) {
+                    } else {
+                        return null;
+                    }
+                    return e;
+                });
+
+                var agency_contact = agency_selected[0] ? agency_selected[0].contact : null;
+                var agency_phone = agency_selected[0] ? agency_selected[0].phone : null;
+                var agency_id = agency_selected[0] ? agency_selected[0].id : null;
+
+                $('#add-project-implement-contact').val(agency_contact);
+                $('#add-project-implement-phone').val(agency_phone);
+                $('#add-project-implement-id').val(agency_id);
+            });
+
+            $('#edit-project-contract-select').comboSelect();
+            $('#edit-project-contract-select').change(function () {
+                var construction_id = $(this).val();
+                var construction_select = {!! $data['contract'] !!};
+                var construction_selected = construction_select.filter(function (e) {
+                    if (e.id == construction_id) {
+                    } else {
+                        return null;
+                    }
+                    return e;
+                });
+
+                var contract_number = construction_selected[0] ? construction_selected[0].number_name : null;
+                var contract_id = construction_selected[0] ? construction_selected[0].id : null;
+
+                var construction_id = construction_selected[0] ? construction_selected[0].construction_id : null;
+                var agency_id = construction_selected[0] ? construction_selected[0].agency_id : null;
+
+                $('#edit-project-contract-number').val(contract_number);
+                $('#edit-project-contract-id').val(contract_id);
+
+                if (construction_id) {
+                    var construction_phone = construction_selected[0].construction.phone;
+                    var construction_name = construction_selected[0].construction.name;
+                    var construction_contact = construction_selected[0].construction.contact;
+                    $('#edit-project-construction-contact').val(construction_contact);
+                    $('#edit-project-construction-phone').val(construction_phone);
+                    $('#edit-project-construction-id').val(construction_id);
+                    $('#edit-project-construction-select').nextAll('input[type="text"]').val(construction_name);
+                } else {
+                    $('#edit-project-construction-contact').val('');
+                    $('#edit-project-construction-phone').val('');
+                    $('#edit-project-construction-id').val('');
+                    $('#edit-project-construction-select').nextAll('input[type="text"]').val('选择建设单位');
+                }
+                if (agency_id) {
+                    var agency_phone = construction_selected[0].agency.phone;
+                    var agency_name = construction_selected[0].agency.name;
+                    var agency_contact = construction_selected[0].agency.contact;
+                    $('#edit-project-agency-contact').val(agency_contact);
+                    $('#edit-project-agency-phone').val(agency_phone);
+                    $('#edit-project-agency-id').val(agency_id);
+                    $('#edit-project-agency-select').nextAll('input[type="text"]').val(agency_name);
+                } else {
+                    $('#edit-project-agency-contact').val('');
+                    $('#edit-project-agency-phone').val('');
+                    $('#edit-project-agency-id').val('');
+                    $('#edit-project-agency-select').nextAll('input[type="text"]').val('选择委托单位');
+                }
+            });
+            $('#edit-project-construction-select').comboSelect();
+            $('#edit-project-construction-select').change(function () {
+                var construction_id = $(this).val();
+                var construction_select = {!! $data['company'] !!};
+                var construction_selected = construction_select.filter(function (e) {
+                    if (e.id == construction_id) {
+                    } else {
+                        return null;
+                    }
+                    return e;
+                });
+
+                var construction_contact = construction_selected[0] ? construction_selected[0].contact : null;
+                var construction_phone = construction_selected[0] ? construction_selected[0].phone : null;
+                var construction_id = construction_selected[0] ? construction_selected[0].id : null;
+
+                $('#edit-project-construction-contact').val(construction_contact);
+                $('#edit-project-construction-phone').val(construction_phone);
+                $('#edit-project-construction-id').val(construction_id);
+            });
+            $('#edit-project-agency-select').comboSelect();
+            $('#edit-project-agency-select').change(function () {
+                var agency_id = $(this).val();
+                var agency_select = {!! $data['company'] !!};
+                var agency_selected = agency_select.filter(function (e) {
+                    if (e.id == agency_id) {
+                    } else {
+                        return null;
+                    }
+                    return e;
+                });
+
+                var agency_contact = agency_selected[0] ? agency_selected[0].contact : null;
+                var agency_phone = agency_selected[0] ? agency_selected[0].phone : null;
+                var agency_id = agency_selected[0] ? agency_selected[0].id : null;
+
+                $('#edit-project-agency-contact').val(agency_contact);
+                $('#edit-project-agency-phone').val(agency_phone);
+                $('#edit-project-agency-id').val(agency_id);
+            });
+            $('#edit-project-implement-select').comboSelect();
+            $('#edit-project-implement-select').change(function () {
+                var agency_id = $(this).val();
+                var agency_select = {!! $data['company'] !!};
+                var agency_selected = agency_select.filter(function (e) {
+                    if (e.id == agency_id) {
+                    } else {
+                        return null;
+                    }
+                    return e;
+                });
+
+                var agency_contact = agency_selected[0] ? agency_selected[0].contact : null;
+                var agency_phone = agency_selected[0] ? agency_selected[0].phone : null;
+                var agency_id = agency_selected[0] ? agency_selected[0].id : null;
+
+                $('#edit-project-implement-contact').val(agency_contact);
+                $('#edit-project-implement-phone').val(agency_phone);
+                $('#edit-project-implement-id').val(agency_id);
+            });
+
+            $('#project_table').bootstrapTable({
+                url: 'getFinaceManageList',
                 ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
                 cache: false,
                 method: 'POST',
@@ -1003,1001 +912,252 @@
                 dataField: "data",
                 pageNumber: 1,
                 pagination: true,
-                search: true,
-                sidePagination: 'client',
+                queryParams: function (params) {
+                    return {
+                        page: (params.offset / params.limit) + 1,
+                        item: params.limit,
+                        search: $('#demo-input-search2').val(),
+                        service_id: $('#project-type-select').val()
+                    }
+                },
+                sidePagination: 'server',
                 pageSize: 10,//单页记录数
+                pageList: [10, 15, 20],
                 responseHandler: function (result) {
-                    var errcode = result.code;
+                    var errcode = result.code;//在此做了错误代码的判断
                     if (errcode) {
                         return;
                     }
                     return {
-                        total: result.data.length,
-                        data: result.data
+                        total: result.data.total,
+                        data: result.data.data
                     };
                 },
                 columns: [{
                     field: 'SerialNumber',
                     title: '序号',
                     formatter: function (value, row, index) {
-                        return index + 1;
+                        var pageSize = $('#project_table').bootstrapTable('getOptions').pageSize;//通过表的#id 可以得到每页多少条
+                        var pageNumber = $('#project_table').bootstrapTable('getOptions').pageNumber;//通过表的#id 可以得到当前第几页
+                        return pageSize * (pageNumber - 1) + index + 1;
                     }
+                }, {
+                    field: 'number',
+                    title: '项目编号'
                 }, {
                     field: 'name',
-                    title: '姓名'
+                    title: '项目名称'
                 }, {
-                    field: 'sex_name',
-                    title: '性别'
+                    field: 'service_name',
+                    title: '项目类型'
                 }, {
-                    field: 'cardno',
-                    title: '身份证号'
+                    field: 'profession',
+                    title: '专业类型',
+                    formatter: function (value, row, index) {
+                        var str = new Array();
+                        if (value) {
+                            for (var i = 0, len = value.length; i < len; i++) {
+                                str[i] = value[i]['name'];
+                            }
+                            return str;
+                        } else {
+                            return null;
+                        }
+                    }
                 }, {
-                    field: 'phone',
-                    title: '手机号码'
+                    field: 'status_txt',
+                    title: '项目进度'
                 }, {
-                    field: 'department_name',
-                    title: '部门'
+                    field: 'incomes',
+                    title: '收款（万元）',
+                    formatter: function (value, row, index) {
+                        var money = 0;
+                        if (value) {
+                            for (var i = 0, len = value.length; i < len; i++) {
+                                money = (money * 1) + (value[i]['money'] * 1);
+                            }
+                            return money;
+                        } else {
+                            return null;
+                        }
+                    }
                 }, {
-                    field: 'admin_level_name',
-                    title: '行政级别'
-                }, {
-                    field: 'technical_level_name',
-                    title: '人员类别'
-                }, {
-                    field: 'level_name',
-                    title: '技术职称'
-                }, {
-                    field: 'work_status_name',
-                    title: '在职状态'
-                }, {
-                    field: 'professions',
-                    title: '负责专业',
-                    formatter: educationFormatter
+                    field: 'allots',
+                    title: '分配（万元）',
+                    formatter: function (value, row, index) {
+                        var money = 0;
+                        if (value) {
+                            for (var i = 0, len = value.length; i < len; i++) {
+                                money = (money * 1) + (value[i]['money'] * 1);
+                            }
+                            return money;
+                        } else {
+                            return null;
+                        }
+                    }
                 }, {
                     field: 'id',
-                    title: '操作<button type="button" id="addAdminInfo" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="添加人员"><i class="ti-user" aria-hidden="true"></i></button>',
-                    formatter: operateFormatter
+                    title: '查看',
+                    formatter: function (value, row, index) {
+                        if (row.show_check) {
+                            return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn checkProject" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="审核详情"><i class="ti-stamp" aria-hidden="true"></i></button>' +
+                                '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn addCpattachment" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="附件管理"><i class="ti-file" aria-hidden="true"></i></button>' +
+                                '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editProject" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="项目详情"><i class="ti-eye" aria-hidden="true"></i></button>';
+                        } else {
+                            return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn addCpattachment" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="附件管理"><i class="ti-file" aria-hidden="true"></i></button>' +
+                                '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editProject" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="项目详情"><i class="ti-eye" aria-hidden="true"></i></button>';
+                        }
+                    }
+                }, {
+                    field: 'id',
+                    title: '操作',
+                    formatter: function (value, row, index) {
+                        if (row.status == 6) {
+                            return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn addIncomeMoney" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="收款"><i class="ti-money" aria-hidden="true"></i></button>' +
+                                '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn addAllotMoney" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="分配"><i class="ti-tag" aria-hidden="true"></i></button>';
+                        } else {
+                            return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn addIncomeMoney" data-project-index=' + index + ' data-toggle="tooltip" data-original-title="收款"><i class="ti-money" aria-hidden="true"></i></button>';
+                        }
+                    }
                 }],
-                onPostBody: onPostBody
+                onPostBody: onPostBody,
+                detailView: true,
+                onExpandRow: function (index, row, $detail) {
+                    var son_table = $detail.html('<table id="sonproject-table-' + row.id + '" class="table table-bordered table-hover toggle-circle" data-page-size="6"></table>').find('table');
+                    var marcher_id = row.marcher_id;
+                    var service_id = row.service_id;
+                    $(son_table).bootstrapTable({
+                        url: 'getCostSonProjectList',
+                        ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
+                        cache: false,
+                        method: 'POST',
+                        contentType: "application/x-www-form-urlencoded",
+                        dataField: "data",
+                        pageNumber: 1,
+                        pagination: false,
+                        search: false,
+                        sidePagination: 'client',
+                        pageSize: 5,//单页记录数
+                        responseHandler: function (result) {
+                            var errcode = result.code;
+                            if (errcode) {
+                                return;
+                            }
+                            return {
+                                total: result.data.length,
+                                data: result.data
+                            };
+                        },
+                        queryParams: function (params) {
+                            return {
+                                project_id: row.id
+                            }
+                        },
+                        columns: [{
+                            field: 'SerialNumber',
+                            title: '序号',
+                            formatter: function (value, row, index) {
+                                return index + 1;
+                            }
+                        }, {
+                            field: 'number',
+                            title: '专项编号'
+                        }, {
+                            field: 'name',
+                            title: '专项名称'
+                        }, {
+                            field: 'profession_name',
+                            title: '专业类型'
+                        }, {
+                            field: 'status_txt',
+                            title: '专项进度'
+                        }, {
+                            field: 'marcher_name',
+                            title: '实施人'
+                        }, {
+                            field: 'id',
+                            title: '查看',
+                            formatter: function (value, row, index) {
+                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-service-id=' + service_id + ' data-toggle="tooltip" data-original-title="专项详情"><i class="ti-eye" aria-hidden="true"></i></button>';
+                            }
+                        }],
+                        onPostBody: onPostBodySon
+                    });
+                },
+                icons: {
+                    paginationSwitchDown: 'glyphicon-collapse-down icon-chevron-down',
+                    paginationSwitchUp: 'glyphicon-collapse-up icon-chevron-up',
+                    refresh: 'glyphicon-refresh icon-refresh',
+                    toggle: 'glyphicon-list-alt icon-list-alt',
+                    columns: 'glyphicon-th icon-th',
+                    detailOpen: 'mdi mdi-arrow-right-drop-circle-outline',
+                    detailClose: 'mdi mdi-arrow-down-drop-circle-outline'
+                }
             });
 
-            function educationFormatter(value, row, index) {
-                var str = new Array();
-                if (value) {
-                    for (var i = 0, len = value.length; i < len; i++) {
-                        str[i] = value[i]['name'];
-                    }
-                    return str;
-                } else {
-                    return null;
-                }
-            }
-
-            function operateFormatter(value, row, index) {
-                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editAdminInfo" data-admininfo_id=' + index + ' data-toggle="tooltip" data-original-title="编辑"><i class="ti-marker-alt" aria-hidden="true"></i></button>' +
-                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delAdminInfo" data-admininfo_id=' + index + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
-            }
-
             function refresh() {
-                $('#admin_info_table').bootstrapTable('refresh', {url: 'getAdminInfoList'});
+                $('#project_table').bootstrapTable('refresh', {url: 'getFinaceManageList'});
             }
 
-            function refresh1() {
-                $('#admin_family_table').bootstrapTable('refresh', {url: 'getAdminFamily'});
+            function sonrefresh(project_id) {
+                $('#sonproject-table-' + project_id).bootstrapTable('refresh', {url: 'getCostSonProjectList'});
             }
 
-            function refresh11() {
-                $('#edit-admin_family_table').bootstrapTable('refresh', {url: 'getAdminFamilyInfo'});
-            }
-
-            function refresh2() {
-                $('#admin_certificate_table').bootstrapTable('refresh', {url: 'getAdminCertificate'});
-            }
-
-            function refresh22() {
-                $('#edit-admin_certificate_table').bootstrapTable('refresh', {url: 'getAdminCertificateInfo'});
-            }
-
-            function refresh3() {
-                $('#admininfo_pic_table').bootstrapTable('refresh', {url: 'getAdmininfoPic'});
-            }
-
-            function refresh33() {
-                $('#edit-admininfo_pic_table').bootstrapTable('refresh', {url: 'getAdmininfoPicInfo'});
+            function attachment() {
+                $('#add-cpattachment-table').bootstrapTable('refresh', {url: 'getCpattachment'});
             }
 
             function onPostBody(res) {
                 $("[data-toggle='tooltip']").tooltip();
 
-                $('#addAdminInfo').click(function () {
-                    $('#addAdminInfoModal').modal('show');
-                    $('#admin_family_table').bootstrapTable({
-                        url: 'getAdminFamily',
-                        ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
-                        cache: false,
-                        method: 'POST',
-                        contentType: "application/x-www-form-urlencoded",
-                        dataField: "data",
-                        pageNumber: 1,
-                        pagination: true,
-                        search: false,
-                        sidePagination: 'client',
-                        pageSize: 5,//单页记录数
-                        responseHandler: function (result) {
-                            var errcode = result.code;
-                            if (errcode) {
-                                return;
-                            }
-                            return {
-                                total: result.data.length,
-                                data: result.data
-                            };
-                        },
-                        columns: [{
-                            field: 'SerialNumber',
-                            title: '序号',
-                            formatter: function (value, row, index) {
-                                return index + 1;
-                            }
-                        }, {
-                            field: 'name',
-                            title: '姓名'
-                        }, {
-                            field: 'relation',
-                            title: '关系'
-                        }, {
-                            field: 'phone',
-                            title: '电话'
-                        }, {
-                            field: 'id',
-                            title: '操作',
-                            formatter: function (value, row, index) {
-                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delFamilyInfo" data-family-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
-                            }
-                        }],
-                        onPostBody: function (res) {
-                            $('.delFamilyInfo').click(function () {
-                                var family_id = $(this).attr('data-family-id');
-                                $.ajax({
-                                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                                    url: 'delAdminFamily',
-                                    type: 'POST',
-                                    data: {
-                                        family_id: family_id
-                                    },
-                                    success: function (doc) {
-                                        if (doc.code) {
-                                            $.toast({
-                                                heading: '警告',
-                                                text: doc.data,
-                                                position: 'top-right',
-                                                loaderBg: '#ff6849',
-                                                icon: 'warning',
-                                                hideAfter: 3000,
-                                                stack: 6
-                                            });
-                                        } else {
-                                            $.toast({
-                                                heading: '成功',
-                                                text: doc.data,
-                                                position: 'top-right',
-                                                loaderBg: '#ff6849',
-                                                icon: 'success',
-                                                hideAfter: 3000,
-                                                stack: 6
-                                            });
-                                            refresh1();
-                                        }
-                                    },
-                                    error: function (doc) {
-                                        $.toast({
-                                            heading: '错误',
-                                            text: '网络错误，请稍后重试！',
-                                            position: 'top-right',
-                                            loaderBg: '#ff6849',
-                                            icon: 'error',
-                                            hideAfter: 3000,
-                                            stack: 6
-                                        });
-                                    }
-                                });
-                            });
-                        }
-                    });
-                    $('#admin_certificate_table').bootstrapTable({
-                        url: 'getAdminCertificate',
-                        ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
-                        cache: false,
-                        method: 'POST',
-                        contentType: "application/x-www-form-urlencoded",
-                        dataField: "data",
-                        pageNumber: 1,
-                        pagination: true,
-                        search: false,
-                        sidePagination: 'client',
-                        pageSize: 5,//单页记录数
-                        responseHandler: function (result) {
-                            var errcode = result.code;
-                            if (errcode) {
-                                return;
-                            }
-                            return {
-                                total: result.data.length,
-                                data: result.data
-                            };
-                        },
-                        columns: [{
-                            field: 'SerialNumber',
-                            title: '序号',
-                            formatter: function (value, row, index) {
-                                return index + 1;
-                            }
-                        }, {
-                            field: 'name',
-                            title: '证书名称'
-                        }, {
-                            field: 'number',
-                            title: '编号'
-                        }, {
-                            field: 'continue_password',
-                            title: '延续注册密码'
-                        }, {
-                            field: 'study_password',
-                            title: '继续再教育密码'
-                        }, {
-                            field: 'change_password',
-                            title: '变更密码'
-                        }, {
-                            field: 'id',
-                            title: '操作',
-                            formatter: function (value, row, index) {
-                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delCertificateInfo" data-certificate-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
-                            }
-                        }],
-                        onPostBody: function (res) {
-                            $('.delCertificateInfo').click(function () {
-                                var certificate_id = $(this).attr('data-certificate-id');
-                                $.ajax({
-                                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                                    url: 'delAdminCertificate',
-                                    type: 'POST',
-                                    data: {
-                                        certificate_id: certificate_id
-                                    },
-                                    success: function (doc) {
-                                        if (doc.code) {
-                                            $.toast({
-                                                heading: '警告',
-                                                text: doc.data,
-                                                position: 'top-right',
-                                                loaderBg: '#ff6849',
-                                                icon: 'warning',
-                                                hideAfter: 3000,
-                                                stack: 6
-                                            });
-                                        } else {
-                                            $.toast({
-                                                heading: '成功',
-                                                text: doc.data,
-                                                position: 'top-right',
-                                                loaderBg: '#ff6849',
-                                                icon: 'success',
-                                                hideAfter: 3000,
-                                                stack: 6
-                                            });
-                                            refresh2();
-                                        }
-                                    },
-                                    error: function (doc) {
-                                        $.toast({
-                                            heading: '错误',
-                                            text: '网络错误，请稍后重试！',
-                                            position: 'top-right',
-                                            loaderBg: '#ff6849',
-                                            icon: 'error',
-                                            hideAfter: 3000,
-                                            stack: 6
-                                        });
-                                    }
-                                });
-                            });
-                        }
-                    });
-                    $('#admininfo_pic_table').bootstrapTable({
-                        url: 'getAdmininfoPic',
-                        ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
-                        cache: false,
-                        method: 'POST',
-                        contentType: "application/x-www-form-urlencoded",
-                        dataField: "data",
-                        pageNumber: 1,
-                        pagination: true,
-                        search: false,
-                        sidePagination: 'client',
-                        pageSize: 6,//单页记录数
-                        responseHandler: function (result) {
-                            var errcode = result.code;
-                            if (errcode) {
-                                return;
-                            }
-                            return {
-                                total: result.data.length,
-                                data: result.data
-                            };
-                        },
-                        columns: [{
-                            field: 'SerialNumber',
-                            title: '序号',
-                            formatter: function (value, row, index) {
-                                return index + 1;
-                            }
-                        }, {
-                            field: 'name',
-                            title: '文件名称'
-                        }, {
-                            field: 'mimetype',
-                            title: '文件类型'
-                        }, {
-                            field: 'id',
-                            title: '操作',
-                            formatter: function (value, row, index) {
-                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn showAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="查看"><i class="ti-eye" aria-hidden="true"></i></button>' +
-                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn downLoadAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="下载"><i class="ti-save" aria-hidden="true"></i></button>' +
-                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
-                            }
-                        }],
-                        onPostBody: function (res) {
-                            $('.delAdminInfoPic').click(function () {
-                                var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
-                                $.ajax({
-                                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                                    url: 'delAdmininfoPic',
-                                    type: 'POST',
-                                    data: {
-                                        admininfo_pic_id: admininfo_pic_id
-                                    },
-                                    success: function (doc) {
-                                        if (doc.code) {
-                                            $.toast({
-                                                heading: '警告',
-                                                text: doc.data,
-                                                position: 'top-right',
-                                                loaderBg: '#ff6849',
-                                                icon: 'warning',
-                                                hideAfter: 3000,
-                                                stack: 6
-                                            });
-                                        } else {
-                                            $.toast({
-                                                heading: '成功',
-                                                text: doc.data,
-                                                position: 'top-right',
-                                                loaderBg: '#ff6849',
-                                                icon: 'success',
-                                                hideAfter: 3000,
-                                                stack: 6
-                                            });
-                                            refresh3();
-                                        }
-                                    },
-                                    error: function (doc) {
-                                        $.toast({
-                                            heading: '错误',
-                                            text: '网络错误，请稍后重试！',
-                                            position: 'top-right',
-                                            loaderBg: '#ff6849',
-                                            icon: 'error',
-                                            hideAfter: 3000,
-                                            stack: 6
-                                        });
-                                    }
-                                });
-                            });
-                            $('.showAdminInfoPic').click(function () {
-                                var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
-                                window.open('showAdmininfoPic?admininfo_pic_id=' + admininfo_pic_id);
-                            });
-                            $('.downLoadAdminInfoPic').click(function () {
-                                var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
-                                window.open('downLoadAdmininfoPic?admininfo_pic_id=' + admininfo_pic_id);
-                            });
-                        }
-                    });
-                });
+                $('.editProject').click(function () {
+                    $('#editProjectModal').modal('show');
 
-                $('#add_tmp_family_info').click(function () {
-                    var family_name = $('#family_name').val();
-                    var family_relation = $('#family_relation').val();
-                    var family_phone = $('#family_phone').val();
-                    $.ajax({
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        url: 'addAdminFamily',
-                        type: 'POST',
-                        data: {
-                            family_name: family_name,
-                            family_relation: family_relation,
-                            family_phone: family_phone
-                        },
-                        success: function (doc) {
-                            if (doc.code) {
-                                $.toast({
-                                    heading: '警告',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'warning',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                            } else {
-                                $.toast({
-                                    heading: '成功',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'success',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                                refresh1();
-                                $('#family_name').val('');
-                                $('#family_relation').val('');
-                                $('#family_phone').val('');
-                            }
-                        },
-                        error: function (doc) {
-                            $.toast({
-                                heading: '错误',
-                                text: '网络错误，请稍后重试！',
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'error',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        }
+                    var data = $('#project_table').bootstrapTable('getData');
+                    var index = $(this).attr('data-project-index');
+                    public_project_id = data[index].id;
+                    $('#edit-project-name').val(data[index].name);
+                    $('#edit-project-service').val(data[index].service_id);
+                    $('#edit-project-marcher').val(data[index].marcher_id);
+                    data[index].profession.map(function (value, index, array) {
+                        $("#edit-project-profession-" + value.id).prop("checked", true);
                     });
-                });
-                $('#edit-add_tmp_family_info').click(function () {
-                    var family_name = $('#edit-family_name').val();
-                    var family_relation = $('#edit-family_relation').val();
-                    var family_phone = $('#edit-family_phone').val();
-                    $.ajax({
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        url: 'addAdminFamilyInfo',
-                        type: 'POST',
-                        data: {
-                            admininfo_id: $('#edit-admininfo_id').val(),
-                            family_name: family_name,
-                            family_relation: family_relation,
-                            family_phone: family_phone
-                        },
-                        success: function (doc) {
-                            if (doc.code) {
-                                $.toast({
-                                    heading: '警告',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'warning',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                            } else {
-                                $.toast({
-                                    heading: '成功',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'success',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                                refresh11();
-                                $('#edit-family_name').val('');
-                                $('#edit-family_relation').val('');
-                                $('#edit-family_phone').val('');
-                            }
-                        },
-                        error: function (doc) {
-                            $.toast({
-                                heading: '错误',
-                                text: '网络错误，请稍后重试！',
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'error',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        }
-                    });
-                });
-                $('#add_tmp_certificate_info').click(function () {
-                    var certificate_name = $('#certificate_name').val();
-                    var certificate_number = $('#certificate_number').val();
-                    var continue_password = $('#certificate_continue_password').val();
-                    var study_password = $('#certificate_study_password').val();
-                    var change_password = $('#certificate_change_password').val();
-                    $.ajax({
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        url: 'addAdminCertificate',
-                        type: 'POST',
-                        data: {
-                            certificate_name: certificate_name,
-                            certificate_number: certificate_number,
-                            continue_password: continue_password,
-                            study_password: study_password,
-                            change_password: change_password
-                        },
-                        success: function (doc) {
-                            if (doc.code) {
-                                $.toast({
-                                    heading: '警告',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'warning',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                            } else {
-                                $.toast({
-                                    heading: '成功',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'success',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                                refresh2();
-                                $('#certificate_name').val('');
-                                $('#certificate_number').val('');
-                                $('#certificate_continue_password').val('');
-                                $('#certificate_study_password').val('');
-                                $('#certificate_change_password').val('');
-                            }
-                        },
-                        error: function (doc) {
-                            $.toast({
-                                heading: '错误',
-                                text: '网络错误，请稍后重试！',
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'error',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        }
-                    });
-                });
-                $('#edit-add_tmp_certificate_info').click(function () {
-                    var certificate_name = $('#edit-certificate_name').val();
-                    var certificate_number = $('#edit-certificate_number').val();
-                    var continue_password = $('#edit-certificate_continue_password').val();
-                    var study_password = $('#edit-certificate_study_password').val();
-                    var change_password = $('#edit-certificate_change_password').val();
-                    $.ajax({
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        url: 'addAdminCertificateInfo',
-                        type: 'POST',
-                        data: {
-                            admininfo_id: $('#edit-admininfo_id').val(),
-                            certificate_name: certificate_name,
-                            certificate_number: certificate_number,
-                            continue_password: continue_password,
-                            study_password: study_password,
-                            change_password: change_password
-                        },
-                        success: function (doc) {
-                            if (doc.code) {
-                                $.toast({
-                                    heading: '警告',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'warning',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                            } else {
-                                $.toast({
-                                    heading: '成功',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'success',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                                refresh22();
-                                $('#edit-certificate_name').val('');
-                                $('#edit-certificate_number').val('');
-                                $('#edit-certificate_continue_password').val('');
-                                $('#edit-certificate_study_password').val('');
-                                $('#edit-certificate_change_password').val('');
-                            }
-                        },
-                        error: function (doc) {
-                            $.toast({
-                                heading: '错误',
-                                text: '网络错误，请稍后重试！',
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'error',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        }
-                    });
-                });
-                $('#add_tmp_admininfo_pic').click(function () {
-                    var admininfo_pic_name = $('#admininfo_pic_name').val();
-                    //初始化FormData对象
-                    var formData = new FormData();
-                    var file = $("#admininfo_pic_dir").prop("files");
-                    var n = file.length;
-                    for (var i = 0; i < n; i++) {
-                        formData.append("files[]", file[i]);
-                    }
-                    formData.append("admininfo_pic_name", admininfo_pic_name);
-                    $.ajax({
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        url: 'addAdmininfoPic',
-                        type: 'POST',
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        success: function (doc) {
-                            if (doc.code) {
-                                $.toast({
-                                    heading: '警告',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'warning',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                            } else {
-                                $.toast({
-                                    heading: '成功',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'success',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                                refresh3();
-                                $('#admininfo_pic_name').val('');
-                                $("#admininfo_pic_dir").val('')
-                            }
-                        },
-                        error: function (doc) {
-                            $.toast({
-                                heading: '错误',
-                                text: '网络错误，请稍后重试！',
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'error',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        }
-                    });
-                });
-                $('#edit-add_tmp_admininfo_pic').click(function () {
-                    var admininfo_pic_name = $('#edit-admininfo_pic_name').val();
-                    //初始化FormData对象
-                    var formData = new FormData();
-                    var file = $("#edit-admininfo_pic_dir").prop("files");
-                    var n = file.length;
-                    for (var i = 0; i < n; i++) {
-                        formData.append("files[]", file[i]);
-                    }
-                    formData.append("admininfo_pic_name", admininfo_pic_name);
-                    formData.append("admininfo_id", $('#edit-admininfo_id').val());
-                    $.ajax({
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        url: 'addAdmininfoPicInfo',
-                        type: 'POST',
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        success: function (doc) {
-                            if (doc.code) {
-                                $.toast({
-                                    heading: '警告',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'warning',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                            } else {
-                                $.toast({
-                                    heading: '成功',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'success',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                                refresh33();
-                                $('#edit-admininfo_pic_name').val('');
-                                $("#edit-admininfo_pic_dir").val('')
-                            }
-                        },
-                        error: function (doc) {
-                            $.toast({
-                                heading: '错误',
-                                text: '网络错误，请稍后重试！',
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'error',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        }
-                    });
-                });
+                    $('#edit-project-cost').val(data[index].cost);
+                    $('#edit-project-receive-date').val(data[index].receive_date);
 
-                $('.editAdminInfo').click(function () {
-                    $('#editAdminInfoModal').modal('show');
+                    $('#edit-project-construction-id').val(data[index].construction_id);
+                    $('#edit-project-construction-select').nextAll('input[type="text"]').val(data[index].construction_name);
+                    $('#edit-project-construction-contact').val(data[index].construction_contact);
+                    $('#edit-project-construction-phone').val(data[index].construction_phone);
 
-                    var data = $('#admin_info_table').bootstrapTable('getData');
-                    var index = $(this).attr('data-admininfo_id');
-                    var admininfo_id = data[index].id;
-                    $('#edit-admininfo_id').val(admininfo_id);
-                    $('#edit-username').val(data[index].username);
-                    $('#edit-realname').val(data[index].name);
-                    $('#edit-birthday').val(data[index].birthday);
-                    $('#edit-cardno').val(data[index].cardno);
-                    $('#edit-phone').val(data[index].phone);
-                    $('#edit-address').val(data[index].address);
-                    $('#edit-school').val(data[index].school);
-                    $('#edit-major').val(data[index].major);
-                    $('#edit-graduate_date').val(data[index].graduate_date);
-                    $('#edit-work_year').val(data[index].work_year);
-                    $('#edit-level_type').val(data[index].level_type);
-                    $('#edit-work_start_date').val(data[index].work_start_date);
-                    //textarea
-                    $('#edit-remark').val(data[index].remark);
-                    $('#edit-work_resume').val(data[index].work_resume);
-                    $('#edit-study_resume').val(data[index].study_resume);
-                    $('#edit-performance').val(data[index].performance);
-                    $('#edit-rewards').val(data[index].rewards);
-                    //select
-                    $('#edit-adminsex').val(data[index].sex);
-                    $('#edit-education').val(data[index].education_id);
-                    $('#edit-level_id').val(data[index].level_id);
-                    $('#edit-department').val(data[index].department_id);
-                    $('#edit-admin_level').val(data[index].admin_level_id);
-                    $('#edit-technical_level').val(data[index].technical_level_id);
-                    $('#edit-work_status').val(data[index].work_status);
-                    //checkbox
-                    data[index].professions.map(function (value, index, array) {
-                        $("#edit-admin_profession_" + value.id).attr("checked", "checked");
-                    });
-                    var admininfo_avatar;
-                    if (data[index].avatar) {
-                        admininfo_avatar = "getAdminAvatar" + data[index].avatar;
+                    $('#edit-project-agency-id').val(data[index].agency_id);
+                    $('#edit-project-agency-select').nextAll('input[type="text"]').val(data[index].agency_name);
+                    $('#edit-project-agency-contact').val(data[index].agency_contact);
+                    $('#edit-project-agency-phone').val(data[index].agency_phone);
+
+                    $('#edit-project-implement-id').val(data[index].implement_id);
+                    $('#edit-project-implement-select').nextAll('input[type="text"]').val(data[index].implement_name);
+                    $('#edit-project-implement-contact').val(data[index].implement_contact);
+                    $('#edit-project-implement-phone').val(data[index].implement_phone);
+
+                    $('#edit-project-contract-id').val(data[index].contract_id);
+                    if (data[index].contract) {
+                        $('#edit-project-contract-select').nextAll('input[type="text"]').val(data[index].contract.name);
+                        $('#edit-project-contract-number').val(data[index].contract.number_name);
                     } else {
-                        admininfo_avatar = "getAdminAvatar/0/0";
+                        $('#edit-project-contract-select').nextAll('input[type="text"]').val('选择项目合同');
+                        $('#edit-project-contract-number').val('');
                     }
-                    $('#edit-admininfo-avatar').siblings('.dropify-preview')
-                        .children('.dropify-render').children('img')
-                        .attr('src', admininfo_avatar);
+                    $('#edit-project-remark').val(data[index].remark);
+                });
 
-                    $('#edit-admin_family_table').bootstrapTable({
-                        url: 'getAdminFamilyInfo',
-                        ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
-                        cache: false,
-                        method: 'POST',
-                        contentType: "application/x-www-form-urlencoded",
-                        dataField: "data",
-                        pageNumber: 1,
-                        pagination: true,
-                        search: false,
-                        sidePagination: 'client',
-                        pageSize: 5,//单页记录数
-                        queryParams: function (params) {
-                            return {
-                                admininfo_id: $('#edit-admininfo_id').val()
-                            }
-                        },
-                        responseHandler: function (result) {
-                            var errcode = result.code;
-                            if (errcode) {
-                                return;
-                            }
-                            return {
-                                total: result.data.length,
-                                data: result.data
-                            };
-                        },
-                        columns: [{
-                            field: 'SerialNumber',
-                            title: '序号',
-                            formatter: function (value, row, index) {
-                                return index + 1;
-                            }
-                        }, {
-                            field: 'name',
-                            title: '姓名'
-                        }, {
-                            field: 'relation',
-                            title: '关系'
-                        }, {
-                            field: 'phone',
-                            title: '电话'
-                        }, {
-                            field: 'id',
-                            title: '操作',
-                            formatter: function (value, row, index) {
-                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delEditFamilyInfo" data-family-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
-                            }
-                        }],
-                        onPostBody: function (res) {
-                            $('.delEditFamilyInfo').click(function () {
-                                var family_id = $(this).attr('data-family-id');
-                                $.ajax({
-                                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                                    url: 'delAdminFamily',
-                                    type: 'POST',
-                                    data: {
-                                        family_id: family_id
-                                    },
-                                    success: function (doc) {
-                                        if (doc.code) {
-                                            $.toast({
-                                                heading: '警告',
-                                                text: doc.data,
-                                                position: 'top-right',
-                                                loaderBg: '#ff6849',
-                                                icon: 'warning',
-                                                hideAfter: 3000,
-                                                stack: 6
-                                            });
-                                        } else {
-                                            $.toast({
-                                                heading: '成功',
-                                                text: doc.data,
-                                                position: 'top-right',
-                                                loaderBg: '#ff6849',
-                                                icon: 'success',
-                                                hideAfter: 3000,
-                                                stack: 6
-                                            });
-                                            refresh11();
-                                        }
-                                    },
-                                    error: function (doc) {
-                                        $.toast({
-                                            heading: '错误',
-                                            text: '网络错误，请稍后重试！',
-                                            position: 'top-right',
-                                            loaderBg: '#ff6849',
-                                            icon: 'error',
-                                            hideAfter: 3000,
-                                            stack: 6
-                                        });
-                                    }
-                                });
-                            });
-                        }
-                    });
+                $('.addCpattachment').click(function () {
+                    $('#addCpattachmentModal').modal('show');
 
-                    $('#edit-admin_certificate_table').bootstrapTable({
-                        url: 'getAdminCertificateInfo',
-                        ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
-                        cache: false,
-                        method: 'POST',
-                        contentType: "application/x-www-form-urlencoded",
-                        dataField: "data",
-                        pageNumber: 1,
-                        pagination: true,
-                        search: false,
-                        sidePagination: 'client',
-                        pageSize: 5,//单页记录数
-                        queryParams: function (params) {
-                            return {
-                                admininfo_id: $('#edit-admininfo_id').val()
-                            }
-                        },
-                        responseHandler: function (result) {
-                            var errcode = result.code;
-                            if (errcode) {
-                                return;
-                            }
-                            return {
-                                total: result.data.length,
-                                data: result.data
-                            };
-                        },
-                        columns: [{
-                            field: 'SerialNumber',
-                            title: '序号',
-                            formatter: function (value, row, index) {
-                                return index + 1;
-                            }
-                        }, {
-                            field: 'name',
-                            title: '证书名称'
-                        }, {
-                            field: 'number',
-                            title: '编号'
-                        }, {
-                            field: 'continue_password',
-                            title: '延续注册密码'
-                        }, {
-                            field: 'study_password',
-                            title: '继续再教育密码'
-                        }, {
-                            field: 'change_password',
-                            title: '变更密码'
-                        }, {
-                            field: 'id',
-                            title: '操作',
-                            formatter: function (value, row, index) {
-                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delEditCertificateInfo" data-certificate-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
-                            }
-                        }],
-                        onPostBody: function (res) {
-                            $('.delEditCertificateInfo').click(function () {
-                                var certificate_id = $(this).attr('data-certificate-id');
-                                $.ajax({
-                                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                                    url: 'delAdminCertificate',
-                                    type: 'POST',
-                                    data: {
-                                        certificate_id: certificate_id
-                                    },
-                                    success: function (doc) {
-                                        if (doc.code) {
-                                            $.toast({
-                                                heading: '警告',
-                                                text: doc.data,
-                                                position: 'top-right',
-                                                loaderBg: '#ff6849',
-                                                icon: 'warning',
-                                                hideAfter: 3000,
-                                                stack: 6
-                                            });
-                                        } else {
-                                            $.toast({
-                                                heading: '成功',
-                                                text: doc.data,
-                                                position: 'top-right',
-                                                loaderBg: '#ff6849',
-                                                icon: 'success',
-                                                hideAfter: 3000,
-                                                stack: 6
-                                            });
-                                            refresh22();
-                                        }
-                                    },
-                                    error: function (doc) {
-                                        $.toast({
-                                            heading: '错误',
-                                            text: '网络错误，请稍后重试！',
-                                            position: 'top-right',
-                                            loaderBg: '#ff6849',
-                                            icon: 'error',
-                                            hideAfter: 3000,
-                                            stack: 6
-                                        });
-                                    }
-                                });
-                            });
-                        }
-                    });
-
-                    $('#edit-admininfo_pic_table').bootstrapTable({
-                        url: 'getAdmininfoPicInfo',
+                    var data = $('#project_table').bootstrapTable('getData');
+                    var index = $(this).attr('data-project-index');
+                    $('#add-cpattachment-table').bootstrapTable({
+                        url: 'getCpattachment',
                         ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
                         cache: false,
                         method: 'POST',
@@ -2010,7 +1170,7 @@
                         pageSize: 6,//单页记录数
                         queryParams: function (params) {
                             return {
-                                admininfo_id: $('#edit-admininfo_id').val()
+                                project_id: data[index].id
                             }
                         },
                         responseHandler: function (result) {
@@ -2036,23 +1196,154 @@
                             field: 'mimetype',
                             title: '文件类型'
                         }, {
+                            field: 'operator_name',
+                            title: '上传人'
+                        }, {
+                            field: 'check_name',
+                            title: '审核类型'
+                        }, {
                             field: 'id',
                             title: '操作',
                             formatter: function (value, row, index) {
-                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn showEditAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="查看"><i class="ti-eye" aria-hidden="true"></i></button>' +
-                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn downLoadEditAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="下载"><i class="ti-save" aria-hidden="true"></i></button>' +
-                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delEditAdminInfoPic" data-admininfo-pic-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn showCpattachment" data-cpattachment-dir=' + row.dir + ' data-toggle="tooltip" data-original-title="查看"><i class="ti-eye" aria-hidden="true"></i></button>' +
+                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn downLoadCpattachment" data-cpattachment-dir=' + row.dir + ' data-cpattachment-name=' + row.name + ' data-toggle="tooltip" data-original-title="下载"><i class="ti-save" aria-hidden="true"></i></button>';
                             }
                         }],
                         onPostBody: function (res) {
-                            $('.delEditAdminInfoPic').click(function () {
-                                var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
+                            $('.showCpattachment').click(function () {
+                                var dir = $(this).attr('data-cpattachment-dir');
+                                window.open('aetherupload/display/' + dir);
+                            });
+                            $('.downLoadCpattachment').click(function () {
+                                var dir = $(this).attr('data-cpattachment-dir');
+                                var name = $(this).attr('data-cpattachment-name');
+                                window.open('aetherupload/download/' + dir + '/' + name);
+                            });
+                        }
+                    });
+                });
+
+                $('.checkProject').click(function () {
+                    $('#checkProjectModal').modal('show');
+
+                    var data = $('#project_table').bootstrapTable('getData');
+                    var index = $(this).attr('data-project-index');
+                    public_project_id = data[index].id;
+                    $('#check-project-name').val(data[index].name);
+                    var service_id = data[index].service_id;
+                    $('#check-project-service').val(data[index].service_id);
+                    $('#check-project-marcher').val(data[index].marcher_id);
+                    $('#check-project-cost').val(data[index].cost);
+                    $('#check-project-checkmark').val(data[index].check_mark);
+                    $('#check-project-basic-rate').val(data[index].basic_rate);
+                    $('#check-project-min-profit').val(data[index].min_profit);
+                    $('#check-project-checkcost').val(data[index].check_cost);
+                    $('#check-project-check-rate').val(data[index].check_rate);
+                    $('#check-project-check-cost-rate').val(data[index].check_cost_rate);
+                    $('#check-project-check-money').val(data[index].check_money);
+                    $('#check-project-service-fee').val(data[index].service_money);
+
+                    if (service_id == 19) {
+                        $('#check-project-check-info').show();
+                        $('#check-project-check-money-show').show();
+                        $('#sonproject-cost-table').bootstrapTable({
+                            data: data[index].sonproject,
+                            pageNumber: 1,
+                            pagination: false,
+                            search: false,
+                            sidePagination: 'client',
+                            pageSize: 10,//单页记录数
+                            columns: [{
+                                field: 'SerialNumber',
+                                title: '序号',
+                                formatter: function (value, row, index) {
+                                    return index + 1;
+                                }
+                            }, {
+                                field: 'profession_name',
+                                title: '专项名称'
+                            }, {
+                                field: 'cost',
+                                title: '收费基数(万元)'
+                            }, {
+                                field: 'check_cost',
+                                title: '核定基数(万元)'
+                            }]
+                        });
+                    } else {
+                        $('#check-project-check-info').hide();
+                        $('#check-project-check-money-show').hide();
+                        $('#sonproject-cost-table').bootstrapTable({
+                            data: data[index].sonproject,
+                            pageNumber: 1,
+                            pagination: false,
+                            search: false,
+                            sidePagination: 'client',
+                            pageSize: 10,//单页记录数
+                            columns: [{
+                                field: 'SerialNumber',
+                                title: '序号',
+                                formatter: function (value, row, index) {
+                                    return index + 1;
+                                }
+                            }, {
+                                field: 'profession_name',
+                                title: '专项名称'
+                            }, {
+                                field: 'cost',
+                                title: '收费基数(万元)'
+                            }]
+                        });
+                    }
+                });
+
+                $('.addIncomeMoney').click(function () {
+                    $('#addIncomeMoneyModal').modal('show');
+
+                    var data = $('#project_table').bootstrapTable('getData');
+                    var index = $(this).attr('data-project-index');
+                    public_project_id = data[index].id;
+                    $('#income-money-project-name').val(data[index].name);
+                    $('#income-money-date').val('');
+                    $('#income-money').val('');
+                    $('#income-money-table').bootstrapTable({
+                        data: data[index].incomes,
+                        pageNumber: 1,
+                        pagination: false,
+                        search: false,
+                        sidePagination: 'client',
+                        pageSize: 10,//单页记录数
+                        columns: [{
+                            field: 'SerialNumber',
+                            title: '序号',
+                            formatter: function (value, row, index) {
+                                return index + 1;
+                            }
+                        }, {
+                            field: 'money',
+                            title: '金额(万元)'
+                        }, {
+                            field: 'receipt_date',
+                            title: '收款日期'
+                        }, {
+                            field: 'operator_name',
+                            title: '收款人'
+                        }, {
+                            field: 'id',
+                            title: '操作',
+                            formatter: function (value, row, index) {
+                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delIncomeMoney" data-income-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                            }
+                        }],
+                        onPostBody: function(res){
+                            $('.delIncomeMoney').click(function () {
+                                var income_id = $(this).attr('data-income-id');
                                 $.ajax({
                                     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                                    url: 'delAdmininfoPic',
+                                    url: 'delIncomeMoney',
                                     type: 'POST',
                                     data: {
-                                        admininfo_pic_id: admininfo_pic_id
+                                        income_id: income_id
                                     },
                                     success: function (doc) {
                                         if (doc.code) {
@@ -2075,7 +1366,8 @@
                                                 hideAfter: 3000,
                                                 stack: 6
                                             });
-                                            refresh33();
+                                            $('#addIncomeMoneyModal').modal('hide');
+                                            refresh();
                                         }
                                     },
                                     error: function (doc) {
@@ -2091,35 +1383,165 @@
                                     }
                                 });
                             });
-
-                            $('.showEditAdminInfoPic').click(function () {
-                                var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
-                                window.open('showAdmininfoPic?admininfo_pic_id=' + admininfo_pic_id);
-                            });
-                            $('.downLoadEditAdminInfoPic').click(function () {
-                                var admininfo_pic_id = $(this).attr('data-admininfo-pic-id');
-                                window.open('downLoadAdmininfoPic?admininfo_pic_id=' + admininfo_pic_id);
-                            });
                         }
                     });
                 });
 
-                $('.delAdminInfo').click(function () {
-                    $('#confirmDelAdmin').modal('show');
+                $('.addAllotMoney').click(function () {
+                    $('#addAllotMoneyModal').modal('show');
 
-                    var data = $('#admin_info_table').bootstrapTable('getData');
-                    var index = $(this).attr('data-admininfo_id');
-                    del_admin_id = data[index].admin_id;
+                    var data = $('#project_table').bootstrapTable('getData');
+                    var index = $(this).attr('data-project-index');
+                    var myDate = new Date();
+                    public_project_id = data[index].id;
+                    $('#allot-money-project-name').val(data[index].name);
+                    $('#allot-money-year').val(myDate.getFullYear());
+                    $('#allot-money').val('');
+                    $('#allot-money-table').bootstrapTable({
+                        data: data[index].allots,
+                        pageNumber: 1,
+                        pagination: false,
+                        search: false,
+                        sidePagination: 'client',
+                        pageSize: 10,//单页记录数
+                        columns: [{
+                            field: 'SerialNumber',
+                            title: '序号',
+                            formatter: function (value, row, index) {
+                                return index + 1;
+                            }
+                        }, {
+                            field: 'money',
+                            title: '金额(万元)'
+                        }, {
+                            field: 'allot_year',
+                            title: '分配年度'
+                        }, {
+                            field: 'operator_name',
+                            title: '分配人'
+                        }, {
+                            field: 'id',
+                            title: '操作',
+                            formatter: function (value, row, index) {
+                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn delAllotMoney" data-allot-id=' + value + ' data-toggle="tooltip" data-original-title="删除"><i class="ti-close" aria-hidden="true"></i></button>';
+                            }
+                        }],
+                        onPostBody: function(res){
+                            $('.delAllotMoney').click(function () {
+                                var allot_id = $(this).attr('data-allot-id');
+                                $.ajax({
+                                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                                    url: 'delAllotMoney',
+                                    type: 'POST',
+                                    data: {
+                                        allot_id: allot_id
+                                    },
+                                    success: function (doc) {
+                                        if (doc.code) {
+                                            $.toast({
+                                                heading: '警告',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'warning',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                        } else {
+                                            $.toast({
+                                                heading: '成功',
+                                                text: doc.data,
+                                                position: 'top-right',
+                                                loaderBg: '#ff6849',
+                                                icon: 'success',
+                                                hideAfter: 3000,
+                                                stack: 6
+                                            });
+                                            $('#addAllotMoneyModal').modal('hide');
+                                            refresh();
+                                        }
+                                    },
+                                    error: function (doc) {
+                                        $.toast({
+                                            heading: '错误',
+                                            text: '网络错误，请稍后重试！',
+                                            position: 'top-right',
+                                            loaderBg: '#ff6849',
+                                            icon: 'error',
+                                            hideAfter: 3000,
+                                            stack: 6
+                                        });
+                                    }
+                                });
+                            });
+                        }
+                    });
                 });
             }
 
-            $('#del-admin-info').click(function(){
+            function onPostBodySon(res) {
+                $("[data-toggle='tooltip']").tooltip();
+
+                $('.editSonProject').click(function () {
+                    $('#editSonProjectModal').modal('show');
+                    service_id = $(this).attr('data-service-id');
+                    if (service_id == 19) {
+                        $('#cost-sonproject-check-cost-show').show();
+                    } else {
+                        $('#cost-sonproject-check-cost-show').hide();
+                    }
+
+                    var index = $(this).attr('data-sonproject-index');
+                    public_project_id = $(this).attr('data-project-id');
+                    public_sontable_index = $(this).attr('data-project-id');
+                    var data = $('#sonproject-table-' + public_sontable_index).bootstrapTable('getData');
+                    public_sonproject_id = data[index].id;
+                    $('#edit-son-project-name').val(data[index].name);
+                    addSonProfession('#edit-son-project-profession', data[index].profession, data[index].profession_id);
+                    $('#edit-son-project-remark').val(data[index].remark);
+                    $('#edit-son-project-cost').val(data[index].cost);
+                    addSonMarcher('#edit-son-project-marcher', data[index].marchers, data[index].marcher_id);
+                    $('#edit-son-project-basic-rate').val(data[index].rates.basic_rate);
+                    $('#edit-son-project-check-rate').val(data[index].rates.check_rate);
+                    $('#edit-son-project-start-date').val(data[index].start_date);
+                    $('#edit-son-project-end-date').val(data[index].end_date);
+                    $('#edit-son-project-checkcost').val(data[index].check_cost);
+                });
+            }
+
+            function addSonProfession(id, data, select) {
+                $(id).empty();
+                $(id).append('<option value="">选择专业类型</option>');
+                var count = data.length;
+                var b = "";
+                for (var i = 0; i < count; i++) {
+                    b += "<option value='" + data[i].id + "'>" + data[i].name + "</option>";
+                }
+                $(id).append(b);
+                $(id).val(select);
+            }
+
+            function addSonMarcher(id, data, select) {
+                $(id).empty();
+                $(id).append('<option value="">选择专项实施人</option>');
+                var count = data.length;
+                var b = "";
+                for (var i = 0; i < count; i++) {
+                    b += "<option value='" + data[i].admin_id + "'>" + data[i].name + "</option>";
+                }
+                $(id).append(b);
+                $(id).val(select);
+            }
+
+            $('#income-money-submit').click(function () {
                 $.ajax({
                     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    url: 'delAdmin',
+                    url: 'incomeMoney',
                     type: 'POST',
                     data: {
-                        admin_id: del_admin_id
+                        project_id: public_project_id,
+                        money: $('#income-money').val(),
+                        receipt_date: $('#income-money-date').val()
                     },
                     success: function (doc) {
                         if (doc.code) {
@@ -2142,7 +1564,7 @@
                                 hideAfter: 3000,
                                 stack: 6
                             });
-                            $('#confirmDelAdmin').modal('hide');
+                            $('#addIncomeMoneyModal').modal('hide');
                             refresh();
                         }
                     },
@@ -2160,260 +1582,154 @@
                 });
             });
 
-            $('#addAdminInfoModal').on('hide.bs.modal', function () {
-                $('#admin_family_table').bootstrapTable('destroy');
-                $('#admin_certificate_table').bootstrapTable('destroy');
-                $('#admininfo_pic_table').bootstrapTable('destroy');
+            $('#allot-money-submit').click(function () {
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: 'allotMoney',
+                    type: 'POST',
+                    data: {
+                        project_id: public_project_id,
+                        money: $('#allot-money').val(),
+                        allot_year: $('#allot-money-year').val()
+                    },
+                    success: function (doc) {
+                        if (doc.code) {
+                            $.toast({
+                                heading: '警告',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'warning',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        } else {
+                            $.toast({
+                                heading: '成功',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'success',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                            $('#addAllotMoneyModal').modal('hide');
+                            refresh();
+                        }
+                    },
+                    error: function (doc) {
+                        $.toast({
+                            heading: '错误',
+                            text: '网络错误，请稍后重试！',
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'error',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                });
             });
 
-            $('#editAdminInfoModal').on('hide.bs.modal', function () {
-                $("input[name='edit-admin_professions_checkbox_group']")
+            $('#check-project-sum-cost').click(function () {
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: 'getCostProjectMoney',
+                    type: 'POST',
+                    data: {
+                        service_id: $('#check-project-service').val(),
+                        cost: $('#check-project-cost').val(),
+                        project_basic_rate: $('#check-project-basic-rate').val(),
+                        min_profit: $('#check-project-min-profit').val(),
+                        check_cost: $('#check-project-checkcost').val(),
+                        project_check_rate: $('#check-project-check-rate').val(),
+                        check_cost_rate: $('#check-project-check-cost-rate').val()
+                    },
+                    success: function (doc) {
+                        if (doc.code) {
+                            $.toast({
+                                heading: '警告',
+                                text: doc.data,
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'warning',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        } else {
+                            $.toast({
+                                heading: '成功',
+                                text: '费用计算成功',
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'success',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                            $('#check-project-check-money').val(doc.data.check_money);
+                            $('#check-project-service-fee').val(doc.data.service_money);
+                        }
+                    },
+                    error: function (doc) {
+                        $.toast({
+                            heading: '错误',
+                            text: '网络错误，请稍后重试！',
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'error',
+                            hideAfter: 3000,
+                            stack: 6
+                        });
+                    }
+                });
+            });
+
+            $('#checkProjectModal').on('hide.bs.modal', function () {
+                $('#sonproject-cost-table').bootstrapTable('destroy');
+            });
+
+            $('#addCpattachmentModal').on('hide.bs.modal', function () {
+                $('#add-cpattachment-table').bootstrapTable('destroy');
+            });
+
+            $('#editProjectModal').on('hide.bs.modal', function () {
+                $("input[name='edit-project-professions-checkbox-group']")
                     .map(function (index, elem) {
-                        $(elem).removeAttr('checked');
+                        $(elem).prop("checked", false);
                     });
-                $('#edit-admin_family_table').bootstrapTable('destroy');
-                $('#edit-admin_certificate_table').bootstrapTable('destroy');
-                $('#edit-admininfo_pic_table').bootstrapTable('destroy');
             });
 
-            function clearModalInput() {
-                $("#addAdminInfoForm")[0].reset();
-                $('#admininfo-avatar').siblings('.dropify-preview')
-                    .children('.dropify-render').children('img')
-                    .attr('src', "{{ asset('admin/avatars/avatar.png') }}");
+            $('#editSonProjectModal').on('hide.bs.modal', function () {
+                $('#edit-cspattachment-table').bootstrapTable('destroy');
+            });
+
+            $('#addIncomeMoneyModal').on('hide.bs.modal', function () {
+                $('#income-money-table').bootstrapTable('destroy');
+            });
+
+            $('#addAllotMoneyModal').on('hide.bs.modal', function () {
+                $('#allot-money-table').bootstrapTable('destroy');
+            });
+
+            $('#project-type-select').change(function () {
+                refresh();
+            });
+
+            $('#project-search-button').click(function () {
+                refresh();
+            });
+
+            //文件上传
+            $('#add-cpattachment-button').click(function () {
+                $('#upload-progress').show();
+                $('#output').show();
+                aetherupload(this, 'file').success(someCallback).upload();
+            });
+            someCallback = function () {
+                attachment();
+                $('#max-file-name').val('');
+                $('#file').val('');
             }
-
-            //添加人员信息
-            var form = $("#addAdminInfoForm").show();
-
-            $("#addAdminInfoForm").steps({
-                headerTag: "h6",
-                bodyTag: "section",
-                transitionEffect: "fade",
-                titleTemplate: '<span class="step">#index#</span> #title#',
-                labels: {
-                    next: "下一步",
-                    previous: "上一步",
-                    finish: "提交"
-                },
-                onStepChanging: function (event, currentIndex, newIndex) {
-                    return currentIndex > newIndex || (currentIndex < newIndex && (form.find(".body:eq(" + newIndex + ") label.error").remove(), form.find(".body:eq(" + newIndex + ") .error").removeClass("error")), form.validate().settings.ignore = ":disabled,:hidden", form.valid())
-                },
-                onFinishing: function (event, currentIndex) {
-                    return form.validate().settings.ignore = ":disabled", form.valid()
-                },
-                onFinished: function (event, currentIndex) {
-                    $.ajax({
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        url: 'addAdminInfo',
-                        type: 'POST',
-                        data: {
-                            //input
-                            username: $('#username').val(),
-                            realname: $('#realname').val(),
-                            birthday: $('#birthday').val(),
-                            cardno: $('#cardno').val(),
-                            phone: $('#phone').val(),
-                            address: $('#address').val(),
-                            school: $('#school').val(),
-                            major: $('#major').val(),
-                            graduate_date: $('#graduate_date').val(),
-                            work_year: $('#work_year').val(),
-                            level_type: $('#level_type').val(),
-                            work_start_date: $('#work_start_date').val(),
-                            //textarea
-                            remark: $('#remark').val(),
-                            work_resume: $('#work_resume').val(),
-                            study_resume: $('#study_resume').val(),
-                            performance: $('#performance').val(),
-                            rewards: $('#rewards').val(),
-                            //select
-                            adminsex: $('#adminsex').val(),
-                            education_id: $('#education').val(),
-                            level_id: $('#level_id').val(),
-                            department_id: $('#department').val(),
-                            admin_level_id: $('#admin_level').val(),
-                            technical_level_id: $('#technical_level').val(),
-                            work_status: $('#work_status').val(),
-                            //checkbox
-                            admin_profession: $("input[name='admin_professions_checkbox_group']:checked")
-                                .map(function (index, elem) {
-                                    return $(elem).val();
-                                }).get(),
-                            avatar: $('#admininfo-avatar').siblings('.dropify-preview')
-                                .children('.dropify-render').children('img')
-                                .attr('src')
-                        },
-                        success: function (doc) {
-                            if (doc.code) {
-                                $.toast({
-                                    heading: '警告',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'warning',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                            } else {
-                                $.toast({
-                                    heading: '成功',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'success',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                                clearModalInput();
-                                $('#addAdminInfoModal').modal('hide');
-                                refresh();
-                            }
-                        },
-                        error: function (doc) {
-                            $.toast({
-                                heading: '错误',
-                                text: '网络错误，请稍后重试！',
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'error',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        }
-                    });
-                }
-            }),
-                $("#addAdminInfoForm").validate({
-                    ignore: "input[type=hidden]",
-                    errorClass: "text-danger",
-                    successClass: "text-success",
-                    highlight: function (element, errorClass) {
-                        $(element).removeClass(errorClass)
-                    },
-                    unhighlight: function (element, errorClass) {
-                        $(element).removeClass(errorClass)
-                    },
-                    errorPlacement: function (error, element) {
-                        error.insertAfter(element)
-                    }
-                });
-            //编辑人员信息
-            var form1 = $("#editAdminInfoForm").show();
-
-            $("#editAdminInfoForm").steps({
-                headerTag: "h6",
-                bodyTag: "section",
-                transitionEffect: "fade",
-                titleTemplate: '<span class="step">#index#</span> #title#',
-                labels: {
-                    next: "下一步",
-                    previous: "上一步",
-                    finish: "提交"
-                },
-                onStepChanging: function (event, currentIndex, newIndex) {
-                    return currentIndex > newIndex || (currentIndex < newIndex && (form1.find(".body:eq(" + newIndex + ") label.error").remove(), form1.find(".body:eq(" + newIndex + ") .error").removeClass("error")), form1.validate().settings.ignore = ":disabled,:hidden", form1.valid())
-                },
-                onFinishing: function (event, currentIndex) {
-                    return form1.validate().settings.ignore = ":disabled", form1.valid()
-                },
-                onFinished: function (event, currentIndex) {
-                    $.ajax({
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        url: 'editAdminInfo',
-                        type: 'POST',
-                        data: {
-                            admininfo_id: $('#edit-admininfo_id').val(),
-                            //input
-                            username: $('#edit-username').val(),
-                            realname: $('#edit-realname').val(),
-                            birthday: $('#edit-birthday').val(),
-                            cardno: $('#edit-cardno').val(),
-                            phone: $('#edit-phone').val(),
-                            address: $('#edit-address').val(),
-                            school: $('#edit-school').val(),
-                            major: $('#edit-major').val(),
-                            graduate_date: $('#edit-graduate_date').val(),
-                            work_year: $('#edit-work_year').val(),
-                            level_type: $('#edit-level_type').val(),
-                            work_start_date: $('#edit-work_start_date').val(),
-                            //textarea
-                            remark: $('#edit-remark').val(),
-                            work_resume: $('#edit-work_resume').val(),
-                            study_resume: $('#edit-study_resume').val(),
-                            performance: $('#edit-performance').val(),
-                            rewards: $('#edit-rewards').val(),
-                            //select
-                            adminsex: $('#edit-adminsex').val(),
-                            education_id: $('#edit-education').val(),
-                            level_id: $('#edit-level_id').val(),
-                            department_id: $('#edit-department').val(),
-                            admin_level_id: $('#edit-admin_level').val(),
-                            technical_level_id: $('#edit-technical_level').val(),
-                            work_status: $('#edit-work_status').val(),
-                            //checkbox
-                            admin_profession: $("input[name='edit-admin_professions_checkbox_group']:checked")
-                                .map(function (index, elem) {
-                                    return $(elem).val();
-                                }).get(),
-                            avatar: $('#edit-admininfo-avatar').siblings('.dropify-preview')
-                                .children('.dropify-render').children('img')
-                                .attr('src')
-                        },
-                        success: function (doc) {
-                            if (doc.code) {
-                                $.toast({
-                                    heading: '警告',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'warning',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                            } else {
-                                $.toast({
-                                    heading: '成功',
-                                    text: doc.data,
-                                    position: 'top-right',
-                                    loaderBg: '#ff6849',
-                                    icon: 'success',
-                                    hideAfter: 3000,
-                                    stack: 6
-                                });
-                                $('#editAdminInfoModal').modal('hide');
-                                refresh();
-                            }
-                        },
-                        error: function (doc) {
-                            $.toast({
-                                heading: '错误',
-                                text: '网络错误，请稍后重试！',
-                                position: 'top-right',
-                                loaderBg: '#ff6849',
-                                icon: 'error',
-                                hideAfter: 3000,
-                                stack: 6
-                            });
-                        }
-                    });
-                }
-            }),
-                $("#editAdminInfoForm").validate({
-                    ignore: "input[type=hidden]",
-                    errorClass: "text-danger",
-                    successClass: "text-success",
-                    highlight: function (element, errorClass) {
-                        $(element).removeClass(errorClass)
-                    },
-                    unhighlight: function (element, errorClass) {
-                        $(element).removeClass(errorClass)
-                    },
-                    errorPlacement: function (error, element) {
-                        error.insertAfter(element)
-                    }
-                });
-
         })
     </script>
 @endsection

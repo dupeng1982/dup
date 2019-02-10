@@ -175,6 +175,11 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->get('myextract', 'AdminController@myextract');
     //财务管理
     $router->get('financemanage', 'AdminController@financemanage');
+    $router->post('getFinaceManageList', 'AdminController@getFinaceManageList');
+    $router->post('incomeMoney', 'AdminController@incomeMoney');
+    $router->post('allotMoney', 'AdminController@allotMoney');
+    $router->post('delIncomeMoney', 'AdminController@delIncomeMoney');
+    $router->post('delAllotMoney', 'AdminController@delAllotMoney');
 
     //上传大文件
     Route::any('aetherupload/preprocess', '\AetherUpload\UploadHandler@preprocess');
@@ -185,7 +190,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     Route::get('aetherupload/download/{group}/{subDir}/{resourceName}/{newName}', '\AetherUpload\ResourceHandler@downloadResource');
 
     //测试
-    $router->any('test', 'AdminController@getCostProjectMoney');
+    $router->any('test', 'AdminController@getFinaceManageList');
 });
 
 

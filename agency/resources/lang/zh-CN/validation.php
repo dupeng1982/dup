@@ -214,6 +214,11 @@ return [
         'project_basic_rate' => '基础费率',
         'check_cost_rate' => '核定费率',
         'min_profit' => '最小收费',
+        'receipt_date' => '收款日期',
+        'allot_year' => '分配年度',
+        'money' => '金额',
+        'allot_id' => '分配金额ID',
+        'income_id' => '收入金额ID',
 
     ],
 

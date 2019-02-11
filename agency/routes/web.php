@@ -173,6 +173,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('getProjectUnitList', 'AdminController@getProjectUnitList');
     //我的提成
     $router->get('myextract', 'AdminController@myextract');
+    $router->post('getMyExtractList', 'AdminController@getMyExtractList');
     //财务管理
     $router->get('financemanage', 'AdminController@financemanage');
     $router->post('getFinaceManageList', 'AdminController@getFinaceManageList');
@@ -180,6 +181,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('allotMoney', 'AdminController@allotMoney');
     $router->post('delIncomeMoney', 'AdminController@delIncomeMoney');
     $router->post('delAllotMoney', 'AdminController@delAllotMoney');
+    //提成统计
+    $router->get('extractstatistics', 'AdminController@extractstatistics');
+    $router->post('getExtractList', 'AdminController@getExtractList');
 
     //上传大文件
     Route::any('aetherupload/preprocess', '\AetherUpload\UploadHandler@preprocess');
@@ -190,7 +194,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     Route::get('aetherupload/download/{group}/{subDir}/{resourceName}/{newName}', '\AetherUpload\ResourceHandler@downloadResource');
 
     //测试
-    $router->any('test', 'AdminController@getFinaceManageList');
+    $router->any('test', 'AdminController@getExtractList');
 });
 
 

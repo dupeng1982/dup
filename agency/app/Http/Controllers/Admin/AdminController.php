@@ -26,6 +26,7 @@ use App\Models\ContractType;
 use App\Models\CostProject;
 use App\Models\CostProjectList;
 use App\Models\CostSonProject;
+use App\Models\CostSonProjectList;
 use App\Models\Cpattachment;
 use App\Models\DateSet;
 use App\Models\Department;
@@ -3259,14 +3260,49 @@ class AdminController extends Controller
     /*******我的提成视图*******/
     public function myextract()
     {
-        $data['education'] = Education::get();
-        $data['level'] = Level::get();
-        $data['department'] = Department::get();
-        $data['admin_level'] = AdminLevel::get();
-        $data['technical_level'] = TechnicalLevel::get();
-        $data['work_status'] = WorkStatus::get();
+        $data['project_type'] = Service::get();
         $data['professions'] = Profession::get();
+        $data['allot_year'] = $this->_getAllotYear();
         return view('admin/myextract', ['data' => $data]);
+    }
+
+    //获取我的提成列表
+    public function getMyExtractList(Request $request)
+    {
+        $rule = [
+            'page' => 'integer',
+            'item' => 'integer',
+            'allot_year' => 'nullable|date_format:Y'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $arr = array();
+        $request->service_id && array_push($arr, ['cost_project.service_id', '=', $request->service_id]);
+        $request->profession_id && array_push($arr, ['cost_sonproject.profession_id', '=', $request->profession_id]);
+        $search = $request->search;
+        $allot_year = $request->allot_year ? $request->allot_year : 'null';
+        $admin_id = Auth::guard('admin')->user()->id;
+        $data = CostSonProjectList::select('cost_sonproject.*', 'cost_project.name as cost_project_name',
+            'admininfo.name as admininfo_name', 'service.name as service_name',
+            DB::raw($allot_year . ' as allot_year'))
+            ->leftjoin('cost_project', 'cost_project.id', '=', 'cost_sonproject.project_id')
+            ->leftjoin('service', 'service.id', '=', 'cost_project.service_id')
+            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'cost_sonproject.marcher_id')
+            ->where('cost_sonproject.status', 3)
+            ->where('cost_project.status', 6)
+            ->where('cost_sonproject.marcher_id', $admin_id)
+            ->where($arr)
+            ->where(function ($q) use ($search) {
+                $search &&
+                $q->orWhere('cost_sonproject.number', 'like', '%' . $search . '%')
+                    ->orWhere('admininfo.name', 'like', '%' . $search . '%')
+                    ->orWhere('cost_sonproject.name', 'like', '%' . $search . '%')
+                    ->orWhere('cost_project.name', 'like', '%' . $search . '%');
+            })
+            ->paginate($request->item);
+        return $this->resp(0, $data);
     }
 
     /*******财务管理视图*******/
@@ -3393,6 +3429,66 @@ class AdminController extends Controller
         }
         Allot::where('id', $request->allot_id)->delete();
         return $this->resp(0, '删除分配金额成功！');
+    }
+
+    /*******提成统计视图*******/
+    public function extractstatistics()
+    {
+        $data['project_type'] = Service::get();
+        $data['professions'] = Profession::get();
+        $data['allot_year'] = $this->_getAllotYear();
+        return view('admin/extractstatistics', ['data' => $data]);
+    }
+
+    //年份构造
+    private function _getAllotYear()
+    {
+        $arr = array();
+        $year = Date::now()->format('Y');
+        for ($i = $year; $i >= 2010; $i--) {
+            array_push($arr, [
+                'id' => $i,
+                'name' => $i
+            ]);
+        }
+        return $arr;
+    }
+
+    //获取提成列表
+    public function getExtractList(Request $request)
+    {
+        $rule = [
+            'page' => 'integer',
+            'item' => 'integer',
+            'allot_year' => 'nullable|date_format:Y'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $arr = array();
+        $request->service_id && array_push($arr, ['cost_project.service_id', '=', $request->service_id]);
+        $request->profession_id && array_push($arr, ['cost_sonproject.profession_id', '=', $request->profession_id]);
+        $search = $request->search;
+        $allot_year = $request->allot_year ? $request->allot_year : 'null';
+        $data = CostSonProjectList::select('cost_sonproject.*', 'cost_project.name as cost_project_name',
+            'admininfo.name as admininfo_name', 'service.name as service_name',
+            DB::raw($allot_year . ' as allot_year'))
+            ->leftjoin('cost_project', 'cost_project.id', '=', 'cost_sonproject.project_id')
+            ->leftjoin('service', 'service.id', '=', 'cost_project.service_id')
+            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'cost_sonproject.marcher_id')
+            ->where('cost_sonproject.status', 3)
+            ->where('cost_project.status', 6)
+            ->where($arr)
+            ->where(function ($q) use ($search) {
+                $search &&
+                $q->orWhere('cost_sonproject.number', 'like', '%' . $search . '%')
+                    ->orWhere('admininfo.name', 'like', '%' . $search . '%')
+                    ->orWhere('cost_sonproject.name', 'like', '%' . $search . '%')
+                    ->orWhere('cost_project.name', 'like', '%' . $search . '%');
+            })
+            ->paginate($request->item);
+        return $this->resp(0, $data);
     }
 
 }

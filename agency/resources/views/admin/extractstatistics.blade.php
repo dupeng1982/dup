@@ -90,7 +90,7 @@
     <script>
         $(function () {
             $('#project_table').bootstrapTable({
-                url: 'getMyExtractList',
+                url: 'getExtractList',
                 ajaxOptions: {headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}},
                 cache: false,
                 method: 'POST',
@@ -160,7 +160,7 @@
             });
 
             function refresh() {
-                $('#project_table').bootstrapTable('refresh', {url: 'getMyExtractList'});
+                $('#project_table').bootstrapTable('refresh', {url: 'getExtractList'});
             }
 
             $('#project-type-select').change(function () {

@@ -173,6 +173,7 @@
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="{{ url('admin/myextract') }}">我的提成</a></li>
                             <li><a href="{{ url('admin/financemanage') }}">财务管理</a></li>
+                            <li><a href="{{ url('admin/extractstatistics') }}">提成统计</a></li>
                         </ul>
                     </li>
                     <li>

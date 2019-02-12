@@ -979,10 +979,15 @@
                             field: 'marcher_name',
                             title: '实施人'
                         }, {
+                            field: 'check_result_txt',
+                            title: '项目考核'
+                        }, {
                             field: 'id',
                             title: '操作',
                             formatter: function (value, row, index) {
-                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-service-id=' + service_id + ' data-toggle="tooltip" data-original-title="查看"><i class="ti-eye" aria-hidden="true"></i></button>';
+                                return '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn editSonProject" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-service-id=' + service_id + ' data-toggle="tooltip" data-original-title="查看"><i class="ti-eye" aria-hidden="true"></i></button>' +
+                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn checkSonProjectYes" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="合格"><i class="ti-check" aria-hidden="true"></i></button>' +
+                                    '<button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn checkSonProjectNo" data-project-id=' + row.project_id + ' data-sonproject-index=' + index + ' data-toggle="tooltip" data-original-title="不合格"><i class="ti-close" aria-hidden="true"></i></button>';
                             }
                         }],
                         onPostBody: onPostBodySon
@@ -1005,6 +1010,7 @@
 
             function sonrefresh(project_id) {
                 $('#sonproject-table-' + project_id).bootstrapTable('refresh', {url: 'getCostSonProjectList'});
+                $("[data-toggle='tooltip']").tooltip('hide');
             }
 
             function attachment() {
@@ -1281,6 +1287,110 @@
                     $('#edit-son-project-start-date').val(data[index].start_date);
                     $('#edit-son-project-end-date').val(data[index].end_date);
                     $('#edit-son-project-checkcost').val(data[index].check_cost);
+                });
+
+                $('.checkSonProjectYes').click(function () {
+                    var index = $(this).attr('data-sonproject-index');
+                    public_sontable_index = $(this).attr('data-project-id');
+                    var data = $('#sonproject-table-' + public_sontable_index).bootstrapTable('getData');
+                    public_sonproject_id = data[index].id;
+
+                    $.ajax({
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        url: 'checkSonProjectResult',
+                        type: 'POST',
+                        data: {
+                            sonproject_id: public_sonproject_id,
+                            check_result: 1
+                        },
+                        success: function (doc) {
+                            if (doc.code) {
+                                $.toast({
+                                    heading: '警告',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'warning',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                            } else {
+                                $.toast({
+                                    heading: '成功',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'success',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                                sonrefresh(public_sontable_index);
+                            }
+                        },
+                        error: function (doc) {
+                            $.toast({
+                                heading: '错误',
+                                text: '网络错误，请稍后重试！',
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'error',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        }
+                    });
+                });
+
+                $('.checkSonProjectNo').click(function () {
+                    var index = $(this).attr('data-sonproject-index');
+                    public_sontable_index = $(this).attr('data-project-id');
+                    var data = $('#sonproject-table-' + public_sontable_index).bootstrapTable('getData');
+                    public_sonproject_id = data[index].id;
+
+                    $.ajax({
+                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                        url: 'checkSonProjectResult',
+                        type: 'POST',
+                        data: {
+                            sonproject_id: public_sonproject_id,
+                            check_result: 2
+                        },
+                        success: function (doc) {
+                            if (doc.code) {
+                                $.toast({
+                                    heading: '警告',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'warning',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                            } else {
+                                $.toast({
+                                    heading: '成功',
+                                    text: doc.data,
+                                    position: 'top-right',
+                                    loaderBg: '#ff6849',
+                                    icon: 'success',
+                                    hideAfter: 3000,
+                                    stack: 6
+                                });
+                                sonrefresh(public_sontable_index);
+                            }
+                        },
+                        error: function (doc) {
+                            $.toast({
+                                heading: '错误',
+                                text: '网络错误，请稍后重试！',
+                                position: 'top-right',
+                                loaderBg: '#ff6849',
+                                icon: 'error',
+                                hideAfter: 3000,
+                                stack: 6
+                            });
+                        }
+                    });
                 });
             }
 

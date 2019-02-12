@@ -33,7 +33,7 @@
                            data-page-size="7" id="project_table">
                         <div class="m-t-20">
                             <div class="row">
-                                <div class="col-3">
+                                <div class="col-2">
                                     <h4>提成统计列表</h4>
                                 </div>
                                 <div class="col-2">
@@ -66,12 +66,16 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-3">
+                                <div class="col-4">
                                     <div class="form-group">
                                         <input id="demo-input-search2" type="text" placeholder="Search"
                                                autocomplete="off">
                                         <span><button id="project-search-button"
                                                       class="btn btn-info btn-search">查找</button></span>
+                                        <span><button id="import-extract-statistics" class="btn btn-info btn-search"
+                                                      onclick="event.preventDefault();
+                                                      document.getElementById('import-excel-form').submit();">
+                                                导出EXCEL</button></span>
                                     </div>
                                 </div>
                             </div>
@@ -81,6 +85,14 @@
             </div>
         </div>
     </div>
+    <form id="import-excel-form" action="importExtractStatistics" method="GET"
+          style="display: none;">
+        @csrf
+        <input type="text" value="" name="allot_year" id="req-year">
+        <input type="text" value="" name="service_id" id="req-service">
+        <input type="text" value="" name="profession_id" id="req-profession">
+        <input type="text" value="" name="search" id="req-search">
+    </form>
 @endsection
 
 @section('admin-js')
@@ -165,18 +177,22 @@
 
             $('#project-type-select').change(function () {
                 refresh();
+                $('#req-service').val(this.value);
             });
 
             $('#project-search-button').click(function () {
                 refresh();
+                $('#req-search').val($('#demo-input-search2').val());
             });
 
             $('#project-profession-select').change(function () {
                 refresh();
+                $('#req-profession').val(this.value);
             });
 
             $('#allot-year-select').change(function () {
                 refresh();
+                $('#req-year').val(this.value);
             });
         })
     </script>

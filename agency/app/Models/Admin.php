@@ -28,10 +28,26 @@ class Admin extends Authenticatable
         'password', 'remember_token',
     ];
 
-    protected $appends = ['admininfo'];
+    protected $appends = ['admininfo', 'project_info', 'sonproject_info'];
 
     public function getAdmininfoAttribute()
     {
-        return  Admininfo::where('admin_id', $this->id)->first();
+        return Admininfo::where('admin_id', $this->id)->first();
     }
+
+    public function getProjectInfoAttribute()
+    {
+        //项目状态：0-初始待分配，1-待审批，3-负责人待审核，4-技术负责人待审核，5-结项待审核，6-结项
+        return CostProject::distinct('status')->where('checker_id', $this->id)
+            ->whereIn('status', [3, 4, 5])->pluck('status')->toArray();
+    }
+
+    public function getSonprojectInfoAttribute()
+    {
+        //项目状态：0-初始待分配，1-待审批，2-实施人待审核，3-结项
+        return CostSonProjectM::distinct('status')->where('checker_id', $this->id)
+            ->whereIn('status', [1, 2])->pluck('status')->toArray();
+    }
+
+
 }

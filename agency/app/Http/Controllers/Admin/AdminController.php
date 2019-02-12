@@ -27,6 +27,7 @@ use App\Models\CostProject;
 use App\Models\CostProjectList;
 use App\Models\CostSonProject;
 use App\Models\CostSonProjectList;
+use App\Models\CostSonProjectM;
 use App\Models\Cpattachment;
 use App\Models\DateSet;
 use App\Models\Department;
@@ -54,7 +55,11 @@ class AdminController extends Controller
     //公用页面
     public function index()
     {
-        return view('admin/index');
+        $data['project_num'] = CostProject::count();
+        $data['sonproject_num'] = CostSonProjectM::count();
+        $data['income_money'] = Income::sum('money');
+        $data['allot_money'] = Allot::sum('money');
+        return view('admin/index', ['data' => $data]);
     }
 
     //签到
@@ -3127,6 +3132,23 @@ class AdminController extends Controller
         });
     }
 
+    //项目考核
+    public function checkSonProjectResult(Request $request)
+    {
+        $rule = [
+            'sonproject_id' => 'required|integer|exists:cost_sonproject,id',
+            'check_result' => 'required|integer|between:1,2'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        CostSonProjectM::where('id', $request->sonproject_id)->update([
+            'check_result' => $request->check_result
+        ]);
+        return $this->resp(0, '操作成功！');
+    }
+
     /*******造价项目详情视图*******/
     public function costprojectinfo()
     {
@@ -3489,6 +3511,53 @@ class AdminController extends Controller
             })
             ->paginate($request->item);
         return $this->resp(0, $data);
+    }
+
+    //导出EXCEL
+    public function importExtractStatistics(Request $request)
+    {
+        $rule = [
+            'page' => 'integer',
+            'item' => 'integer',
+            'allot_year' => 'nullable|date_format:Y'
+        ];
+        $validator = Validator::make($request->all(), $rule);
+        if ($validator->fails()) {
+            return $this->resp(10000, $validator->messages()->first());
+        }
+        $arr = array();
+        $request->service_id && array_push($arr, ['cost_project.service_id', '=', $request->service_id]);
+        $request->profession_id && array_push($arr, ['cost_sonproject.profession_id', '=', $request->profession_id]);
+        $search = $request->search;
+        $allot_year = $request->allot_year ? $request->allot_year : 'null';
+        $rs = CostSonProjectList::select('cost_sonproject.*', 'cost_project.name as cost_project_name',
+            'admininfo.name as admininfo_name', 'service.name as service_name',
+            DB::raw($allot_year . ' as allot_year'))
+            ->leftjoin('cost_project', 'cost_project.id', '=', 'cost_sonproject.project_id')
+            ->leftjoin('service', 'service.id', '=', 'cost_project.service_id')
+            ->leftjoin('admininfo', 'admininfo.admin_id', '=', 'cost_sonproject.marcher_id')
+            ->where('cost_sonproject.status', 3)
+            ->where('cost_project.status', 6)
+            ->where($arr)
+            ->where(function ($q) use ($search) {
+                $search &&
+                $q->orWhere('cost_sonproject.number', 'like', '%' . $search . '%')
+                    ->orWhere('admininfo.name', 'like', '%' . $search . '%')
+                    ->orWhere('cost_sonproject.name', 'like', '%' . $search . '%')
+                    ->orWhere('cost_project.name', 'like', '%' . $search . '%');
+            })
+            ->get();
+        $id = 1;
+        $cellData = Array();
+        foreach ($rs as $v) {
+            $cellData[] = array($id, $v->cost_project_name, $v->number, $v->name, $v->service_name,
+                $v->profession_name, $v->admininfo_name, $v->project_allot_money,
+                $v->check_allot_money, $v->check_result_name);
+            $id = $id + 1;
+        }
+        $cellHarder = ['序号', '项目名称', '专项编号', '专项名称', '项目类型', '专业类型', '实施人',
+            '项目提成（万元）', '考核提成（万元）', '考核状态'];
+        return new ExportController(collect($cellData), '提成统计表.xls', $cellHarder);
     }
 
 }

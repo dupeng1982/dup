@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="/admin/assets/images/favicon.png">
-    <title>登陆</title>
+    <title>{{ config('app.name', '金信造价咨询') }}</title>
     <!-- Bootstrap Core CSS -->
     <link href="/admin/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
@@ -38,7 +38,7 @@
 <!-- Main wrapper - style you can find in pages.scss -->
 <!-- ============================================================== -->
 <section id="wrapper">
-    <div class="login-register" style="background-image:url(/admin/assets/images/background/login-register.jpg);">
+    <div class="login-register" style="background-image:url(/admin/assets/images/background/timg.jpg);">
         <div class="login-box card">
             <div class="card-body">
                 <form class="form-horizontal form-material" id="loginform" method="POST"

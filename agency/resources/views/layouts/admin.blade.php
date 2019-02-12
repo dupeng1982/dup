@@ -5,11 +5,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="测试网站">
+    <meta name="description" content="金信造价咨询">
     <meta name="author" content="dupeng">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('admin/assets/images/favicon.png') }}">
-    <title>{{ config('app.name', '测试应用') }}</title>
+    <title>{{ config('app.name', '金信造价咨询') }}</title>
     <link href="{{ asset('admin/assets/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('admin/assets/plugins/toast-master/css/jquery.toast.css') }}" rel="stylesheet"/>
     <link href="{{ asset('admin/assets/plugins/dropify/dist/css/dropify.min.css') }}" rel="stylesheet">
@@ -59,22 +59,61 @@
                         <a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href=""
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
                                     class="mdi mdi-message"></i>
-                            <div class="notify"><span class="heartbit"></span> <span class="point"></span></div>
+                            @if(Auth::guard('admin')->user()->project_info || Auth::guard('admin')->user()->sonproject_info)
+                                <div class="notify"><span class="heartbit"></span> <span class="point"></span></div>
+                            @endif
                         </a>
                         <div class="dropdown-menu dropdown-menu-right mailbox scale-up">
                             <ul>
                                 <li>
-                                    <div class="drop-title">待办事项</div>
+                                    <div class="drop-title">
+                                        @if(Auth::guard('admin')->user()->project_info || Auth::guard('admin')->user()->sonproject_info)
+                                            待办事项
+                                        @else
+                                            您暂时没有需要办理的业务！
+                                        @endif
+                                    </div>
                                 </li>
                                 <li>
                                     <div class="message-center">
-                                        <a href="#">
-                                            <div class="btn btn-danger btn-circle"><i class="fa fa-link"></i></div>
-                                            <div class="mail-contnet">
-                                                <h5>Luanch Admin</h5> <span
-                                                        class="mail-desc">Just see the my new admin!</span> <span
-                                                        class="time">9:30 AM</span></div>
-                                        </a>
+                                        @foreach(Auth::guard('admin')->user()->project_info as $value)
+                                            @if($value == 3)
+                                                <a href="/admin/costprojectcheck">
+                                                    <div class="btn btn-danger btn-circle"><i class="fa fa-link"></i>
+                                                    </div>
+                                                    <div class="mail-contnet"><h5>您有项目审核业务，点击前往</h5></div>
+                                                </a>
+                                            @elseif($value == 4)
+                                                <a href="/admin/costprojecttechcheck">
+                                                    <div class="btn btn-danger btn-circle"><i class="fa fa-link"></i>
+                                                    </div>
+                                                    <div class="mail-contnet"><h5>您有技术审核业务，点击前往</h5></div>
+                                                </a>
+                                            @elseif($value == 5)
+                                                <a href="/admin/costprojectknotcheck">
+                                                    <div class="btn btn-danger btn-circle"><i class="fa fa-link"></i>
+                                                    </div>
+                                                    <div class="mail-contnet"><h5>您有结项审核业务，点击前往</h5></div>
+                                                </a>
+                                            @else
+                                            @endif
+                                        @endforeach
+                                        @foreach(Auth::guard('admin')->user()->sonproject_info as $value)
+                                            @if($value == 1)
+                                                <a href="/admin/costsonprojectcheck">
+                                                    <div class="btn btn-danger btn-circle"><i class="fa fa-link"></i>
+                                                    </div>
+                                                    <div class="mail-contnet"><h5>您有项目初审业务，点击前往</h5></div>
+                                                </a>
+                                            @elseif($value == 2)
+                                                <a href="/admin/costsonprojectprofessioncheck">
+                                                    <div class="btn btn-danger btn-circle"><i class="fa fa-link"></i>
+                                                    </div>
+                                                    <div class="mail-contnet"><h5>您有专项审核业务，点击前往</h5></div>
+                                                </a>
+                                            @else
+                                            @endif
+                                        @endforeach
                                     </div>
                                 </li>
                             </ul>

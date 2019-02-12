@@ -161,6 +161,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->post('getCostProjectECheckList', 'AdminController@getCostProjectECheckList');
     $router->post('CostProjectECheck', 'AdminController@CostProjectECheck');
     $router->post('CostProjectEBack', 'AdminController@CostProjectEBack');
+    $router->post('checkSonProjectResult', 'AdminController@checkSonProjectResult');
     //造价项目详情
     $router->get('costprojectinfo', 'AdminController@costprojectinfo');
     $router->post('getCostProjectFCheckList', 'AdminController@getCostProjectFCheckList');
@@ -184,6 +185,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     //提成统计
     $router->get('extractstatistics', 'AdminController@extractstatistics');
     $router->post('getExtractList', 'AdminController@getExtractList');
+    $router->any('importExtractStatistics', 'AdminController@importExtractStatistics');
 
     //上传大文件
     Route::any('aetherupload/preprocess', '\AetherUpload\UploadHandler@preprocess');

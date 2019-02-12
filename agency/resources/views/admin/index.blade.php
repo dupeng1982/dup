@@ -5,44 +5,82 @@
 @endsection
 
 @section('admin-title')
-    <div class="">
-        <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10 btn-themecolor">
-            <i class="ti-settings text-white"></i></button>
-    </div>
-    <div class="form-group " id="aetherupload-wrapper"><!--组件最外部需要有一个名为aetherupload-wrapper的id，用以包装组件-->
-        <div class="controls">
-            <input type="file" id="file" onchange="aetherupload(this,'file').success(someCallback).upload()"/>
-            <!--需要有一个名为file的id，用以标识上传的文件，aetherupload(file,group)中第二个参数为分组名，success方法可用于声名上传成功后的回调方法名-->
-            <div class="progress " style="height: 6px;margin-bottom: 2px;margin-top: 10px;width: 200px;">
-                <div id="progressbar" style="background:blue;height:6px;width:0;"></div>
-                <!--需要有一个名为progressbar的id，用以标识进度条-->
+    <div class="row page-titles">
+        <div class="col-md-5 col-8 align-self-center">
+            <h3 class="text-themecolor m-b-0 m-t-0">首页</h3>
+        </div>
+        <div class="col-md-7 col-4 align-self-center">
+            <div class="d-flex m-t-10 justify-content-end">
+                <div class="">
+                    <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10 btn-themecolor">
+                        <i class="ti-settings text-white"></i></button>
+                </div>
             </div>
-            <span style="font-size:12px;color:#aaa;" id="output"></span><!--需要有一个名为output的id，用以标识提示信息-->
-            <input type="hidden" name="file1" id="savedpath"><!--需要有一个名为savedpath的id，用以标识文件保存路径的表单字段，还需要一个任意名称的name-->
-            <input type="hidden" id="upload-operator-id" value="{{ Auth::guard('admin')->user()->id }}">
-            <input type="hidden" id="upload-project-id" value="0">
-            <input type="hidden" id="max-file-name" value="这是个测试">
         </div>
     </div>
-    <div id="result"></div>
 @endsection
 
 @section('admin-content')
-
+    <div class="row">
+        <!-- Column -->
+        <div class="col-lg-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex flex-row">
+                        <div class="round round-lg align-self-center round-info"><i class="ti-wallet"></i></div>
+                        <div class="m-l-10 align-self-center">
+                            <h3 class="m-b-0 font-light">{{ $data['project_num'] }}个</h3>
+                            <h5 class="text-muted m-b-0">项目总数</h5></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Column -->
+        <!-- Column -->
+        <div class="col-lg-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex flex-row">
+                        <div class="round round-lg align-self-center round-warning"><i class="mdi mdi-cellphone-link"></i></div>
+                        <div class="m-l-10 align-self-center">
+                            <h3 class="m-b-0 font-lgiht">{{ $data['sonproject_num'] }}个</h3>
+                            <h5 class="text-muted m-b-0">专项总数</h5></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Column -->
+        <!-- Column -->
+        <div class="col-lg-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex flex-row">
+                        <div class="round round-lg align-self-center round-primary"><i class="mdi mdi-cart-outline"></i></div>
+                        <div class="m-l-10 align-self-center">
+                            <h3 class="m-b-0 font-lgiht">{{ $data['income_money'] }}万元</h3>
+                            <h5 class="text-muted m-b-0">总收入金额</h5></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Column -->
+        <!-- Column -->
+        <div class="col-lg-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex flex-row">
+                        <div class="round round-lg align-self-center round-danger"><i class="mdi mdi-bullseye"></i></div>
+                        <div class="m-l-10 align-self-center">
+                            <h3 class="m-b-0 font-lgiht">{{ $data['allot_money'] }}万元</h3>
+                            <h5 class="text-muted m-b-0">已分配金额</h5></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Column -->
+    </div>
 @endsection
 
 @section('admin-js')
-    <script src="{{ URL::asset('js/spark-md5.min.js') }}"></script>
-    <script src="{{ URL::asset('js/aetherupload.js') }}"></script>
-    <script>
-        // success(callback)中声名的回调方法需在此定义，参数callback可为任意名称，此方法将会在上传完成后被调用
-        // 可使用this对象获得fileName,fileSize,uploadBaseName,uploadExt,subDir,group,savedPath等属性的值
-        someCallback = function () {
-            // Example
-            $('#result').append(
-                '<p>执行回调 - 文件原名：<span >' + this.fileName + '</span> | 文件大小：<span >' + parseFloat(this.fileSize / (1000 * 1000)).toFixed(2) + 'MB' + '</span> | 文件储存名：<span >' + this.savedPath.substr(this.savedPath.lastIndexOf('/') + 1) + '</span></p>'
-            );
-        }
 
-    </script>
 @endsection

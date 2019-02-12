@@ -16,7 +16,7 @@ class CostSonProject extends Model
     public $timestamps = true;
     protected $guarded = ['id', 'created_at', 'updated_at'];
     protected $appends = ['profession_name', 'profession', 'status_txt', 'marchers', 'rates',
-        'project_allot_money', 'check_allot_money'];
+        'project_allot_money', 'check_allot_money', 'check_result_txt'];
 
     public function getStatusTxtAttribute()
     {
@@ -29,6 +29,18 @@ class CostSonProject extends Model
             return '结项';
         } else {
             return '项目分配';
+        }
+    }
+
+    public function getCheckResultTxtAttribute()
+    {
+        //考核结果：0-未考核，1-合格，2-不合格
+        if ($this->check_result == 1) {
+            return '合格';
+        } elseif ($this->check_result == 2) {
+            return '不合格';
+        } else {
+            return '未考核';
         }
     }
 

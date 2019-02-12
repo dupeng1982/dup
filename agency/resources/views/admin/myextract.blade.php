@@ -7,10 +7,10 @@
 @section('admin-title')
     <div class="row page-titles">
         <div class="col-md-5 col-8 align-self-center">
-            <h3 class="text-themecolor m-b-0 m-t-0">提成统计</h3>
+            <h3 class="text-themecolor m-b-0 m-t-0">我的提成</h3>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url('admin/index') }}">首页</a></li>
-                <li class="breadcrumb-item active">提成统计</li>
+                <li class="breadcrumb-item active">我的提成</li>
             </ol>
         </div>
         <div class="col-md-7 col-4 align-self-center">
@@ -34,7 +34,7 @@
                         <div class="m-t-20">
                             <div class="row">
                                 <div class="col-3">
-                                    <h4>提成统计列表</h4>
+                                    <h4>我的提成列表</h4>
                                 </div>
                                 <div class="col-2">
                                     <div class="form-group">

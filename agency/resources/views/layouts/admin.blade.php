@@ -316,7 +316,7 @@
             </div>
         </div>
         <footer class="footer text-center">
-            © 2018 dup by agency.com
+            © 2018 dup
         </footer>
     </div>
 </div>

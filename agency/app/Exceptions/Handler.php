@@ -32,7 +32,7 @@ class Handler extends ExceptionHandler
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param  \Exception  $exception
+     * @param  \Exception $exception
      * @return void
      */
     public function report(Exception $exception)
@@ -43,20 +43,29 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Exception $exception
      * @return \Illuminate\Http\Response
      */
     public function render($request, Exception $exception)
     {
-        if($exception instanceof HttpException){
-            if($exception->getStatusCode() == 403){
-                return response()->json([
-                    'code' => 10000,
-                    'data' => '您没有操作权限！',
-                ]);
+        if ($exception instanceof HttpException) {
+            if ($exception->getStatusCode() == 403) {
+                if ($request->getMethod() == 'POST') {
+                    return response()->json([
+                        'code' => 10000,
+                        'data' => '您没有操作权限！请联系管理员！',
+                    ]);
+                } elseif ($request->getMethod() == 'GET') {
+                    return response()->view('error', [
+                        'httpStatus' => $exception->getStatusCode(),
+                        'data' => '您没有操作权限！请联系管理员！']);
+                }
             }
         }
-        return parent::render($request, $exception);
+        return response()->view('error', [
+            'httpStatus' => '500',
+            'data' => '这仅是一个小问题，不用担心！']);
+//        return parent::render($request, $exception);
     }
 }

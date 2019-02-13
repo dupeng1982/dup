@@ -110,7 +110,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function ($router) {
     $router->get('contractmanage', 'AdminController@contractmanage');
     $router->post('addContract', 'AdminController@addContract');
     $router->post('editContract', 'AdminController@editContract');
-    $router->post('delContract', 'AdminController@delContract');
+    $router->post('delContract', 'AdminController@delContract')->middleware('permission:manageoperate');
     $router->post('getContractList', 'AdminController@getContractList');
     $router->post('addCattachment', 'AdminController@addCattachment');
     $router->post('getCattachmentList', 'AdminController@getCattachmentList');

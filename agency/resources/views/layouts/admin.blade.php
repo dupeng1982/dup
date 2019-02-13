@@ -190,19 +190,29 @@
                            aria-expanded="false"><i
                                     class="mdi mdi-store"></i><span class="hide-menu">项目管理</span></a>
                         <ul aria-expanded="false" class="collapse">
+                            @permission('manageshow')
                             <li><a href="{{ url('admin/contractmanage') }}">合同管理</a></li>
+                            <li><a href="{{ url('admin/projectunitmanage') }}">项目单位管理</a></li>
+                            @endpermission
                             <li><a class="has-arrow" href="#" aria-expanded="false">造价项目管理</a>
                                 <ul aria-expanded="false" class="collapse">
                                     <li><a href="{{ url('admin/costprojectinfo') }}">项目详情</a></li>
+                                    @permission('projectallot')
                                     <li><a href="{{ url('admin/costprojectmanage') }}">项目分配</a></li>
+                                    @endpermission
+                                    @permission('projectfirstcheck')
                                     <li><a href="{{ url('admin/costsonprojectcheck') }}">项目初审</a></li>
+                                    @endpermission
                                     <li><a href="{{ url('admin/costsonprojectprofessioncheck') }}">专项审核</a></li>
                                     <li><a href="{{ url('admin/costprojectcheck') }}">项目审核</a></li>
+                                    @permission('projecttechcheck')
                                     <li><a href="{{ url('admin/costprojecttechcheck') }}">技术审核</a></li>
+                                    @endpermission
+                                    @permission('projectfirstcheck')
                                     <li><a href="{{ url('admin/costprojectknotcheck') }}">结项审核</a></li>
+                                    @endpermission
                                 </ul>
                             </li>
-                            <li><a href="{{ url('admin/projectunitmanage') }}">项目单位管理</a></li>
                         </ul>
                     </li>
                     <li>
@@ -211,8 +221,10 @@
                                     class="mdi mdi-coin"></i><span class="hide-menu">财务管理</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="{{ url('admin/myextract') }}">我的提成</a></li>
+                            @permission('financemanage')
                             <li><a href="{{ url('admin/financemanage') }}">财务管理</a></li>
                             <li><a href="{{ url('admin/extractstatistics') }}">提成统计</a></li>
+                            @endpermission
                         </ul>
                     </li>
                     <li>
@@ -221,7 +233,9 @@
                                     class="mdi mdi-account-edit"></i><span class="hide-menu">人员管理</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="{{ url('admin/myinfo') }}">我的信息</a></li>
+                            @permission('adminmanage')
                             <li><a href="{{ url('admin/adminmanagelist') }}">人员列表</a></li>
+                            @endpermission
                         </ul>
                     </li>
                     <li>
@@ -230,13 +244,16 @@
                                     class="mdi mdi-alarm"></i><span class="hide-menu">考勤管理</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="{{ url('admin/mysign') }}">我的考勤</a></li>
+                            @permission('signmanage')
                             <li><a href="{{ url('admin/signapplylist') }}">补签审核</a></li>
                             <li><a href="{{ url('admin/leaveapplylist') }}">请假审核</a></li>
                             <li><a href="{{ url('admin/signandleavestatistics') }}">考勤统计</a></li>
                             <li><a href="{{ url('admin/signandleavesummary') }}">考勤汇总</a></li>
                             <li><a href="{{ url('admin/dateset') }}">考勤设置</a></li>
+                            @endpermission
                         </ul>
                     </li>
+                    @permission('systemset')
                     <li>
                         <a class="has-arrow waves-effect waves-dark" href="{{ url('admin/roleset') }}"
                            aria-expanded="false"><i
@@ -246,6 +263,7 @@
 
                         </ul>
                     </li>
+                    @endpermission
                 </ul>
             </nav>
         </div>
